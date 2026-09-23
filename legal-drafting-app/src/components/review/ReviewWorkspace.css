@@ -1,0 +1,301 @@
+/* Review workspace — same three-panel language as the Draft Workspace */
+
+.rw {
+  display: flex;
+  flex-direction: column;
+  height: calc(100vh - var(--navbar-height));
+  height: calc(100dvh - var(--navbar-height));
+  min-height: 560px;
+}
+
+.rw__header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  padding: var(--space-3) var(--space-4);
+  border-bottom: 1px solid var(--color-border);
+}
+.rw__title {
+  flex: 1;
+  min-width: 0;
+}
+.rw__title h1 {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: var(--text-md);
+}
+.rw__badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 4px;
+}
+.rw__badges .badge {
+  height: 20px;
+  font-size: 10px;
+}
+
+.rw__tabs {
+  margin: var(--space-2) var(--space-3);
+}
+
+.rw__body {
+  flex: 1;
+  min-height: 0;
+  display: grid;
+  grid-template-columns: 280px minmax(0, 1fr) 360px;
+}
+
+.rw__file,
+.rw__findings {
+  min-height: 0;
+  background: var(--color-bg);
+}
+.rw__file {
+  overflow-y: auto;
+  border-right: 1px solid var(--color-border);
+}
+.rw__findings {
+  border-left: 1px solid var(--color-border);
+}
+.rw__text {
+  min-width: 0;
+  min-height: 0;
+  background: var(--color-bg-muted);
+}
+
+/* File info */
+.review-info {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+  padding: var(--space-4);
+}
+.review-info__file {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+.review-info__icon {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-md);
+  background: var(--color-black);
+  color: var(--color-white);
+}
+.review-info__name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-weight: var(--weight-semibold);
+  max-width: 190px;
+}
+.review-info__meta {
+  color: var(--color-text-secondary);
+  font-size: var(--text-xs);
+}
+.review-info__list {
+  margin: 0;
+  border-top: 1px solid var(--color-border);
+}
+.review-info__list div {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding: var(--space-2) 0;
+  border-bottom: 1px solid var(--color-border);
+  font-size: var(--text-sm);
+}
+.review-info__list dt {
+  color: var(--color-text-secondary);
+}
+.review-info__list dd {
+  margin: 0;
+  text-align: right;
+  font-weight: var(--weight-medium);
+}
+.review-info__type select {
+  width: 100%;
+  height: 36px;
+  padding: 0 var(--space-3);
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-md);
+  background: var(--color-bg);
+  font-size: var(--text-sm);
+}
+
+/* Extracted text */
+.extracted {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
+}
+.extracted__toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-4);
+  border-bottom: 1px solid var(--color-border);
+  background: var(--color-bg);
+}
+.extracted__title {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+}
+.extracted__title h2 {
+  font-size: var(--text-md);
+}
+.extracted__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1);
+}
+.extracted__changed {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding: var(--space-2) var(--space-4);
+  border-bottom: 1px solid var(--color-text);
+  background: var(--color-bg);
+  font-size: var(--text-sm);
+  font-weight: var(--weight-medium);
+}
+.extracted__canvas {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  padding: var(--space-6) var(--space-6) var(--space-4);
+}
+.extracted__page {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  width: 100%;
+  max-width: 794px;
+  margin: 0 auto;
+  background: #fff;
+  border: 1px solid #e3e3e3;
+  box-shadow: var(--shadow-page);
+}
+.extracted__page.is-editing {
+  outline: 2px solid var(--color-black);
+  outline-offset: 2px;
+}
+.extracted__page textarea {
+  flex: 1;
+  width: 100%;
+  padding: 56px 72px;
+  border: 0;
+  background: transparent;
+  font-family: 'Times New Roman', Times, 'Noto Serif Devanagari', serif;
+  font-size: 12pt;
+  line-height: 1.6;
+  color: #111;
+  resize: none;
+}
+.extracted__page textarea:focus-visible {
+  box-shadow: none;
+}
+.extracted__page textarea:read-only {
+  cursor: text;
+}
+.extracted__note {
+  max-width: 794px;
+  margin: var(--space-2) auto 0;
+  color: var(--color-text-muted);
+  font-size: 11px;
+  text-align: center;
+}
+
+/* Summary rows */
+.review-summary__rows {
+  list-style: none;
+  border-top: 1px solid var(--color-border);
+}
+.review-summary__row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  width: 100%;
+  padding: var(--space-3) 0;
+  border-bottom: 1px solid var(--color-border);
+  text-align: left;
+  font-size: var(--text-sm);
+}
+.review-summary__row:hover {
+  background: var(--color-bg-subtle);
+}
+.review-summary__label {
+  flex: 1;
+}
+.review-summary__count {
+  font-weight: var(--weight-semibold);
+  font-variant-numeric: tabular-nums;
+}
+.review-summary__row .badge {
+  height: 20px;
+  font-size: 10px;
+}
+
+@media (max-width: 1279px) {
+  .rw__body {
+    grid-template-columns: 240px minmax(0, 1fr) 320px;
+  }
+  .extracted__page textarea {
+    padding: 40px 48px;
+  }
+}
+
+@media (max-width: 1023px) {
+  .rw {
+    height: auto;
+    min-height: calc(100dvh - var(--navbar-height));
+  }
+  .rw__header {
+    flex-wrap: wrap;
+  }
+  .rw__title {
+    flex-basis: 100%;
+    order: -1;
+  }
+  .rw__body {
+    display: block;
+  }
+  .rw__body > .is-hidden {
+    display: none;
+  }
+  .rw__file,
+  .rw__findings {
+    border: 0;
+  }
+  .rw__text {
+    background: var(--color-bg-muted);
+  }
+  .extracted__canvas {
+    padding: var(--space-3);
+  }
+  .extracted__page {
+    min-height: 60vh;
+  }
+  .extracted__page textarea {
+    padding: 24px 20px;
+    font-size: 11.5pt;
+  }
+  .rw__findings .intel {
+    height: auto;
+  }
+  .rw__findings .intel__body {
+    overflow: visible;
+  }
+}

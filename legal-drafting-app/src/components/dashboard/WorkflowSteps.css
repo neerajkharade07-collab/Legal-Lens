@@ -1,0 +1,51 @@
+.workflow {
+  border-bottom: 1px solid var(--color-border);
+  background: var(--color-bg-subtle);
+}
+
+.workflow__list {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  list-style: none;
+}
+
+.workflow__step {
+  display: flex;
+  gap: var(--space-3);
+  padding: var(--space-5) var(--space-5) var(--space-5) 0;
+}
+.workflow__step + .workflow__step {
+  padding-left: var(--space-5);
+  border-left: 1px solid var(--color-border);
+}
+
+.workflow__num {
+  font-family: var(--font-serif);
+  font-size: var(--text-sm);
+  color: var(--color-text-muted);
+  line-height: 1.6;
+}
+
+.workflow__title {
+  font-weight: var(--weight-semibold);
+}
+.workflow__text {
+  color: var(--color-text-secondary);
+  font-size: var(--text-sm);
+}
+
+@media (max-width: 1024px) {
+  .workflow__list {
+    display: flex;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+  }
+  .workflow__list::-webkit-scrollbar {
+    display: none;
+  }
+  .workflow__step {
+    flex: 0 0 220px;
+    scroll-snap-align: start;
+  }
+}

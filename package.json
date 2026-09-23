@@ -1,0 +1,16 @@
+{
+  "name": "legal-lens-site",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Legal Lens website with the Legal Drafting Assistant V2 served at /legal-drafting/.",
+  "type": "module",
+  "scripts": {
+    "build": "node scripts/build-vercel.mjs",
+    "start": "node scripts/serve.mjs",
+    "dev:drafting": "npm --prefix legal-drafting-app run dev",
+    "lint": "npm --prefix legal-drafting-app run lint"
+  },
+  "engines": {
+    "node": ">=20.19"
+  }
+}

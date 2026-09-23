@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Legal Lens — Lawyer Portal Login</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --black: #0a0a0a;
+    --white: #ffffff;
+    --off-white: #fafafa;
+    --gray-100: #f5f5f5;
+    --gray-200: #e6e6e6;
+    --gray-300: #d4d4d4;
+    --gray-500: #8f8f8f;
+    --gray-600: #6b6b6b;
+    --gray-800: #2b2b2b;
+    --radius-sm: 11px;
+    --radius-md: 14px;
+    --ease: cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  * { box-sizing: border-box; }
+
+  html, body { height: 100%; margin: 0; }
+
+  body {
+    font-family: 'Poppins', sans-serif;
+    background: var(--white);
+    color: var(--black);
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+  }
+
+  .login-shell {
+    min-height: 100vh;
+    display: grid;
+    grid-template-columns: 45% 55%;
+  }
+
+  /* ---------- LEFT BRANDING PANEL ---------- */
+  .brand-panel {
+    position: relative;
+    background: var(--black);
+    color: var(--white);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 64px;
+    opacity: 0;
+    animation: panelFadeIn 0.9s var(--ease) forwards;
+  }
+
+  @keyframes panelFadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+  .brand-bg-canvas { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0.55; }
+
+  .brand-content { position: relative; z-index: 2; max-width: 420px; }
+
+  .brand-mark {
+    display: flex; align-items: center; gap: 10px; margin-bottom: 40px;
+    opacity: 0; transform: translateY(10px);
+    animation: fadeSlideUp 0.7s var(--ease) forwards; animation-delay: 0.3s;
+  }
+  .brand-mark svg { width: 26px; height: 26px; stroke: var(--white); fill: none; flex-shrink: 0; }
+  .brand-mark span { font-size: 17px; font-weight: 600; letter-spacing: 0.01em; }
+
+  .portal-badge {
+    display: inline-flex; align-items: center; gap: 7px;
+    font-size: 11px; font-weight: 600; letter-spacing: 1.4px;
+    color: rgba(255,255,255,0.85);
+    border: 1px solid rgba(255,255,255,0.28);
+    border-radius: 999px;
+    padding: 7px 14px;
+    margin-bottom: 24px;
+    opacity: 0; transform: translateY(10px);
+    animation: fadeSlideUp 0.7s var(--ease) forwards; animation-delay: 0.38s;
+  }
+  .portal-badge svg { width: 13px; height: 13px; stroke: rgba(255,255,255,0.85); fill: none; }
+
+  .brand-headline {
+    font-size: 34px; font-weight: 700; line-height: 1.28; margin: 0 0 22px;
+    opacity: 0; transform: translateY(14px);
+    animation: fadeSlideUp 0.8s var(--ease) forwards; animation-delay: 0.45s;
+  }
+
+  .brand-desc {
+    font-size: 14.5px; line-height: 1.7; color: rgba(255,255,255,0.62); font-weight: 400; margin: 0 0 56px;
+    opacity: 0; transform: translateY(14px);
+    animation: fadeSlideUp 0.8s var(--ease) forwards; animation-delay: 0.6s;
+  }
+
+  .brand-icons-row {
+    display: flex; gap: 28px;
+    opacity: 0; transform: translateY(14px);
+    animation: fadeSlideUp 0.8s var(--ease) forwards; animation-delay: 0.75s;
+  }
+  .brand-icon-item { display: flex; flex-direction: column; align-items: flex-start; gap: 10px; }
+  .brand-icon-item .icon-box {
+    width: 40px; height: 40px; border-radius: 50%; border: 1px solid rgba(255,255,255,0.28);
+    display: flex; align-items: center; justify-content: center;
+  }
+  .brand-icon-item svg { width: 17px; height: 17px; stroke: rgba(255,255,255,0.85); fill: none; }
+  .brand-icon-item .icon-label { font-size: 11.5px; color: rgba(255,255,255,0.5); font-weight: 500; }
+
+  @keyframes fadeSlideUp { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: translateY(0); } }
+
+  /* ---------- RIGHT LOGIN PANEL ---------- */
+  .form-panel { display: flex; align-items: center; justify-content: center; padding: 40px 24px; background: var(--off-white); }
+
+  .login-card { width: 100%; max-width: 400px; opacity: 0; transform: translateY(18px); animation: fadeSlideUp 0.7s var(--ease) forwards; animation-delay: 0.2s; }
+
+  .login-card .back-to-connect {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-size: 12.5px; font-weight: 500; color: var(--gray-600);
+    text-decoration: none; margin-bottom: 22px;
+  }
+  .login-card .back-to-connect svg { width: 13px; height: 13px; stroke: var(--gray-600); }
+  .login-card .back-to-connect:hover { color: var(--black); }
+
+  .login-card h1 { font-size: 28px; font-weight: 700; margin: 0 0 8px; letter-spacing: -0.01em; }
+  .login-card .subtitle { font-size: 14px; color: var(--gray-600); font-weight: 400; margin: 0 0 36px; }
+
+  .field-group { margin-bottom: 20px; opacity: 0; transform: translateY(10px); animation: fadeSlideUp 0.6s var(--ease) forwards; }
+  .field-group:nth-of-type(1) { animation-delay: 0.35s; }
+  .field-group:nth-of-type(2) { animation-delay: 0.45s; }
+  .field-group label { display: block; font-size: 13px; font-weight: 500; margin-bottom: 8px; }
+
+  .input-wrap { position: relative; display: flex; align-items: center; }
+  .input-wrap svg.field-icon { position: absolute; left: 16px; width: 17px; height: 17px; stroke: var(--gray-500); fill: none; pointer-events: none; transition: stroke 0.2s var(--ease); }
+  .input-wrap input {
+    width: 100%; font-family: 'Poppins', sans-serif; font-size: 14px; font-weight: 400;
+    padding: 14px 16px 14px 46px; border: 1px solid var(--gray-300); border-radius: var(--radius-sm);
+    color: var(--black); background: var(--white); outline: none;
+    transition: border-color 0.2s var(--ease), box-shadow 0.2s var(--ease);
+  }
+  .input-wrap input::placeholder { color: var(--gray-500); }
+  .input-wrap input:focus { border-color: var(--black); box-shadow: 0 0 0 3px rgba(0,0,0,0.06); }
+  .input-wrap:focus-within svg.field-icon { stroke: var(--black); }
+
+  .field-group.has-error input { border-color: var(--black); }
+  .password-toggle { position: absolute; right: 14px; background: none; border: none; padding: 4px; cursor: pointer; display: flex; align-items: center; justify-content: center; border-radius: 6px; }
+  .password-toggle svg { width: 18px; height: 18px; stroke: var(--gray-500); fill: none; transition: stroke 0.2s var(--ease); }
+  .password-toggle:hover svg { stroke: var(--black); }
+
+  .field-error { max-height: 0; opacity: 0; overflow: hidden; transition: max-height 0.25s var(--ease), opacity 0.25s var(--ease); font-size: 12px; color: var(--gray-800); }
+  .field-group.has-error .field-error { max-height: 40px; opacity: 1; margin-top: 7px; }
+
+  .signin-btn {
+    width: 100%; font-family: 'Poppins', sans-serif; font-size: 15px; font-weight: 600; padding: 15px;
+    border: 1.5px solid var(--black); border-radius: var(--radius-sm); background: var(--black); color: var(--white);
+    cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px;
+    transition: transform 0.15s var(--ease), box-shadow 0.15s var(--ease), background 0.2s var(--ease);
+    opacity: 0; transform: translateY(10px); animation: fadeSlideUp 0.6s var(--ease) forwards; animation-delay: 0.6s;
+    margin-top: 6px;
+  }
+  .signin-btn:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 10px 24px rgba(0,0,0,0.18); }
+  .signin-btn:active:not(:disabled) { transform: translateY(0); }
+  .signin-btn:disabled { cursor: default; opacity: 0.85; }
+  .signin-btn.success { background: var(--white); color: var(--black); border-color: var(--black); }
+
+  .btn-spinner { width: 15px; height: 15px; border: 2px solid rgba(255,255,255,0.35); border-top-color: var(--white); border-radius: 50%; animation: spin 0.7s linear infinite; display: none; }
+  .signin-btn.loading .btn-spinner { display: inline-block; }
+  .btn-check { display: none; width: 16px; height: 16px; stroke: var(--black); fill: none; }
+  .signin-btn.success .btn-check { display: inline-block; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .signup-row {
+    text-align: center; margin-top: 26px; font-size: 13.5px; color: var(--gray-600);
+    opacity: 0; transform: translateY(10px); animation: fadeSlideUp 0.6s var(--ease) forwards; animation-delay: 0.75s;
+  }
+  .signup-row a { font-weight: 500; color: var(--black); text-decoration: none; position: relative; margin-left: 4px; }
+  .signup-row a::after { content: ''; position: absolute; left: 0; bottom: -2px; width: 100%; height: 1px; background: var(--black); transform: scaleX(0); transform-origin: right; transition: transform 0.25s var(--ease); }
+  .signup-row a:hover::after { transform: scaleX(1); transform-origin: left; }
+
+  .security-note {
+    display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: 32px; font-size: 12px; color: var(--gray-500);
+    opacity: 0; animation: fadeIn 0.6s var(--ease) forwards; animation-delay: 0.9s;
+  }
+  .security-note svg { width: 13px; height: 13px; stroke: var(--gray-500); fill: none; flex-shrink: 0; }
+  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+  .legal-disclaimer { text-align: center; margin-top: 16px; font-size: 11.5px; color: var(--gray-500); line-height: 1.6; opacity: 0; animation: fadeIn 0.6s var(--ease) forwards; animation-delay: 0.95s; }
+
+  /* ---------- RESPONSIVE ---------- */
+  @media (max-width: 1000px) {
+    .login-shell { grid-template-columns: 40% 60%; }
+    .brand-panel { padding: 48px; }
+    .brand-headline { font-size: 28px; }
+  }
+  @media (max-width: 760px) {
+    .login-shell { grid-template-columns: 1fr; grid-template-rows: auto 1fr; }
+    .brand-panel { padding: 40px 28px; min-height: 220px; justify-content: flex-start; }
+    .brand-desc { margin-bottom: 0; }
+    .brand-icons-row { display: none; }
+    .brand-headline { font-size: 22px; margin-bottom: 12px; }
+    .form-panel { padding: 40px 20px 56px; }
+  }
+  @media (max-width: 420px) {
+    .login-card h1 { font-size: 24px; }
+    .brand-headline { font-size: 20px; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    * { animation: none !important; transition: none !important; }
+    .login-card, .field-group, .signin-btn, .signup-row, .security-note, .legal-disclaimer, .brand-panel, .brand-mark, .portal-badge, .brand-headline, .brand-desc, .brand-icons-row {
+      opacity: 1 !important; transform: none !important;
+    }
+  }
+  input:focus-visible, button:focus-visible, a:focus-visible { outline: 2px solid var(--black); outline-offset: 2px; }
+</style>
+</head>
+<body>
+
+<div class="login-shell">
+
+  <!-- LEFT BRANDING PANEL -->
+  <div class="brand-panel">
+    <canvas class="brand-bg-canvas" id="brandCanvas" aria-hidden="true"></canvas>
+
+    <div class="brand-content">
+      <div class="brand-mark">
+        <svg viewBox="0 0 24 24" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 4 6v6c0 5 3.4 9.2 8 10 4.6-.8 8-5 8-10V6z"></path></svg>
+        <span>Legal Lens</span>
+      </div>
+
+      <span class="portal-badge">
+        <svg viewBox="0 0 24 24" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+        LAWYER PORTAL
+      </span>
+
+      <h2 class="brand-headline">Grow your practice.<br>Meet new clients.</h2>
+      <p class="brand-desc">Manage your professional profile, respond to consultation requests, and connect with people who need your expertise.</p>
+
+      <div class="brand-icons-row">
+        <div class="brand-icon-item">
+          <div class="icon-box"><svg viewBox="0 0 24 24" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"></circle><path d="M4 21c0-4.4 3.6-8 8-8s8 3.6 8 8"></path></svg></div>
+          <span class="icon-label">Profile</span>
+        </div>
+        <div class="brand-icon-item">
+          <div class="icon-box"><svg viewBox="0 0 24 24" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg></div>
+          <span class="icon-label">Requests</span>
+        </div>
+        <div class="brand-icon-item">
+          <div class="icon-box"><svg viewBox="0 0 24 24" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg></div>
+          <span class="icon-label">Clients</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- RIGHT LOGIN PANEL -->
+  <div class="form-panel">
+    <div class="login-card">
+      <a href="lawyer-connect.html" class="back-to-connect">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+        Back to Lawyer Connect
+      </a>
+
+      <h1>Welcome back, Counsel</h1>
+      <p class="subtitle">Log in to your Lawyer Connect portal.</p>
+
+      <form id="lawyerLoginForm" novalidate>
+        <div class="field-group" id="emailGroup">
+          <label for="email">Email Address</label>
+          <div class="input-wrap">
+            <svg class="field-icon" viewBox="0 0 24 24" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16v12H4z"></path><path d="m4 7 8 6 8-6"></path></svg>
+            <input type="email" id="email" name="email" placeholder="Enter your professional email" autocomplete="email">
+          </div>
+          <div class="field-error" id="emailError">Please enter your email address.</div>
+        </div>
+
+        <div class="field-group" id="passwordGroup">
+          <label for="password">Password</label>
+          <div class="input-wrap">
+            <svg class="field-icon" viewBox="0 0 24 24" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="10" width="16" height="10" rx="2"></rect><path d="M8 10V7a4 4 0 0 1 8 0v3"></path></svg>
+            <input type="password" id="password" name="password" placeholder="Enter your password" autocomplete="current-password" style="padding-right:46px;">
+            <button type="button" class="password-toggle" id="passwordToggle" aria-label="Show password">
+              <svg viewBox="0 0 24 24" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" id="eyeIcon"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+            </button>
+          </div>
+          <div class="field-error" id="passwordError">Please enter your password.</div>
+        </div>
+
+        <button type="submit" class="signin-btn" id="signinBtn">
+          <span class="btn-spinner"></span>
+          <svg class="btn-check" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+          <span id="signinBtnText">Log In to Portal</span>
+        </button>
+      </form>
+
+      <div class="signup-row">
+        New to Legal Lens? <a href="lawyer-signup.html">Register as a Lawyer</a>
+      </div>
+
+      <div class="security-note">
+        <svg viewBox="0 0 24 24" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="10" width="16" height="10" rx="2"></rect><path d="M8 10V7a4 4 0 0 1 8 0v3"></path></svg>
+        <span>Your information is protected with secure data practices.</span>
+      </div>
+
+      <p class="legal-disclaimer">This is the Lawyer Connect professional portal. Looking for legal help instead? <a href="index.html" style="color:var(--gray-600);">Go to the Legal Lens homepage</a> (no login needed).</p>
+    </div>
+  </div>
+
+</div>
+
+<script src="lawyer-data.js"></script>
+<script src="config.js"></script>
+<script src="auth.js"></script>
+<script>
+(function () {
+  /* ---------- Subtle animated grid background ---------- */
+  const canvas = document.getElementById('brandCanvas');
+  const ctx = canvas.getContext('2d');
+  const panel = canvas.parentElement;
+  let width, height, dpr, offset = 0;
+  const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  function resize() {
+    dpr = window.devicePixelRatio || 1;
+    width = panel.clientWidth; height = panel.clientHeight;
+    canvas.width = width * dpr; canvas.height = height * dpr;
+    canvas.style.width = width + 'px'; canvas.style.height = height + 'px';
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  }
+
+  function drawGrid() {
+    ctx.clearRect(0, 0, width, height);
+    const spacing = 46;
+    ctx.strokeStyle = 'rgba(255,255,255,0.05)';
+    ctx.lineWidth = 1;
+    for (let x = -spacing + (offset % spacing); x < width + spacing; x += spacing) { ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, height); ctx.stroke(); }
+    for (let y = -spacing + (offset % spacing); y < height + spacing; y += spacing) { ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(width, y); ctx.stroke(); }
+    const grad = ctx.createRadialGradient(width * 0.7, height * 0.25, 0, width * 0.7, height * 0.25, width * 0.6);
+    grad.addColorStop(0, 'rgba(255,255,255,0.05)'); grad.addColorStop(1, 'rgba(255,255,255,0)');
+    ctx.fillStyle = grad; ctx.fillRect(0, 0, width, height);
+  }
+
+  function animate() { offset += 0.06; drawGrid(); if (!prefersReducedMotion) requestAnimationFrame(animate); }
+
+  resize(); drawGrid();
+  window.addEventListener('resize', resize);
+  if (!prefersReducedMotion) requestAnimationFrame(animate);
+
+  /* ---------- Password show/hide ---------- */
+  const passwordInput = document.getElementById('password');
+  const passwordToggle = document.getElementById('passwordToggle');
+  const eyeIcon = document.getElementById('eyeIcon');
+  const eyeOpenPath = '<path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7z"></path><circle cx="12" cy="12" r="3"></circle>';
+  const eyeClosedPath = '<path d="M17.94 17.94A10.94 10.94 0 0 1 12 19c-7 0-11-7-11-7a21.6 21.6 0 0 1 5.06-5.94M9.9 4.24A10.94 10.94 0 0 1 12 4c7 0 11 7 11 7a21.6 21.6 0 0 1-2.61 3.65M14.12 14.12a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line>';
+
+  passwordToggle.addEventListener('click', () => {
+    const isPassword = passwordInput.type === 'password';
+    passwordInput.type = isPassword ? 'text' : 'password';
+    eyeIcon.innerHTML = isPassword ? eyeClosedPath : eyeOpenPath;
+    passwordToggle.setAttribute('aria-label', isPassword ? 'Hide password' : 'Show password');
+  });
+
+  /* ---------- Form validation & submission ---------- */
+  const form = document.getElementById('lawyerLoginForm');
+  const emailInput = document.getElementById('email');
+  const emailGroup = document.getElementById('emailGroup');
+  const emailError = document.getElementById('emailError');
+  const passwordGroup = document.getElementById('passwordGroup');
+  const passwordError = document.getElementById('passwordError');
+  const signinBtn = document.getElementById('signinBtn');
+  const signinBtnText = document.getElementById('signinBtnText');
+
+  const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+  function clearError(group) { group.classList.remove('has-error'); }
+  function setError(group, errorEl, message) { errorEl.textContent = message; group.classList.add('has-error'); }
+
+  emailInput.addEventListener('input', () => clearError(emailGroup));
+  passwordInput.addEventListener('input', () => clearError(passwordGroup));
+
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
+    let valid = true;
+
+    if (emailInput.value.trim() === '') {
+      setError(emailGroup, emailError, 'Please enter your email address.'); valid = false;
+    } else if (!emailPattern.test(emailInput.value.trim())) {
+      setError(emailGroup, emailError, 'Please enter a valid email address.'); valid = false;
+    } else { clearError(emailGroup); }
+
+    if (passwordInput.value === '') {
+      setError(passwordGroup, passwordError, 'Please enter your password.'); valid = false;
+    } else { clearError(passwordGroup); }
+
+    if (!valid) return;
+
+    signinBtn.disabled = true;
+    signinBtn.classList.add('loading');
+    signinBtnText.textContent = 'Signing In...';
+
+    loginUser('lawyer', emailInput.value.trim(), passwordInput.value)
+      .then(() => {
+        signinBtn.classList.remove('loading');
+        signinBtn.classList.add('success');
+        signinBtnText.textContent = 'Login successful';
+        // loginUser() performs the redirect itself once the API confirms login.
+      })
+      .catch((err) => {
+        signinBtn.disabled = false;
+        signinBtn.classList.remove('loading');
+        signinBtnText.textContent = 'Log In to Portal';
+        setError(emailGroup, emailError, err.message || 'Invalid email or password.');
+      });
+  });
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Contact Us — Legal Lens</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="style.css">
+
+<!-- ============================================================
+     PAGE-SPECIFIC STYLES ONLY.
+     Everything the navbar and footer need (colors, Poppins,
+     .navbar-*, .ll-footer-*, etc.) already lives in your existing
+     style.css and is reused as-is via the <link> above — nothing
+     below redefines or overrides it. This block only adds the
+     new classes this page introduces: .contact-hero-*,
+     .contact-content-*, .contact-form-*.
+     If you'd rather keep one single stylesheet, just cut this
+     block and paste it into style.css — the class names won't
+     collide with anything already there.
+     ============================================================ -->
+<style>
+  /* ===== CONTACT HERO ===== */
+  .contact-hero{
+    width: 100%;
+    background: #000000;
+    padding: 96px 0 64px;
+    text-align: center;
+  }
+
+  .contact-hero-inner{
+    max-width: 640px;
+    margin: 0 auto;
+    padding: 0 40px;
+  }
+
+  .contact-hero-label{
+    margin: 0;
+    font-family: 'Poppins', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 2px;
+    color: #D4D4D4;
+    text-transform: uppercase;
+  }
+
+  .contact-hero-heading{
+    margin: 16px 0 0;
+    font-family: 'Poppins', sans-serif;
+    font-size: 42px;
+    font-weight: 700;
+    line-height: 1.2;
+    letter-spacing: -0.4px;
+    color: #FFFFFF;
+  }
+
+  .contact-hero-sub{
+    margin: 14px 0 0;
+    font-family: 'Poppins', sans-serif;
+    font-size: 16px;
+    font-weight: 400;
+    line-height: 1.7;
+    color: #D4D4D4;
+  }
+
+  /* ===== CONTACT CONTENT ===== */
+  .contact-content{
+    width: 100%;
+    background: #000000;
+    padding: 0 0 120px;
+  }
+
+  .contact-content-inner{
+    max-width: 1120px;
+    margin: 0 auto;
+    padding: 0 40px;
+    display: grid;
+    grid-template-columns: 0.9fr 1.1fr;
+    gap: 56px;
+    align-items: start;
+  }
+
+  /* --- Left: Let's Talk --- */
+  .contact-left-heading{
+    margin: 0;
+    font-family: 'Poppins', sans-serif;
+    font-size: 26px;
+    font-weight: 700;
+    color: #FFFFFF;
+  }
+
+  .contact-left-text{
+    margin: 18px 0 0;
+    font-family: 'Poppins', sans-serif;
+    font-size: 15px;
+    font-weight: 400;
+    line-height: 1.8;
+    color: #9A9A9A;
+    max-width: 420px;
+  }
+
+  .contact-email-block{
+    margin-top: 36px;
+  }
+
+  .contact-email-label{
+    display: block;
+    font-family: 'Poppins', sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    color: #6B6B6B;
+    text-transform: uppercase;
+  }
+
+  .contact-email-value{
+    display: inline-block;
+    margin-top: 8px;
+    font-family: 'Poppins', sans-serif;
+    font-size: 16px;
+    font-weight: 500;
+    color: #FFFFFF;
+    text-decoration: none;
+    border-bottom: 1px solid #333333;
+    transition: color 0.25s ease, border-color 0.25s ease;
+  }
+
+  .contact-email-value:hover{
+    color: #FFFFFF;
+    border-color: #FFFFFF;
+  }
+
+  /* --- Right: Form panel (white card, per spec) --- */
+  .contact-form-panel{
+    background: #FFFFFF;
+    border-radius: 16px;
+    padding: 40px 36px;
+  }
+
+  .contact-form{
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .contact-field{
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .contact-field label{
+    font-family: 'Poppins', sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    color: #222222;
+  }
+
+  .contact-field input,
+  .contact-field textarea{
+    font-family: 'Poppins', sans-serif;
+    font-size: 14.5px;
+    font-weight: 400;
+    color: #000000;
+    background: #FFFFFF;
+    border: 1px solid #D0D0D0;
+    border-radius: 8px;
+    padding: 12px 14px;
+    outline: none;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  .contact-field textarea{
+    resize: vertical;
+    min-height: 120px;
+  }
+
+  .contact-field input::placeholder,
+  .contact-field textarea::placeholder{
+    color: #A8A8A8;
+  }
+
+  .contact-field input:focus,
+  .contact-field textarea:focus{
+    border-color: #000000;
+    box-shadow: 0 0 0 3px rgba(0,0,0,0.06);
+  }
+
+  .contact-field.has-error input,
+  .contact-field.has-error textarea{
+    border-color: #B3261E;
+  }
+
+  .contact-field-error{
+    display: none;
+    font-family: 'Poppins', sans-serif;
+    font-size: 12.5px;
+    color: #B3261E;
+  }
+
+  .contact-field.has-error .contact-field-error{
+    display: block;
+  }
+
+  .contact-submit{
+    align-self: flex-start;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 8px;
+    background: #000000;
+    color: #FFFFFF;
+    font-family: 'Poppins', sans-serif;
+    font-size: 15px;
+    font-weight: 600;
+    padding: 14px 28px;
+    border: 1px solid #000000;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+  }
+
+  .contact-submit:hover{
+    transform: translateY(-2px) scale(1.02);
+    box-shadow: 0 12px 24px rgba(0,0,0,0.18);
+  }
+
+  .contact-submit-arrow{
+    transition: transform 0.25s ease;
+  }
+
+  .contact-submit:hover .contact-submit-arrow{
+    transform: translateX(4px);
+  }
+
+  .contact-success{
+    display: none;
+    align-items: center;
+    gap: 10px;
+    margin-top: 20px;
+    padding: 14px 16px;
+    background: #F0FBF3;
+    border: 1px solid #B7E4C0;
+    border-radius: 8px;
+    font-family: 'Poppins', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    color: #1E7A34;
+  }
+
+  .contact-success.is-visible{
+    display: flex;
+  }
+
+  /* ===== Responsive ===== */
+
+  @media (max-width: 900px){
+    .contact-hero{ padding: 80px 0 56px; }
+    .contact-hero-heading{ font-size: 32px; }
+    .contact-content-inner{
+      grid-template-columns: 1fr;
+      gap: 40px;
+    }
+    .contact-left-text{ max-width: 100%; }
+  }
+
+  @media (max-width: 560px){
+    .contact-hero-inner{ padding: 0 20px; }
+    .contact-hero-heading{ font-size: 27px; }
+    .contact-content-inner{ padding: 0 20px; }
+    .contact-form-panel{ padding: 28px 22px; }
+    .contact-submit{
+      width: 100%;
+      justify-content: center;
+    }
+  }
+</style>
+</head>
+<body>
+
+<!-- contact hero starts here -->
+<section class="contact-hero">
+  <div class="contact-hero-inner">
+    <p class="contact-hero-label" data-i18n="contactHeroLabel">CONTACT US</p>
+    <h1 class="contact-hero-heading" data-i18n="contactHeroHeading">Get in Touch</h1>
+    <p class="contact-hero-sub" data-i18n="contactHeroSub">Have a question, feedback, or need help? We're here to help.</p>
+  </div>
+</section>
+<!-- contact hero ends here -->
+
+<!-- contact content starts here -->
+<section class="contact-content">
+  <div class="contact-content-inner">
+
+    <!-- Left: Let's Talk -->
+    <div class="contact-left">
+      <h2 class="contact-left-heading" data-i18n="contactLeftHeading">Let's Talk</h2>
+      <p class="contact-left-text" data-i18n="contactLeftText">Whether you have a question about Legal Lens, need help using the platform, or want to share feedback, we'd love to hear from you.</p>
+
+      <div class="contact-email-block">
+        <span class="contact-email-label" data-i18n="contactEmailLabel">Email</span><br />
+        <!-- Placeholder email — replace with your real support address -->
+        <a class="contact-email-value" href="mailto:support@legallens.example">support@legallens.example</a>
+      </div>
+    </div>
+
+    <!-- Right: Contact Form -->
+    <div class="contact-form-panel">
+      <form class="contact-form" id="contactForm" novalidate>
+
+        <div class="contact-field" id="field-name">
+          <label for="contact-name" data-i18n="contactLabelName">Full Name</label>
+          <input type="text" id="contact-name" name="name" autocomplete="name" required />
+          <span class="contact-field-error" data-i18n="contactErrorName">Please enter your name.</span>
+        </div>
+
+        <div class="contact-field" id="field-email">
+          <label for="contact-email" data-i18n="contactLabelEmail">Email Address</label>
+          <input type="email" id="contact-email" name="email" autocomplete="email" required />
+          <span class="contact-field-error" data-i18n="contactErrorEmail">Please enter a valid email address.</span>
+        </div>
+
+        <div class="contact-field" id="field-subject">
+          <label for="contact-subject" data-i18n="contactLabelSubject">Subject</label>
+          <input type="text" id="contact-subject" name="subject" required />
+          <span class="contact-field-error" data-i18n="contactErrorSubject">Please enter a subject.</span>
+        </div>
+
+        <div class="contact-field" id="field-message">
+          <label for="contact-message" data-i18n="contactLabelMessage">Message</label>
+          <textarea id="contact-message" name="message" rows="5" required></textarea>
+          <span class="contact-field-error" data-i18n="contactErrorMessage">Please enter a message.</span>
+        </div>
+
+        <button type="submit" class="contact-submit">
+          <span data-i18n="contactSend">Send Message</span> <span class="contact-submit-arrow">→</span>
+        </button>
+
+        <div class="contact-success" id="contactSuccess" role="status" aria-live="polite">
+          <span data-i18n="contactSuccessMsg">Thank you! Your message has been received.</span>
+        </div>
+      </form>
+    </div>
+
+  </div>
+</section>
+<!-- contact content ends here -->
+
+<script>
+  // ===== Contact form: frontend-only validation + success message =====
+  (function(){
+    const form = document.getElementById('contactForm');
+    const successBox = document.getElementById('contactSuccess');
+
+    const fields = [
+      { wrapId: 'field-name', inputId: 'contact-name' },
+      { wrapId: 'field-email', inputId: 'contact-email' },
+      { wrapId: 'field-subject', inputId: 'contact-subject' },
+      { wrapId: 'field-message', inputId: 'contact-message' }
+    ];
+
+    function isValidEmail(value){
+      return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
+    }
+
+    function validate(){
+      let allValid = true;
+
+      fields.forEach(({ wrapId, inputId }) => {
+        const wrap = document.getElementById(wrapId);
+        const input = document.getElementById(inputId);
+        const value = input.value.trim();
+
+        let fieldValid = value.length > 0;
+        if(inputId === 'contact-email' && fieldValid){
+          fieldValid = isValidEmail(value);
+        }
+
+        wrap.classList.toggle('has-error', !fieldValid);
+        if(!fieldValid) allValid = false;
+      });
+
+      return allValid;
+    }
+
+    // Clear a field's error state as soon as the person starts fixing it
+    fields.forEach(({ wrapId, inputId }) => {
+      const input = document.getElementById(inputId);
+      input.addEventListener('input', () => {
+        document.getElementById(wrapId).classList.remove('has-error');
+      });
+    });
+
+    form.addEventListener('submit', (e) => {
+      e.preventDefault(); // frontend-only: no request is sent anywhere
+
+      successBox.classList.remove('is-visible');
+
+      if(!validate()){
+        return;
+      }
+
+      // No external service is called here. This only confirms the
+      // fields passed validation and shows a local success message.
+      successBox.classList.add('is-visible');
+      form.reset();
+    });
+  })();
+</script>
+
+<script src="translations.js"></script>
+<script src="language.js"></script>
+</body>
+</html>

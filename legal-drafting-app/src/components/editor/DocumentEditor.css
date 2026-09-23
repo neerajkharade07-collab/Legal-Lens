@@ -1,0 +1,167 @@
+/* ==========================================================================
+   A4 page + legal document typography
+   A4 = 210 × 297 mm ≈ 794 × 1123 CSS px at 96 dpi; margins ≈ 25 mm.
+   ========================================================================== */
+
+.a4-page {
+  --page-width: 794px;
+  --page-margin: 96px;
+  width: 100%;
+  max-width: var(--page-width);
+  min-height: 1123px;
+  margin: 0 auto;
+  padding: 84px var(--page-margin) 96px;
+  background: #ffffff;
+  border: 1px solid #e3e3e3;
+  box-shadow: var(--shadow-page);
+  color: #111111;
+}
+
+.legal-doc {
+  min-height: 900px;
+  outline: none;
+  font-family: 'Times New Roman', Times, serif;
+  font-size: 12pt;
+  line-height: var(--doc-line-height, 1.5);
+  overflow-wrap: break-word;
+  caret-color: #000;
+}
+.legal-doc:focus-visible {
+  box-shadow: none;
+}
+
+.legal-doc > * + * {
+  margin-top: 0.35em;
+}
+.legal-doc p {
+  margin: 0;
+  min-height: 1em;
+}
+
+.legal-doc h1 {
+  margin: 0.6em 0 0.8em;
+  font-family: inherit;
+  font-size: 15pt;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  line-height: 1.3;
+}
+
+.legal-doc h2 {
+  margin: 1.1em 0 0.35em;
+  font-family: inherit;
+  font-size: 12.5pt;
+  font-weight: 700;
+  letter-spacing: 0;
+  line-height: 1.35;
+}
+
+.legal-doc h3 {
+  margin: 0.9em 0 0.3em;
+  font-family: inherit;
+  font-size: 12pt;
+  font-weight: 700;
+  font-style: italic;
+  letter-spacing: 0;
+}
+
+.legal-doc ul,
+.legal-doc ol {
+  margin: 0.25em 0;
+  padding-left: 1.6em;
+}
+.legal-doc li + li {
+  margin-top: 0.15em;
+}
+.legal-doc li p {
+  min-height: 0;
+}
+
+.legal-doc strong {
+  font-weight: 700;
+}
+
+/* Placeholder for an empty document */
+.legal-doc p.is-editor-empty:first-child::before {
+  content: attr(data-placeholder);
+  float: left;
+  height: 0;
+  color: #9a9a9a;
+  pointer-events: none;
+}
+
+/* ---------- Field tokens ---------- */
+
+.field-token {
+  padding: 0 2px;
+  border-radius: 2px;
+  border-bottom: 1px solid #111111;
+  white-space: pre-wrap;
+  cursor: pointer;
+  transition:
+    background-color var(--duration-fast) var(--ease-out),
+    box-shadow var(--duration-fast) var(--ease-out);
+}
+.field-token:hover {
+  background: #f2f2f2;
+}
+
+.field-token[data-empty='true'] {
+  border: 1px dashed #bdbdbd;
+  background: #f7f7f7;
+  color: #7a7a7a;
+  font-family: var(--font-sans);
+  font-size: 0.78em;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+}
+
+.field-token.is-highlighted {
+  background: #111111;
+  color: #ffffff;
+  border-color: #111111;
+  box-shadow: 0 0 0 2px #111111;
+}
+.field-token.ProseMirror-selectednode {
+  box-shadow: 0 0 0 2px #111111;
+}
+
+/* ---------- Preview mode (clean page, blanks for empty fields) ---------- */
+
+.a4-page.is-preview .field-token {
+  border: 0;
+  background: none;
+  padding: 0;
+  cursor: text;
+  box-shadow: none;
+  color: inherit;
+}
+.a4-page.is-preview .field-token[data-empty='true'] {
+  display: inline-block;
+  min-width: 9em;
+  border-bottom: 1px solid #111111;
+  color: transparent;
+  font-size: 0.6em;
+}
+
+@media (max-width: 1100px) {
+  .a4-page {
+    --page-margin: 64px;
+    padding-top: 64px;
+  }
+}
+
+@media (max-width: 640px) {
+  .a4-page {
+    --page-margin: 22px;
+    padding-top: 28px;
+    padding-bottom: 40px;
+    min-height: 0;
+  }
+  .legal-doc {
+    min-height: 60vh;
+    font-size: 11.5pt;
+  }
+}

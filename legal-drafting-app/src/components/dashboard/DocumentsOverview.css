@@ -1,0 +1,68 @@
+/* Shared dashboard panel surface */
+.panel {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+
+.panel__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding: var(--space-5) var(--space-5) var(--space-3);
+}
+
+.panel__heading {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-3);
+  min-width: 0;
+}
+
+.panel__title {
+  font-size: var(--text-lg);
+}
+
+.docs-overview__tabs {
+  padding-inline: var(--space-3);
+}
+
+.docs-overview__body {
+  min-height: 280px;
+}
+
+.docs-overview__list {
+  list-style: none;
+}
+
+.docs-overview__skeleton {
+  list-style: none;
+  padding: var(--space-2) var(--space-5);
+}
+.docs-overview__skeleton li {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  padding-block: var(--space-3);
+}
+.docs-overview__skeleton li > div {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+@media (max-width: 640px) {
+  .panel__header {
+    padding: var(--space-4) var(--space-4) var(--space-2);
+  }
+  .docs-overview__tabs {
+    padding-inline: var(--space-1);
+  }
+}

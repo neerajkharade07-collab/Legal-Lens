@@ -1,0 +1,103 @@
+.research {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.research__form {
+  position: relative;
+  display: flex;
+  gap: var(--space-2);
+}
+.research__icon {
+  position: absolute;
+  left: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--color-text-muted);
+  pointer-events: none;
+}
+.research__form input {
+  flex: 1;
+  min-width: 0;
+  height: 32px;
+  padding: 0 var(--space-3) 0 32px;
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-md);
+  font-size: var(--text-sm);
+}
+.research__form input:focus-visible {
+  border-color: var(--color-black);
+  box-shadow: 0 0 0 1px var(--color-black);
+  border-radius: var(--radius-md);
+}
+
+.research__topics {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: var(--space-2);
+}
+.research__topic {
+  padding: 4px 10px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-full);
+  font-size: var(--text-xs);
+  color: var(--color-text-secondary);
+}
+.research__topic:hover {
+  border-color: var(--color-black);
+  color: var(--color-text);
+}
+
+.research__saved {
+  list-style: none;
+  margin-top: var(--space-2);
+  border-top: 1px solid var(--color-border);
+}
+.research__saved li {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  border-bottom: 1px solid var(--color-border);
+}
+.research__saved-title {
+  flex: 1;
+  min-width: 0;
+  padding: var(--space-2) 0;
+  text-align: left;
+  font-size: var(--text-sm);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.research__saved-title:hover {
+  text-decoration: underline;
+}
+
+.research-modal__header {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding: var(--space-5) var(--space-5) 0;
+}
+.research-modal__title {
+  margin-top: var(--space-1);
+  font-size: var(--text-lg);
+}
+.research-modal__body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding: var(--space-4) var(--space-5);
+  color: var(--color-text-secondary);
+  overflow-y: auto;
+}
+.research-modal__footer {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: var(--space-2);
+  padding: var(--space-4) var(--space-5);
+  border-top: 1px solid var(--color-border);
+}

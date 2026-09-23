@@ -1,0 +1,1 @@
+import{u as n,a as o,b as c,r as s,g as p,j as f,P as i}from"./index-D1MZij0B.js";function d(){const[e]=n(),t=o(),{openDraftSetup:a}=c(),r=s.useRef(!1);return s.useEffect(()=>{if(r.current)return;r.current=!0;const u=p(e.get("type"));t("/",{replace:!0}),a({typeId:u?.id??null,source:"link"})},[e,t,a]),f.jsx(i,{})}export{d as default};

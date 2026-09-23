@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Legal Lens — Lawyer Profile</title>
+<meta name="description" content="View a lawyer's profile, practice areas, and request a consultation on Legal Lens.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="lawyer-profile.css">
+</head>
+<body>
+
+<!-- ================= NAVBAR ================= -->
+<header class="site-navbar">
+  <div class="navbar-inner">
+    <a href="index.html" class="nav-brand">
+      <svg viewBox="0 0 24 24" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 4 6v6c0 5 3.4 9.2 8 10 4.6-.8 8-5 8-10V6z"></path></svg>
+      Legal Lens
+    </a>
+
+    <nav aria-label="Main navigation">
+      <ul class="nav-links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="find-a-lawyer.html" class="current">Lawyer Connect</a></li>
+        <li><a href="about.html">About Us</a></li>
+        <li><a href="contact.html">Contact Us</a></li>
+      </ul>
+    </nav>
+
+    <div class="nav-actions">
+      <button class="nav-lang" id="navLangBtn" aria-label="Change language">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>
+        EN
+      </button>
+
+      <div id="navLoggedOut" style="display:flex; gap:10px;">
+        <a href="lawyer-dashboard.html" class="nav-btn solid">Register as a Lawyer</a>
+      </div>
+
+      <button class="nav-user" id="navUser" style="display:none;">
+        <span class="avatar" id="navUserAvatar">U</span>
+        <span id="navUserName">Account</span>
+      </button>
+
+      <button class="nav-toggle" aria-label="Open menu">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+      </button>
+    </div>
+  </div>
+</header>
+
+<div class="wrap">
+
+  <!-- ================= LOADING STATE ================= -->
+  <div class="page-state" id="loadingState">
+    <p class="loading-text">Loading lawyer profile…</p>
+  </div>
+
+  <!-- ================= NOT FOUND STATE ================= -->
+  <div class="page-state" id="notFoundState" style="display:none;">
+    <div class="not-found-box">
+      <div class="icon-circle"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg></div>
+      <h1>Lawyer Not Found</h1>
+      <p>We couldn't find a lawyer profile matching this link. It may have been removed, or the link may be incorrect.</p>
+      <a class="btn-apply" href="find-a-lawyer.html">Back to Find a Lawyer</a>
+    </div>
+  </div>
+
+  <!-- ================= PROFILE CONTENT ================= -->
+  <div id="profileContent" style="display:none;">
+
+    <div class="breadcrumb"><a href="find-a-lawyer.html">Find a Lawyer</a> / <span id="breadcrumbName">Lawyer Profile</span></div>
+
+    <a href="find-a-lawyer.html" class="back-link">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+      Back to results
+    </a>
+
+    <!-- ================= HERO ================= -->
+    <section class="profile-hero reveal">
+      <div class="avatar-circle-lg" id="heroAvatar">AA</div>
+      <div class="profile-hero-right">
+        <h1 id="heroName">Lawyer Name</h1>
+        <span class="verified-badge" id="heroVerifiedBadge"></span>
+        <p class="hero-practice-areas" id="heroPracticeAreas">—</p>
+
+        <div class="hero-meta-row">
+          <span class="meta-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 6-9 12-9 12s-9-6-9-12a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+            <span id="heroLocation">—</span>
+          </span>
+          <span class="dot" aria-hidden="true"></span>
+          <span class="meta-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>
+            <span id="heroLanguages">—</span>
+          </span>
+        </div>
+
+        <div class="hero-cta-row">
+          <button class="btn-request-lg" id="heroRequestBtn">Request Consultation</button>
+          <button class="btn-save-lg" id="heroSaveBtn" aria-pressed="false">
+            <svg viewBox="0 0 24 24" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21 12 16 5 21V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path></svg>
+            <span id="heroSaveLabel">Save Lawyer</span>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= STATS ================= -->
+    <section class="stats-row reveal">
+      <div class="stat-block">
+        <div class="stat-val" id="statExperience">—</div>
+        <div class="stat-label">YEARS EXPERIENCE</div>
+      </div>
+      <div class="stat-block">
+        <div class="stat-val" id="statRating">—</div>
+        <div class="stat-label">RATING</div>
+      </div>
+      <div class="stat-block">
+        <div class="stat-val" id="statConsultations">—</div>
+        <div class="stat-label">CONSULTATIONS</div>
+      </div>
+    </section>
+
+    <!-- ================= BODY GRID ================= -->
+    <div class="profile-body-grid">
+
+      <div class="profile-main">
+
+        <div class="profile-section reveal">
+          <h2>About</h2>
+          <p id="aboutText">—</p>
+        </div>
+
+        <div class="profile-section reveal">
+          <h2>Practice Areas</h2>
+          <div class="tag-row" id="practiceAreasTags"></div>
+        </div>
+
+        <div class="profile-section reveal">
+          <h2>Languages</h2>
+          <div class="tag-row" id="languagesTags"></div>
+        </div>
+
+        <div class="profile-section reveal">
+          <h2>Location</h2>
+          <p id="locationText">—</p>
+        </div>
+
+        <div class="profile-section reveal">
+          <h2>Experience &amp; Background</h2>
+          <p id="backgroundText">—</p>
+        </div>
+
+        <div class="trust-section reveal">
+          <h3>Why Connect Through Legal Lens</h3>
+          <ul class="trust-list">
+            <li><svg viewBox="0 0 24 24" fill="none" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg> Verification status shown clearly on every profile</li>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg> Review practice areas and experience before reaching out</li>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg> Consultation requests go directly to the lawyer</li>
+          </ul>
+        </div>
+
+      </div>
+
+      <aside class="consult-panel reveal">
+        <h3>Consultation Fee</h3>
+        <div class="consult-fee" id="panelFee">—</div>
+        <div class="consult-fee-label">per consultation</div>
+
+        <div class="consult-types" id="panelConsultTypes"></div>
+
+        <button class="btn-request-lg full" id="panelRequestBtn">Request Consultation</button>
+        <button class="btn-save-lg full" id="panelSaveBtn" aria-pressed="false">
+          <svg viewBox="0 0 24 24" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21 12 16 5 21V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path></svg>
+          <span id="panelSaveLabel">Save Lawyer</span>
+        </button>
+      </aside>
+
+    </div>
+
+    <!-- ================= SIMILAR LAWYERS ================= -->
+    <section class="similar-section reveal">
+      <h2>Similar Lawyers</h2>
+      <div class="similar-grid" id="similarGrid"></div>
+    </section>
+
+    <p class="page-disclaimer">Legal Lens helps users discover and connect with legal professionals. Information shown in this prototype is for demonstration purposes and does not constitute legal advice.</p>
+
+  </div>
+
+</div>
+
+<!-- ================= FOOTER ================= -->
+<footer class="site-footer">
+  <div class="wrap">
+    <div class="footer-grid">
+      <div>
+        <div class="footer-brand">
+          <svg viewBox="0 0 24 24" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 4 6v6c0 5 3.4 9.2 8 10 4.6-.8 8-5 8-10V6z"></path></svg>
+          Legal Lens
+        </div>
+        <p class="footer-tagline">AI-powered legal guidance and lawyer connections, made simple for every citizen.</p>
+      </div>
+      <div class="footer-col">
+        <h4>PRODUCT</h4>
+        <ul>
+          <li><a href="legal-help-dashboard/index.html">AI Legal Guidance</a></li>
+          <li><a href="find-a-lawyer.html">Lawyer Connect</a></li>
+          <li><a href="/legal-drafting/">Legal Drafting Assistant</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>RESOURCES</h4>
+        <ul>
+          <li><a href="https://ecourts.gov.in/" target="_blank" rel="noopener noreferrer">e-Courts</a></li>
+          <li><a href="https://www.india.gov.in/" target="_blank" rel="noopener noreferrer">Government Portals</a></li>
+          <li><a href="https://www.indiacode.nic.in/" target="_blank" rel="noopener noreferrer">Legal Resources</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>COMPANY</h4>
+        <ul>
+          <li><a href="about.html">About Us</a></li>
+          <li><a href="contact.html">Contact Us</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>Legal Lens provides general educational information and AI-assisted guidance. It does not constitute legal advice. Always consult a qualified legal professional for advice regarding your specific situation.</p>
+      <span class="footer-copy">© 2026 Legal Lens</span>
+    </div>
+  </div>
+</footer>
+
+<!-- ================= MOBILE STICKY CTA ================= -->
+<div class="mobile-sticky-cta" id="mobileStickyCta" style="display:none;">
+  <button class="btn-request-lg full" id="mobileRequestBtn">Request Consultation</button>
+</div>
+
+<!-- ================= CONSULTATION REQUEST MODAL ================= -->
+<div class="modal-overlay" id="consultModalOverlay">
+  <div class="modal-box" role="dialog" aria-modal="true" aria-labelledby="consultTitle">
+    <button class="modal-close" id="consultCloseBtn" aria-label="Close consultation request"><svg viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round"><line x1="4" y1="4" x2="16" y2="16"></line><line x1="16" y1="4" x2="4" y2="16"></line></svg></button>
+    <div class="modal-content">
+
+      <div class="consult-form-body" id="consultFormBody">
+        <h2 class="form-title" id="consultTitle">Request Consultation</h2>
+        <p class="form-sub" id="consultSub">Demo Mode: requests are saved in this browser only and are not sent to the lawyer.</p>
+
+        <form id="consultForm">
+          <div class="form-row">
+            <label for="consultIssue">Legal Issue</label>
+            <select id="consultIssue" required>
+              <option value="">Select a legal issue</option>
+              <option>Criminal Law</option>
+              <option>Property Law</option>
+              <option>Family Law</option>
+              <option>Civil Law</option>
+              <option>Consumer Law</option>
+              <option>Cyber Law</option>
+              <option>Employment Law</option>
+              <option>Business / Corporate Law</option>
+              <option>Banking / Finance</option>
+              <option>Tenant / Rental Disputes</option>
+            </select>
+          </div>
+
+          <div class="form-row form-row-split">
+            <div>
+              <label for="consultDate">Preferred Date</label>
+              <input type="date" id="consultDate" required>
+            </div>
+            <div>
+              <label for="consultTime">Preferred Time</label>
+              <input type="time" id="consultTime" required>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <label for="consultDesc">Brief Description of Legal Problem</label>
+            <textarea id="consultDesc" placeholder="Describe your situation briefly..." required></textarea>
+          </div>
+
+          <div class="form-row">
+            <label for="consultLang">Preferred Language</label>
+            <select id="consultLang" required>
+              <option value="">Select a language</option>
+              <option>English</option>
+              <option>Hindi</option>
+              <option>Marathi</option>
+              <option>Tamil</option>
+              <option>Telugu</option>
+              <option>Kannada</option>
+            </select>
+          </div>
+
+          <div class="form-row">
+            <label>Consultation Type</label>
+            <div class="consult-type-group" id="consultTypeGroup">
+              <div class="consult-type-option" data-type="Video">Video</div>
+              <div class="consult-type-option" data-type="Phone">Phone</div>
+              <div class="consult-type-option" data-type="In-Person">In-Person</div>
+            </div>
+          </div>
+
+          <div class="modal-form-actions">
+            <button type="submit" class="btn-send" id="sendConsultBtn">Save Demo Request</button>
+            <button type="button" class="btn-cancel" id="cancelConsultBtn">Cancel</button>
+          </div>
+        </form>
+      </div>
+
+      <div class="consult-success" id="consultSuccess">
+        <div class="check-circle"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg></div>
+        <h2>Demo Request Saved</h2>
+        <p>Demo Mode: this consultation request was saved only in this browser. It has <strong>not</strong> been sent to the lawyer and no notification will be sent.</p>
+        <button class="btn-send" id="consultDoneBtn">Done</button>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script src="lawyer-data.js"></script>
+<script src="lawyer-profile.js"></script>
+<!-- SIH demo: the mobile menu button previously had no click handler (dead button). -->
+<style>
+  @media (max-width: 900px) {
+    .site-navbar.nav-open .nav-links { display: flex; flex-direction: column; align-items: flex-start; gap: 14px;
+      position: absolute; top: 100%; left: 0; right: 0; padding: 16px 24px; background: #fff;
+      border-bottom: 1px solid #e5e5e5; z-index: 200; }
+  }
+</style>
+<script>
+(function () {
+  var header = document.querySelector('.site-navbar');
+  var toggle = header && header.querySelector('.nav-toggle');
+  if (!toggle) return;
+  if (getComputedStyle(header).position === 'static') header.style.position = 'relative';
+  toggle.setAttribute('aria-expanded', 'false');
+  toggle.addEventListener('click', function () {
+    var open = header.classList.toggle('nav-open');
+    toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+    toggle.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
+  });
+})();
+</script>
+</body>
+</html>

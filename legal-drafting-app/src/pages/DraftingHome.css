@@ -1,0 +1,22 @@
+.drafting-home__workspace {
+  padding-top: var(--space-16);
+}
+
+.drafting-home__grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.75fr) minmax(300px, 1fr);
+  align-items: start;
+  gap: var(--space-5);
+}
+
+@media (max-width: 1024px) {
+  .drafting-home__grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 640px) {
+  .drafting-home__workspace {
+    padding-top: var(--space-10);
+  }
+}

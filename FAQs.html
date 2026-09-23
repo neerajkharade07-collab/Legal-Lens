@@ -1,0 +1,733 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Legal Lens — FAQ</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --black: #0a0a0a;
+    --white: #ffffff;
+    --gray-100: #f7f7f7;
+    --gray-200: #ececec;
+    --gray-300: #dcdcdc;
+    --gray-500: #8a8a8a;
+    --gray-600: #6b6b6b;
+    --border-radius-sm: 10px;
+    --border-radius-md: 16px;
+    --border-radius-lg: 22px;
+    --shadow-soft: 0 1px 2px rgba(0,0,0,0.04), 0 8px 24px rgba(0,0,0,0.04);
+    --ease: cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    font-family: 'Poppins', sans-serif;
+    background: var(--white);
+    color: var(--black);
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+  }
+
+  .faq-page {
+    max-width: 1160px;
+    margin: 0 auto;
+    padding: 80px 24px 100px;
+  }
+
+  /* ---------- HERO ---------- */
+  .faq-hero {
+    text-align: center;
+    max-width: 720px;
+    margin: 0 auto 56px;
+  }
+
+  .faq-eyebrow {
+    font-size: 12.5px;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    color: var(--gray-600);
+    margin-bottom: 18px;
+  }
+
+  .faq-hero h1 {
+    font-size: 44px;
+    font-weight: 600;
+    line-height: 1.18;
+    margin: 0 0 18px;
+    letter-spacing: -0.01em;
+  }
+
+  .faq-hero p {
+    font-size: 16px;
+    line-height: 1.65;
+    color: var(--gray-600);
+    font-weight: 400;
+    margin: 0 0 40px;
+  }
+
+  .faq-search {
+    position: relative;
+    max-width: 520px;
+    margin: 0 auto;
+  }
+
+  .faq-search input {
+    width: 100%;
+    padding: 16px 20px 16px 50px;
+    border: 1px solid var(--gray-300);
+    border-radius: 999px;
+    font-family: 'Poppins', sans-serif;
+    font-size: 14.5px;
+    color: var(--black);
+    outline: none;
+    transition: border-color 0.2s var(--ease), box-shadow 0.2s var(--ease);
+    background: var(--white);
+  }
+
+  .faq-search input::placeholder { color: var(--gray-500); }
+
+  .faq-search input:focus {
+    border-color: var(--black);
+    box-shadow: 0 0 0 3px rgba(0,0,0,0.06);
+  }
+
+  .faq-search svg {
+    position: absolute;
+    left: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 17px;
+    height: 17px;
+    stroke: var(--gray-500);
+    pointer-events: none;
+  }
+
+  /* ---------- CATEGORY NAV ---------- */
+  .faq-categories {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 56px;
+    padding-bottom: 4px;
+  }
+
+  .faq-cat-btn {
+    font-family: 'Poppins', sans-serif;
+    font-size: 13.5px;
+    font-weight: 500;
+    padding: 10px 18px;
+    border-radius: 999px;
+    border: 1px solid var(--black);
+    background: var(--white);
+    color: var(--black);
+    cursor: pointer;
+    white-space: nowrap;
+    transition: background 0.2s var(--ease), color 0.2s var(--ease), transform 0.15s var(--ease);
+  }
+
+  .faq-cat-btn:hover { transform: translateY(-1px); }
+
+  .faq-cat-btn.active {
+    background: var(--black);
+    color: var(--white);
+  }
+
+  /* ---------- CATEGORY GROUPS ---------- */
+  .faq-group {
+    margin-bottom: 44px;
+  }
+
+  .faq-group-title {
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    color: var(--gray-600);
+    margin-bottom: 18px;
+    padding-left: 2px;
+  }
+
+  /* ---------- ACCORDION ---------- */
+  .faq-item {
+    border: 1px solid var(--gray-200);
+    border-radius: var(--border-radius-md);
+    margin-bottom: 12px;
+    overflow: hidden;
+    background: var(--white);
+    transition: box-shadow 0.25s var(--ease), transform 0.2s var(--ease), border-color 0.2s var(--ease);
+  }
+
+  .faq-item:hover {
+    box-shadow: var(--shadow-soft);
+    transform: translateY(-2px);
+    border-color: var(--gray-300);
+  }
+
+  .faq-question {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    padding: 20px 24px;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .faq-question h3 {
+    font-size: 15.5px;
+    font-weight: 500;
+    margin: 0;
+    line-height: 1.5;
+  }
+
+  .faq-icon {
+    flex-shrink: 0;
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    border: 1px solid var(--black);
+    position: relative;
+  }
+
+  .faq-icon::before,
+  .faq-icon::after {
+    content: '';
+    position: absolute;
+    background: var(--black);
+    top: 50%;
+    left: 50%;
+    transition: transform 0.3s var(--ease), opacity 0.3s var(--ease);
+  }
+
+  .faq-icon::before {
+    width: 10px;
+    height: 1.4px;
+    transform: translate(-50%, -50%);
+  }
+
+  .faq-icon::after {
+    width: 1.4px;
+    height: 10px;
+    transform: translate(-50%, -50%);
+  }
+
+  .faq-item.open .faq-icon::after {
+    transform: translate(-50%, -50%) rotate(90deg);
+    opacity: 0;
+  }
+
+  .faq-answer {
+    max-height: 0;
+    opacity: 0;
+    overflow: hidden;
+    transition: max-height 0.35s var(--ease), opacity 0.3s var(--ease);
+  }
+
+  .faq-answer p {
+    margin: 0;
+    padding: 0 24px 22px;
+    font-size: 14.5px;
+    line-height: 1.7;
+    color: var(--gray-600);
+    max-width: 640px;
+  }
+
+  .faq-item.open .faq-answer {
+    opacity: 1;
+  }
+
+  /* ---------- NO RESULTS ---------- */
+  .faq-no-results {
+    text-align: center;
+    padding: 60px 20px;
+    color: var(--gray-500);
+    font-size: 15px;
+    display: none;
+  }
+
+  /* ---------- CTA ---------- */
+  .faq-cta {
+    margin-top: 72px;
+    text-align: center;
+    padding: 56px 32px;
+    border: 1px solid var(--gray-200);
+    border-radius: var(--border-radius-lg);
+  }
+
+  .faq-cta h2 {
+    font-size: 26px;
+    font-weight: 600;
+    margin: 0 0 12px;
+    letter-spacing: -0.01em;
+  }
+
+  .faq-cta p {
+    font-size: 14.5px;
+    color: var(--gray-600);
+    max-width: 460px;
+    margin: 0 auto 30px;
+    line-height: 1.65;
+  }
+
+  .faq-cta-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 14px;
+    flex-wrap: wrap;
+  }
+
+  .faq-btn {
+    font-family: 'Poppins', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    padding: 13px 28px;
+    border-radius: 999px;
+    border: 1.5px solid var(--black);
+    background: var(--black);
+    color: var(--white);
+    cursor: pointer;
+    transition: background 0.2s var(--ease), color 0.2s var(--ease), transform 0.15s var(--ease);
+  }
+
+  .faq-btn:hover {
+    background: var(--white);
+    color: var(--black);
+    transform: translateY(-1px);
+  }
+
+  .faq-btn.secondary {
+    background: var(--white);
+    color: var(--black);
+  }
+
+  .faq-btn.secondary:hover {
+    background: var(--black);
+    color: var(--white);
+  }
+
+  /* ---------- DISCLAIMER ---------- */
+  .faq-disclaimer {
+    text-align: center;
+    font-size: 12px;
+    color: var(--gray-500);
+    line-height: 1.6;
+    max-width: 620px;
+    margin: 28px auto 0;
+  }
+
+  /* ---------- RESPONSIVE ---------- */
+  @media (max-width: 860px) {
+    .faq-hero h1 { font-size: 34px; }
+    .faq-page { padding: 56px 20px 80px; }
+  }
+
+  @media (max-width: 640px) {
+    .faq-hero h1 { font-size: 28px; }
+    .faq-hero p { font-size: 14.5px; }
+    .faq-categories {
+      flex-wrap: nowrap;
+      overflow-x: auto;
+      justify-content: flex-start;
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+      margin: 0 -20px 44px;
+      padding: 0 20px 4px;
+    }
+    .faq-categories::-webkit-scrollbar { display: none; }
+    .faq-question { padding: 17px 18px; }
+    .faq-question h3 { font-size: 14.5px; }
+    .faq-answer p { padding: 0 18px 18px; font-size: 14px; }
+    .faq-cta { padding: 40px 20px; }
+    .faq-cta-buttons { flex-direction: column; }
+    .faq-btn { width: 100%; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    * { transition: none !important; }
+  }
+
+  .faq-question:focus-visible,
+  .faq-cat-btn:focus-visible,
+  .faq-btn:focus-visible,
+  .faq-search input:focus-visible {
+    outline: 2px solid var(--black);
+    outline-offset: 2px;
+  }
+</style>
+</head>
+<body>
+
+<div class="faq-page">
+
+  <!-- HERO -->
+  <section class="faq-hero">
+    <div class="faq-eyebrow">FREQUENTLY ASKED QUESTIONS</div>
+    <h1>Questions? We have answers.</h1>
+    <p>Find answers to common questions about Legal Lens, document analysis, privacy, AI guidance, and our legal assistance features.</p>
+    <div class="faq-search">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="11" cy="11" r="7"></circle>
+        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+      </svg>
+      <input type="text" id="faqSearchInput" placeholder="Search your question..." autocomplete="off">
+    </div>
+  </section>
+
+  <!-- CATEGORY NAV -->
+  <nav class="faq-categories" id="faqCategories">
+    <button class="faq-cat-btn active" data-category="all">All</button>
+    <button class="faq-cat-btn" data-category="getting-started">Getting Started</button>
+    <button class="faq-cat-btn" data-category="document-analysis">Document Analysis</button>
+    <button class="faq-cat-btn" data-category="ai-guidance">AI & Legal Guidance</button>
+    <button class="faq-cat-btn" data-category="privacy">Privacy & Security</button>
+    <button class="faq-cat-btn" data-category="lawyer-connect">Lawyer Connect</button>
+    <button class="faq-cat-btn" data-category="accessibility">Languages & Accessibility</button>
+    <button class="faq-cat-btn" data-category="e-courts">e-Courts & Government Portals</button>
+  </nav>
+
+  <!-- FAQ CONTENT -->
+  <div id="faqContent">
+
+    <div class="faq-group" data-category="getting-started">
+      <div class="faq-group-title">Getting Started</div>
+
+      <div class="faq-item">
+        <div class="faq-question">
+          <h3>What is Legal Lens?</h3>
+          <span class="faq-icon"></span>
+        </div>
+        <div class="faq-answer"><p>Legal Lens is an AI-powered platform designed to help citizens understand complex legal documents in simple language and identify important information such as deadlines, warnings, and possible next steps.</p></div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-question">
+          <h3>How does Legal Lens work?</h3>
+          <span class="faq-icon"></span>
+        </div>
+        <div class="faq-answer"><p>Upload a legal document such as a PDF or image. Legal Lens processes the document, extracts relevant information, and presents the key points in an easier-to-understand format.</p></div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-question">
+          <h3>What types of documents can I upload?</h3>
+          <span class="faq-icon"></span>
+        </div>
+        <div class="faq-answer"><p>Legal Lens can be designed to support documents such as court notices, FIR-related documents, property papers, tenancy agreements, and loan recovery notices.</p></div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-question">
+          <h3>Do I need legal knowledge to use Legal Lens?</h3>
+          <span class="faq-icon"></span>
+        </div>
+        <div class="faq-answer"><p>No. Legal Lens is designed to make complex legal information easier to understand for people without a legal background.</p></div>
+      </div>
+    </div>
+
+    <div class="faq-group" data-category="document-analysis">
+      <div class="faq-group-title">Document Analysis</div>
+
+      <div class="faq-item">
+        <div class="faq-question">
+          <h3>Can Legal Lens analyze PDF documents?</h3>
+          <span class="faq-icon"></span>
+        </div>
+        <div class="faq-answer"><p>Yes. The platform is designed to process supported PDF documents and extract relevant text for analysis.</p></div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-question">
+          <h3>Can I upload an image of a legal document?</h3>
+          <span class="faq-icon"></span>
+        </div>
+        <div class="faq-answer"><p>Yes. Supported image formats can be processed using OCR technology to extract text from scanned or photographed documents.</p></div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-question">
+          <h3>What information can Legal Lens identify?</h3>
+          <span class="faq-icon"></span>
+        </div>
+        <div class="faq-answer"><p>Depending on the document, the system can highlight important dates, deadlines, names, amounts, warnings, key clauses, and suggested next steps.</p></div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-question">
+          <h3>Can Legal Lens detect fraudulent documents?</h3>
+          <span class="faq-icon"></span>
+        </div>
+        <div class="faq-answer"><p>Legal Lens can help identify potentially suspicious information or inconsistencies. However, these results should be treated as warnings rather than proof of fraud.</p></div>
+      </div>
+    </div>
+
+    <div class="faq-group" data-category="ai-guidance">
+      <div class="faq-group-title">AI & Legal Guidance</div>
+
+      <div class="faq-item">
+        <div class="faq-question">
+          <h3>Does Legal Lens provide legal advice?</h3>
+          <span class="faq-icon"></span>
+        </div>
+        <div class="faq-answer"><p>Legal Lens is designed primarily to provide educational information, document explanations, and general guidance. It should not replace advice from a qualified legal professional.</p></div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-question">
+          <h3>How accurate is the AI?</h3>
+          <span class="faq-icon"></span>
+        </div>
+        <div class="faq-answer"><p>AI-generated results may contain errors or misunderstand legal context. Important legal decisions should always be verified using official sources or with a qualified legal professional.</p></div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-question">
+          <h3>Can Legal Lens tell me what I should do next?</h3>
+          <span class="faq-icon"></span>
+        </div>
+        <div class="faq-answer"><p>It can provide general next-step suggestions based on the information identified in a document. Users should verify these suggestions before taking important legal action.</p></div>
+      </div>
+    </div>
+
+    <div class="faq-group" data-category="privacy">
+      <div class="faq-group-title">Privacy & Security</div>
+
+      <div class="faq-item">
+        <div class="faq-question">
+          <h3>Is my legal document private?</h3>
+          <span class="faq-icon"></span>
+        </div>
+        <div class="faq-answer"><p>Legal documents can contain highly sensitive information. Legal Lens should use appropriate security measures and privacy practices to protect uploaded information.</p></div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-question">
+          <h3>Does Legal Lens store my documents?</h3>
+          <span class="faq-icon"></span>
+        </div>
+        <div class="faq-answer"><p>Document storage depends on the platform's configured data-retention policy. The interface should clearly inform users about how their documents are handled.</p></div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-question">
+          <h3>Can I use Legal Lens without saving my document?</h3>
+          <span class="faq-icon"></span>
+        </div>
+        <div class="faq-answer"><p>Where supported, Privacy Mode can allow users to process documents with reduced or temporary data retention.</p></div>
+      </div>
+    </div>
+
+    <div class="faq-group" data-category="lawyer-connect">
+      <div class="faq-group-title">Lawyer Connect</div>
+
+      <div class="faq-item">
+        <div class="faq-question">
+          <h3>Can I connect with a lawyer through Legal Lens?</h3>
+          <span class="faq-icon"></span>
+        </div>
+        <div class="faq-answer"><p>Yes. Legal Lens can provide a Lawyer Connect feature that helps users find or connect with qualified legal professionals when additional assistance is required.</p></div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-question">
+          <h3>When should I contact a lawyer?</h3>
+          <span class="faq-icon"></span>
+        </div>
+        <div class="faq-answer"><p>You should consider consulting a qualified lawyer when your situation involves significant legal consequences, deadlines, disputes, court proceedings, or when you are unsure about your legal rights.</p></div>
+      </div>
+    </div>
+
+    <div class="faq-group" data-category="accessibility">
+      <div class="faq-group-title">Languages & Accessibility</div>
+
+      <div class="faq-item">
+        <div class="faq-question">
+          <h3>Which languages does Legal Lens support?</h3>
+          <span class="faq-icon"></span>
+        </div>
+        <div class="faq-answer"><p>Legal Lens can provide support for multiple Indian languages. The platform can be designed with an extensible language system so additional regional languages can be added.</p></div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-question">
+          <h3>Can legal documents be explained in my regional language?</h3>
+          <span class="faq-icon"></span>
+        </div>
+        <div class="faq-answer"><p>Yes. The platform can provide simplified explanations in supported regional languages.</p></div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-question">
+          <h3>Does Legal Lens support voice output?</h3>
+          <span class="faq-icon"></span>
+        </div>
+        <div class="faq-answer"><p>Yes. The platform can use text-to-speech technology to provide spoken explanations in supported languages.</p></div>
+      </div>
+    </div>
+
+    <div class="faq-group" data-category="e-courts">
+      <div class="faq-group-title">e-Courts & Government Portals</div>
+
+      <div class="faq-item">
+        <div class="faq-question">
+          <h3>Can Legal Lens connect me to official government portals?</h3>
+          <span class="faq-icon"></span>
+        </div>
+        <div class="faq-answer"><p>Legal Lens can provide links and guidance to relevant official government and e-Courts portals so users can verify information using trusted sources.</p></div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-question">
+          <h3>Can Legal Lens check my court case status?</h3>
+          <span class="faq-icon"></span>
+        </div>
+        <div class="faq-answer"><p>The platform can guide users toward official e-Courts services where they can verify case-related information. Official government portals should be treated as the authoritative source.</p></div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-question">
+          <h3>Why should I verify information on official websites?</h3>
+          <span class="faq-icon"></span>
+        </div>
+        <div class="faq-answer"><p>Legal information can change and AI-generated explanations may contain errors. Official government and court portals provide authoritative information for verification.</p></div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="faq-no-results" id="faqNoResults">No matching questions found.</div>
+
+  <!-- CTA -->
+  <section class="faq-cta">
+    <h2>Still have questions?</h2>
+    <p>Can't find the answer you're looking for? Get additional help or connect with a legal professional.</p>
+    <div class="faq-cta-buttons">
+      <button class="faq-btn">Contact Us</button>
+      <button class="faq-btn secondary">Connect with a Lawyer</button>
+    </div>
+  </section>
+
+  <p class="faq-disclaimer">Disclaimer: Legal Lens provides general educational information and AI-assisted document explanations. It does not constitute legal advice. Always consult a qualified legal professional for advice regarding your specific situation.</p>
+
+</div>
+
+<script>
+(function () {
+  const categoryButtons = document.querySelectorAll('.faq-cat-btn');
+  const groups = document.querySelectorAll('.faq-group');
+  const items = document.querySelectorAll('.faq-item');
+  const searchInput = document.getElementById('faqSearchInput');
+  const noResults = document.getElementById('faqNoResults');
+  let activeCategory = 'all';
+
+  // Accordion behavior
+  items.forEach(item => {
+    const question = item.querySelector('.faq-question');
+    const answer = item.querySelector('.faq-answer');
+
+    question.setAttribute('tabindex', '0');
+    question.setAttribute('role', 'button');
+
+    const toggle = () => {
+      const isOpen = item.classList.contains('open');
+
+      items.forEach(other => {
+        if (other !== item && other.classList.contains('open')) {
+          other.classList.remove('open');
+          other.querySelector('.faq-answer').style.maxHeight = null;
+        }
+      });
+
+      if (isOpen) {
+        item.classList.remove('open');
+        answer.style.maxHeight = null;
+      } else {
+        item.classList.add('open');
+        answer.style.maxHeight = answer.scrollHeight + 'px';
+      }
+    };
+
+    question.addEventListener('click', toggle);
+    question.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        toggle();
+      }
+    });
+  });
+
+  // Category filtering
+  function applyCategory(category) {
+    activeCategory = category;
+
+    categoryButtons.forEach(btn => {
+      btn.classList.toggle('active', btn.dataset.category === category);
+    });
+
+    groups.forEach(group => {
+      const matches = category === 'all' || group.dataset.category === category;
+      group.style.display = matches ? '' : 'none';
+    });
+
+    noResults.style.display = 'none';
+  }
+
+  categoryButtons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      searchInput.value = '';
+      applyCategory(btn.dataset.category);
+    });
+  });
+
+  // Search functionality
+  searchInput.addEventListener('input', () => {
+    const query = searchInput.value.trim().toLowerCase();
+
+    if (query === '') {
+      applyCategory(activeCategory);
+      return;
+    }
+
+    let anyVisible = false;
+
+    groups.forEach(group => {
+      let groupHasMatch = false;
+      const groupItems = group.querySelectorAll('.faq-item');
+
+      groupItems.forEach(item => {
+        const questionText = item.querySelector('h3').textContent.toLowerCase();
+        const answerText = item.querySelector('.faq-answer p').textContent.toLowerCase();
+        const isMatch = questionText.includes(query) || answerText.includes(query);
+
+        item.style.display = isMatch ? '' : 'none';
+        if (isMatch) {
+          groupHasMatch = true;
+          anyVisible = true;
+        }
+      });
+
+      group.style.display = groupHasMatch ? '' : 'none';
+    });
+
+    noResults.style.display = anyVisible ? 'none' : 'block';
+  });
+
+  // Reset item visibility when category changes (in case search hid some)
+  const originalApplyCategory = applyCategory;
+  applyCategory = function (category) {
+    items.forEach(item => { item.style.display = ''; });
+    originalApplyCategory(category);
+  };
+
+  // Init
+  applyCategory('all');
+})();
+</script>
+
+</body>
+</html>

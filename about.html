@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>about section</title>
+</head>
+<style>
+  /* ===== ABOUT LEGAL LENS ===== */
+.about-ll{
+  width: 100%;
+  background: #000000;
+  padding: 100px 0 110px;
+}
+
+.about-container{
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 0 40px;
+}
+
+/* --- Intro --- */
+.about-intro{
+  text-align: center;
+  max-width: 680px;
+  margin: 0 auto 72px;
+}
+
+.about-label{
+  margin: 0;
+  font-family: 'Poppins', sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 2px;
+  color: #D4D4D4;
+  text-transform: uppercase;
+}
+
+.about-heading{
+  margin: 16px 0 0;
+  font-family: 'Poppins', sans-serif;
+  font-size: 36px;
+  font-weight: 700;
+  line-height: 1.28;
+  letter-spacing: -0.4px;
+  color: #FFFFFF;
+}
+
+.about-intro-text{
+  margin: 20px 0 0;
+  font-family: 'Poppins', sans-serif;
+  font-size: 15.5px;
+  font-weight: 400;
+  line-height: 1.8;
+  color: #D4D4D4;
+}
+
+/* --- Mission / Problem grid --- */
+.about-grid{
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 40px;
+  padding-bottom: 56px;
+  border-bottom: 1px solid #222222;
+  margin-bottom: 56px;
+}
+
+.about-block-title{
+  margin: 0 0 14px;
+  font-family: 'Poppins', sans-serif;
+  font-size: 12.5px;
+  font-weight: 600;
+  letter-spacing: 1.4px;
+  color: #FFFFFF;
+  text-transform: uppercase;
+}
+
+.about-block-text{
+  margin: 0;
+  font-family: 'Poppins', sans-serif;
+  font-size: 15px;
+  font-weight: 400;
+  line-height: 1.75;
+  color: #9A9A9A;
+}
+
+/* --- Our Approach --- */
+.about-approach{
+  padding-bottom: 56px;
+  border-bottom: 1px solid #222222;
+  margin-bottom: 56px;
+}
+
+.about-approach .about-block-text{
+  margin-bottom: 28px;
+}
+
+.about-pipeline{
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  padding: 20px 24px;
+  border: 1px solid #222222;
+  border-radius: 12px;
+  background: #0A0A0A;
+  margin-bottom: 32px;
+}
+
+.about-pipeline-step{
+  font-family: 'Poppins', sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  color: #FFFFFF;
+  letter-spacing: 0.3px;
+}
+
+.about-pipeline-arrow{
+  color: #6B6B6B;
+  font-size: 14px;
+}
+
+.about-help-lead{
+  margin: 0 0 16px;
+  font-family: 'Poppins', sans-serif;
+  font-size: 14.5px;
+  font-weight: 600;
+  color: #FFFFFF;
+}
+
+.about-checklist{
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.about-checklist li{
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  font-family: 'Poppins', sans-serif;
+  font-size: 14.5px;
+  font-weight: 400;
+  line-height: 1.6;
+  color: #D4D4D4;
+}
+
+.about-check{
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+  margin-top: 2px;
+  color: #FFFFFF;
+}
+
+/* --- Built With Responsibility (callout) --- */
+.about-responsibility{
+  padding: 32px;
+  border: 1px solid #222222;
+  border-radius: 14px;
+  background: #0A0A0A;
+  margin-bottom: 56px;
+}
+
+.about-responsibility .about-block-text{
+  color: #D4D4D4;
+}
+
+/* --- Our Vision (closing statement) --- */
+.about-vision{
+  text-align: center;
+  padding-top: 8px;
+}
+
+.about-vision-label{
+  margin: 0 0 18px;
+  font-family: 'Poppins', sans-serif;
+  font-size: 12.5px;
+  font-weight: 600;
+  letter-spacing: 1.4px;
+  color: #6B6B6B;
+  text-transform: uppercase;
+}
+
+.about-vision-text{
+  margin: 0;
+  font-family: 'Poppins', sans-serif;
+  font-size: 26px;
+  font-weight: 600;
+  line-height: 1.5;
+  letter-spacing: -0.2px;
+  color: #FFFFFF;
+  max-width: 620px;
+  margin: 0 auto;
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 900px){
+  .about-ll{ padding: 80px 0 88px; }
+  .about-heading{ font-size: 30px; }
+  .about-grid{
+    grid-template-columns: 1fr;
+    gap: 32px;
+  }
+  .about-vision-text{ font-size: 22px; }
+}
+
+@media (max-width: 560px){
+  .about-ll{ padding: 60px 0 64px; }
+  .about-container{ padding: 0 20px; }
+  .about-heading{ font-size: 25px; }
+  .about-intro{ margin-bottom: 56px; }
+  .about-grid{ padding-bottom: 44px; margin-bottom: 44px; }
+  .about-approach{ padding-bottom: 44px; margin-bottom: 44px; }
+  .about-responsibility{ padding: 24px; margin-bottom: 44px; }
+  .about-pipeline{ padding: 16px 18px; gap: 8px; }
+  .about-pipeline-step{ font-size: 13px; }
+  .about-vision-text{ font-size: 20px; }
+}
+</style>
+<body>
+  <!-- about legal lens section starts here -->
+<section class="about-ll" id="about">
+  <div class="about-container">
+
+    <div class="about-intro">
+      <p class="about-label" data-i18n="aboutLabel">ABOUT LEGAL LENS</p>
+      <h2 class="about-heading" data-i18n="aboutHeading">Making Legal Information Easier to Understand</h2>
+      <p class="about-intro-text" data-i18n="aboutIntroText">Legal documents can be complex, confusing, and difficult to navigate. Legal Lens uses AI to help citizens understand important legal information, identify what matters, and take their next step with greater clarity.</p>
+    </div>
+
+    <div class="about-grid">
+
+      <div class="about-block">
+        <h3 class="about-block-title" data-i18n="mission">Our Mission</h3>
+        <p class="about-block-text" data-i18n="aboutMissionText">Make legal information more understandable, accessible, and actionable for everyone.</p>
+      </div>
+
+      <div class="about-block">
+        <h3 class="about-block-title" data-i18n="problem">The Problem</h3>
+        <p class="about-block-text" data-i18n="aboutProblemText">Legal documents often contain complex terminology, important deadlines, unfamiliar procedures, and information that can be difficult for ordinary citizens to understand. This can lead to confusion, missed deadlines, and dependence on unreliable sources or middlemen.</p>
+      </div>
+
+    </div>
+
+    <div class="about-approach">
+      <h3 class="about-block-title" data-i18n="approach">Our Approach</h3>
+      <p class="about-block-text" data-i18n="aboutApproachText">Legal Lens turns complex legal documents into clear, structured information.</p>
+
+      <div class="about-pipeline" aria-label="Upload, then Understand, then Verify, then Act">
+        <span class="about-pipeline-step" data-i18n="aboutPipelineUpload">Upload</span>
+        <span class="about-pipeline-arrow" aria-hidden="true">→</span>
+        <span class="about-pipeline-step" data-i18n="aboutPipelineUnderstand">Understand</span>
+        <span class="about-pipeline-arrow" aria-hidden="true">→</span>
+        <span class="about-pipeline-step" data-i18n="aboutPipelineVerify">Verify</span>
+        <span class="about-pipeline-arrow" aria-hidden="true">→</span>
+        <span class="about-pipeline-step" data-i18n="aboutPipelineAct">Act</span>
+      </div>
+
+      <p class="about-help-lead" data-i18n="aboutHelpLead">We help users:</p>
+      <ul class="about-checklist">
+        <li>
+          <svg class="about-check" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <path d="M4 10.5L8 14.5L16 5.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <span data-i18n="aboutChecklist1">Understand their documents</span>
+        </li>
+        <li>
+          <svg class="about-check" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <path d="M4 10.5L8 14.5L16 5.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <span data-i18n="aboutChecklist2">Identify important information</span>
+        </li>
+        <li>
+          <svg class="about-check" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <path d="M4 10.5L8 14.5L16 5.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <span data-i18n="aboutChecklist3">Find deadlines and next steps</span>
+        </li>
+        <li>
+          <svg class="about-check" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <path d="M4 10.5L8 14.5L16 5.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <span data-i18n="aboutChecklist4">Verify information through trusted sources</span>
+        </li>
+        <li>
+          <svg class="about-check" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <path d="M4 10.5L8 14.5L16 5.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <span data-i18n="aboutChecklist5">Find professional legal assistance when needed</span>
+        </li>
+      </ul>
+    </div>
+
+    <div class="about-responsibility">
+      <h3 class="about-block-title" data-i18n="responsibility">Built With Responsibility</h3>
+      <p class="about-block-text" data-i18n="aboutResponsibilityText">AI can help explain legal information, but it should not replace qualified legal professionals. Legal Lens is designed to improve understanding and navigation&mdash;not to replace professional legal advice.</p>
+    </div>
+
+    <div class="about-vision">
+      <h3 class="about-vision-label" data-i18n="vision">Our Vision</h3>
+      <p class="about-vision-text" data-i18n="aboutVisionText">A future where understanding a legal document doesn't require a law degree.</p>
+    </div>
+
+  </div>
+</section>
+<!-- about legal lens section ends here -->
+<script src="translations.js"></script>
+<script src="language.js"></script>
+</body>
+</html>

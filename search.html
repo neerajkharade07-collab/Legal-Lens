@@ -1,0 +1,935 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Legal Lens — Legal Simplifier</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --ink: #171717;
+    --ink-soft: #404040;
+    --gray-500: #737373;
+    --gray-400: #a3a3a3;
+    --gray-300: #d4d4d4;
+    --gray-200: #e5e5e5;
+    --gray-100: #f5f5f5;
+    --gray-50:  #fafafa;
+    --white: #ffffff;
+    --accent: #92400e;      /* muted bronze — a quiet nod to the scales of justice */
+    --accent-soft: #fef3e8;
+    --danger: #b91c1c;
+    --radius-lg: 20px;
+    --radius-md: 14px;
+    --radius-sm: 10px;
+    --font: 'Poppins', -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+  }
+
+  * { box-sizing: border-box; }
+
+  html, body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    background: var(--white);
+    color: var(--ink);
+    font-family: var(--font);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  button, input {
+    font-family: var(--font);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
+
+  #app {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    height: 100dvh;
+    width: 100%;
+    overflow: hidden;
+  }
+
+  /* ---------- Landing state ---------- */
+  #landing {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex: 1;
+    padding: 0 16px;
+  }
+
+  #brand-mark {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 28px;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.01em;
+    color: var(--gray-500);
+  }
+  #brand-mark .dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 999px;
+    background: var(--accent);
+  }
+
+  #tagline-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex: 1;
+    justify-content: center;
+    padding: 48px 0 32px;
+    gap: 16px;
+  }
+
+  #tagline {
+    font-family: var(--font);
+    font-weight: 600;
+    font-size: 32px;
+    line-height: 1.22;
+    text-align: center;
+    letter-spacing: -0.015em;
+    color: var(--ink);
+    margin: 0;
+  }
+
+  #subtagline {
+    font-size: 15px;
+    line-height: 1.6;
+    color: var(--gray-500);
+    text-align: center;
+    max-width: 440px;
+    margin: 0;
+    font-weight: 400;
+  }
+
+  @media (min-width: 640px) {
+    #tagline { font-size: 44px; }
+    #tagline-wrap { padding-top: 96px; }
+  }
+  @media (min-width: 900px) {
+    #tagline { font-size: 52px; }
+  }
+
+  #landing-input-wrap {
+    width: 100%;
+    padding-bottom: 40px;
+  }
+  @media (min-width: 640px) {
+    #landing-input-wrap { padding-bottom: 64px; }
+  }
+
+  /* Suggested prompts */
+  #suggestions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px;
+    max-width: 640px;
+    margin: 20px auto 0;
+    padding: 0 16px;
+  }
+  .suggestion-chip {
+    border: 1px solid var(--gray-200);
+    background: var(--white);
+    color: var(--ink-soft);
+    font-size: 13px;
+    font-weight: 500;
+    padding: 8px 14px;
+    border-radius: 999px;
+    cursor: pointer;
+    transition: border-color 0.15s ease, color 0.15s ease, background 0.15s ease;
+  }
+  .suggestion-chip:hover {
+    border-color: var(--ink);
+    color: var(--ink);
+    background: var(--gray-50);
+  }
+
+  /* ---------- Chat state ---------- */
+  #chat-view { display: none; flex: 1; flex-direction: column; overflow: hidden; min-height: 0; }
+
+  #chat-header {
+    border-bottom: 1px solid var(--gray-100);
+    padding: 16px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    position: relative;
+  }
+  #chat-header h1 {
+    font-family: var(--font);
+    font-weight: 600;
+    font-size: 16px;
+    margin: 0;
+    letter-spacing: -0.01em;
+  }
+  #chat-header .dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 999px;
+    background: var(--accent);
+  }
+  #new-chat-btn {
+    position: absolute;
+    right: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+    border: 1px solid var(--gray-200);
+    background: var(--white);
+    color: var(--gray-500);
+    font-size: 12.5px;
+    font-weight: 500;
+    padding: 6px 12px;
+    border-radius: 999px;
+    cursor: pointer;
+    transition: border-color 0.15s ease, color 0.15s ease;
+    display: none;
+  }
+  #new-chat-btn:hover { border-color: var(--ink); color: var(--ink); }
+
+  #messages {
+    flex: 1;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  #messages-inner {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 24px 16px 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+  }
+  @media (min-width: 640px) {
+    #messages-inner { padding: 28px 24px 8px; }
+  }
+
+  #chat-input-area {
+    border-top: 1px solid var(--gray-100);
+    background: var(--white);
+    padding: 14px 16px 16px;
+  }
+  @media (min-width: 640px) {
+    #chat-input-area { padding-bottom: 22px; }
+  }
+
+  .disclaimer {
+    max-width: 720px;
+    margin: 10px auto 0;
+    text-align: center;
+    font-size: 11.5px;
+    line-height: 1.5;
+    color: var(--gray-400);
+  }
+
+  /* ---------- Input bar (shared) ---------- */
+  .input-bar-container { margin: 0 auto; width: 100%; padding: 0 16px; }
+  .input-bar-container.wide { max-width: 720px; }
+  .input-bar-container.narrow { max-width: 720px; }
+  @media (min-width: 640px) {
+    .input-bar-container { padding: 0 24px; }
+  }
+
+  .file-chip {
+    display: none;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 8px 12px;
+    margin-bottom: 8px;
+    font-size: 13px;
+    color: var(--ink-soft);
+    background: var(--gray-50);
+    border: 1px solid var(--gray-200);
+    border-radius: 999px;
+  }
+  .file-chip.visible { display: flex; }
+  .file-chip-left { display: flex; align-items: center; gap: 8px; min-width: 0; }
+  .file-chip-left span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .file-chip-remove {
+    flex-shrink: 0;
+    border: none;
+    background: transparent;
+    color: var(--gray-400);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    padding: 2px;
+    border-radius: 999px;
+  }
+  .file-chip-remove:hover { color: var(--ink); background: var(--gray-200); }
+
+  .input-bar {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    border: 1px solid var(--gray-200);
+    border-radius: 999px;
+    background: var(--white);
+    padding: 6px 6px 6px 8px;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+    transition: box-shadow 0.2s ease, border-color 0.2s ease;
+  }
+  .input-bar:focus-within {
+    box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+    border-color: var(--gray-300);
+  }
+  @media (min-width: 640px) {
+    .input-bar { padding: 8px 8px 8px 12px; }
+  }
+
+  .icon-btn {
+    flex-shrink: 0;
+    width: 40px;
+    height: 40px;
+    border-radius: 999px;
+    border: none;
+    background: transparent;
+    color: var(--gray-400);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background 0.2s ease, color 0.2s ease;
+  }
+  .icon-btn:hover { background: var(--gray-100); color: var(--ink); }
+
+  .icon-btn.mic-active { background: var(--accent); color: var(--white); }
+  .icon-btn.mic-active:hover { background: var(--accent); }
+
+  #landing-text-input, [data-role="text-input"] {
+    flex: 1;
+    min-width: 0;
+    border: none;
+    outline: none;
+    background: transparent;
+    font-size: 15px;
+    color: var(--ink);
+    padding: 8px 4px;
+  }
+  [data-role="text-input"]::placeholder { color: var(--gray-400); }
+
+  .send-btn {
+    flex-shrink: 0;
+    width: 40px;
+    height: 40px;
+    border-radius: 999px;
+    border: none;
+    background: var(--ink);
+    color: var(--white);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: transform 0.15s ease, opacity 0.15s ease, background 0.15s ease;
+  }
+  .send-btn:hover:not(:disabled) { transform: scale(1.05); background: var(--accent); }
+  .send-btn:active:not(:disabled) { transform: scale(0.95); }
+  .send-btn:disabled { opacity: 0.3; cursor: default; }
+
+  .listening-indicator {
+    display: none;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    margin-top: 8px;
+    font-size: 12px;
+    color: var(--gray-400);
+  }
+  .listening-indicator.visible { display: flex; }
+  .pulse-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 999px;
+    background: var(--accent);
+    animation: pulse 1.2s ease-in-out infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.3; }
+  }
+
+  /* ---------- Messages ---------- */
+  .msg-row { display: flex; animation: fadein 0.3s ease; }
+  .msg-row.user { justify-content: flex-end; }
+  .msg-row.ai, .msg-row.file { justify-content: flex-start; align-items: flex-end; gap: 8px; }
+
+  @keyframes fadein {
+    from { opacity: 0; transform: translateY(6px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .avatar {
+    flex-shrink: 0;
+    width: 26px;
+    height: 26px;
+    border-radius: 999px;
+    background: var(--ink);
+    color: var(--white);
+    font-size: 11px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    letter-spacing: -0.02em;
+  }
+
+  .bubble-user {
+    max-width: 75%;
+    background: var(--ink);
+    color: var(--white);
+    border-radius: 18px;
+    border-top-right-radius: 4px;
+    padding: 11px 16px;
+    font-size: 14.5px;
+    line-height: 1.55;
+  }
+
+  .bubble-ai, .bubble-file {
+    max-width: 80%;
+    background: var(--white);
+    border: 1px solid var(--gray-200);
+    border-radius: 18px;
+    border-top-left-radius: 4px;
+    padding: 16px 20px;
+  }
+  .bubble-file { max-width: 75%; padding: 12px 16px; }
+
+  .bubble-ai p { margin: 0; font-size: 14.5px; line-height: 1.65; color: var(--ink-soft); }
+
+  .section-block { margin-top: 16px; }
+  .section-title { font-size: 12.5px; font-weight: 600; color: var(--ink); }
+  .section-list { margin: 8px 0 0; padding: 0; list-style: none; }
+  .section-list li {
+    display: flex;
+    gap: 10px;
+    font-size: 14px;
+    line-height: 1.6;
+    color: var(--ink-soft);
+    margin-bottom: 6px;
+  }
+  .bullet-dot {
+    flex-shrink: 0;
+    margin-top: 8px;
+    width: 4px;
+    height: 4px;
+    border-radius: 999px;
+    background: var(--accent);
+  }
+  .num-marker { color: var(--accent); font-weight: 600; font-variant-numeric: tabular-nums; font-size: 13px; }
+
+  .cta-row {
+    margin-top: 16px;
+    padding-top: 12px;
+    border-top: 1px solid var(--gray-100);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+  .cta-row span { font-size: 12.5px; color: var(--gray-400); }
+  .cta-row a { font-size: 13px; font-weight: 600; color: var(--accent); text-decoration: none; }
+  .cta-row a:hover { color: var(--ink); }
+
+  .file-row { display: flex; align-items: center; gap: 8px; font-size: 14px; font-weight: 500; color: var(--ink-soft); }
+  .file-status { margin-top: 6px; font-size: 13px; color: var(--gray-400); display: flex; align-items: center; gap: 6px; }
+
+  .spinner {
+    width: 12px;
+    height: 12px;
+    border-radius: 999px;
+    border: 1.5px solid var(--gray-300);
+    border-top-color: var(--gray-500);
+    animation: spin 0.7s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* Typing indicator */
+  .typing-row { display: flex; align-items: flex-end; gap: 8px; }
+  .typing-bubble {
+    border: 1px solid var(--gray-200);
+    border-radius: 18px;
+    border-top-left-radius: 4px;
+    padding: 14px 18px;
+    display: flex;
+    gap: 4px;
+    align-items: center;
+  }
+  .typing-bubble .td {
+    width: 6px; height: 6px; border-radius: 999px; background: var(--gray-400);
+    animation: bounce 1.1s ease-in-out infinite;
+  }
+  .typing-bubble .td:nth-child(2) { animation-delay: 0.15s; }
+  .typing-bubble .td:nth-child(3) { animation-delay: 0.3s; }
+  @keyframes bounce {
+    0%, 60%, 100% { transform: translateY(0); opacity: 0.5; }
+    30% { transform: translateY(-4px); opacity: 1; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    * { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+  }
+
+  /* Scrollbar polish */
+  #messages::-webkit-scrollbar { width: 8px; }
+  #messages::-webkit-scrollbar-thumb { background: var(--gray-200); border-radius: 999px; }
+  #messages::-webkit-scrollbar-track { background: transparent; }
+</style>
+</head>
+<body>
+
+<div id="app">
+
+  <!-- ================= LANDING STATE ================= -->
+  <div id="landing">
+    <div id="brand-mark"><span class="dot"></span>Legal Lens</div>
+    <div id="tagline-wrap">
+      <h1 id="tagline">Complex Laws.<br />Simple Answers.</h1>
+      <p id="subtagline">Ask a legal question in plain language, or upload a document to have it explained clause by clause.</p>
+    </div>
+    <div id="landing-input-wrap">
+      <div class="input-bar-container wide" id="landing-input-container"></div>
+      <div id="suggestions">
+        <button type="button" class="suggestion-chip" data-prompt="What are my rights as a tenant?">Tenant rights</button>
+        <button type="button" class="suggestion-chip" data-prompt="I received a legal notice, what should I do?">Received a legal notice</button>
+        <button type="button" class="suggestion-chip" data-prompt="Can you explain this contract to me?">Explain a contract</button>
+        <button type="button" class="suggestion-chip" data-prompt="What should I be careful about before signing?">Watch-outs before signing</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= CHAT STATE ================= -->
+  <div id="chat-view">
+    <div id="chat-header">
+      <span class="dot"></span>
+      <h1>Legal Lens</h1>
+      <button type="button" id="new-chat-btn">New chat</button>
+    </div>
+    <div id="messages"><div id="messages-inner"></div></div>
+    <div id="chat-input-area">
+      <div class="input-bar-container narrow" id="chat-input-container"></div>
+      <p class="disclaimer">
+        Legal Lens provides informational assistance and does not replace professional legal advice.
+        Verify important legal matters with a qualified lawyer.
+      </p>
+    </div>
+  </div>
+
+</div>
+
+<script>
+(function () {
+  "use strict";
+
+  // -----------------------------------------------------------------------
+  // Icons (inline SVG strings, stroke-based to match lucide's look)
+  // -----------------------------------------------------------------------
+  const ICONS = {
+    paperclip: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>',
+    mic: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="2" width="6" height="11" rx="3"/><path d="M19 10v1a7 7 0 0 1-14 0v-1"/><line x1="12" y1="19" x2="12" y2="22"/></svg>',
+    stop: '<svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><rect x="4" y="4" width="16" height="16" rx="2"/></svg>',
+    arrowUp: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="19" x2="12" y2="5"/><polyline points="5 12 12 5 19 12"/></svg>',
+    file: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>',
+    close: '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>',
+    check: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>'
+  };
+
+  const MAX_FILE_SIZE_MB = 15;
+  const ALLOWED_EXTENSIONS = [".pdf", ".doc", ".docx", ".jpg", ".jpeg", ".png"];
+
+  // -----------------------------------------------------------------------
+  // Mock response data
+  // -----------------------------------------------------------------------
+  const MOCK_RESPONSES = [
+    {
+      keywords: ["tenant", "rent", "landlord", "eviction"],
+      text: "Tenant rights generally depend on the rental agreement and applicable local law. In simple terms, you may have protections relating to notice, security deposits, basic habitability and lawful eviction.",
+      sections: [{ title: "Key points", type: "bullets", items: [
+        "Review your rental agreement", "Check the notice period",
+        "Keep records of rent payments", "Document important communications"
+      ]}],
+      cta: true
+    },
+    {
+      keywords: ["legal notice", "notice", "summons"],
+      text: "A legal notice is a formal communication stating a person's claim or intended legal action. Receiving one does not automatically mean that a court has ruled against you.",
+      sections: [{ title: "Next steps", type: "numbered", items: [
+        "Read the notice carefully", "Identify the deadline",
+        "Preserve relevant documents", "Consider getting legal advice"
+      ]}],
+      cta: true
+    },
+    {
+      keywords: ["explain this contract", "explain the contract", "contract"],
+      text: "I can help break the contract into simpler sections and identify important obligations, deadlines, fees and clauses you may want to review.",
+      sections: [{ title: "Important", type: "bullets", items: [
+        "Read every clause before signing", "Note any auto-renewal terms",
+        "Flag unclear language for a lawyer"
+      ]}],
+      cta: true
+    },
+    {
+      keywords: ["explain this document", "explain the document", "summarise", "summarize"],
+      text: "Here's a simplified read of your document. It's organised around the parts that usually matter most — obligations, dates, and money.",
+      sections: [
+        { title: "Key points", type: "bullets", items: [
+          "Main obligations are outlined in the early sections",
+          "Check any dates or deadlines mentioned",
+          "Note fees, penalties, or renewal terms"
+        ]},
+        { title: "Important", type: "bullets", items: [
+          "This is a simplified explanation, not legal advice."
+        ]}
+      ],
+      cta: true
+    },
+    {
+      keywords: ["careful", "watch out", "risk"],
+      text: "A few things are worth double-checking before you proceed — these are common places where people run into trouble later.",
+      sections: [{ title: "Important", type: "bullets", items: [
+        "Clauses that renew or change automatically",
+        "Penalties for late payment or early exit",
+        "Any clause that limits your rights to dispute later"
+      ]}],
+      cta: true
+    }
+  ];
+
+  const DEFAULT_RESPONSE = {
+    text: "Here's a simple explanation based on what you've asked. The exact position depends on your specific situation and applicable local law.",
+    sections: [{ title: "Key points", type: "bullets", items: [
+      "Every situation is fact-specific",
+      "Written records help build a clear picture",
+      "Deadlines matter more than they seem"
+    ]}],
+    cta: true
+  };
+
+  function getMockResponse(rawText) {
+    const text = rawText.toLowerCase();
+    const match = MOCK_RESPONSES.find(r => r.keywords.some(k => text.includes(k)));
+    return match || DEFAULT_RESPONSE;
+  }
+
+  function escapeHtml(str) {
+    const div = document.createElement("div");
+    div.textContent = str;
+    return div.innerHTML;
+  }
+
+  // -----------------------------------------------------------------------
+  // State
+  // -----------------------------------------------------------------------
+  let chatStarted = false;
+  let listening = false;
+
+  const landingView = document.getElementById("landing");
+  const chatView = document.getElementById("chat-view");
+  const messagesInner = document.getElementById("messages-inner");
+  const messagesScroll = document.getElementById("messages");
+  const newChatBtn = document.getElementById("new-chat-btn");
+
+  // -----------------------------------------------------------------------
+  // Build an input bar into a given container. Returns handles.
+  // -----------------------------------------------------------------------
+  function buildInputBar(container, { showFileChip }) {
+    container.innerHTML = `
+      <div class="file-chip" data-role="file-chip">
+        <div class="file-chip-left">${ICONS.file}<span data-role="file-chip-name"></span></div>
+        <button type="button" class="file-chip-remove" data-role="file-chip-remove" aria-label="Remove attached document">${ICONS.close}</button>
+      </div>
+      <div class="input-bar">
+        <input type="file" data-role="file-input" accept="${ALLOWED_EXTENSIONS.join(',')}" style="display:none" />
+        <button type="button" class="icon-btn" data-role="attach-btn" aria-label="Upload document">${ICONS.paperclip}</button>
+        <input type="text" data-role="text-input" id="${container.id}-text" placeholder="Ask a legal question or upload a document…" autocomplete="off" aria-label="Type your legal question" />
+        <button type="button" class="icon-btn" data-role="mic-btn" aria-label="Use voice input" aria-pressed="false">${ICONS.mic}</button>
+        <button type="button" class="send-btn" data-role="send-btn" aria-label="Send message" disabled>${ICONS.arrowUp}</button>
+      </div>
+      <div class="listening-indicator" data-role="listening-indicator" role="status" aria-live="polite"><span class="pulse-dot"></span>Listening…</div>
+    `;
+
+    const textInput = container.querySelector('[data-role="text-input"]');
+    const sendBtn = container.querySelector('[data-role="send-btn"]');
+    const attachBtn = container.querySelector('[data-role="attach-btn"]');
+    const fileInput = container.querySelector('[data-role="file-input"]');
+    const micBtn = container.querySelector('[data-role="mic-btn"]');
+    const listeningIndicator = container.querySelector('[data-role="listening-indicator"]');
+    const fileChip = container.querySelector('[data-role="file-chip"]');
+    const fileChipName = container.querySelector('[data-role="file-chip-name"]');
+    const fileChipRemove = container.querySelector('[data-role="file-chip-remove"]');
+
+    if (!showFileChip) fileChip.style.display = "none";
+
+    function refreshSendState() {
+      sendBtn.disabled = textInput.value.trim().length === 0;
+    }
+
+    textInput.addEventListener("input", refreshSendState);
+
+    textInput.addEventListener("keydown", (e) => {
+      if (e.key === "Enter" && !e.shiftKey) {
+        e.preventDefault();
+        submit();
+      }
+    });
+
+    sendBtn.addEventListener("click", submit);
+
+    function submit() {
+      const text = textInput.value.trim();
+      if (!text) return;
+      textInput.value = "";
+      refreshSendState();
+      handleUserSubmit(text);
+    }
+
+    attachBtn.addEventListener("click", () => fileInput.click());
+
+    fileInput.addEventListener("change", () => {
+      const file = fileInput.files && fileInput.files[0];
+      fileInput.value = "";
+      if (!file) return;
+
+      const ext = "." + (file.name.split(".").pop() || "").toLowerCase();
+      if (!ALLOWED_EXTENSIONS.includes(ext)) {
+        showTransientNotice(container, `${ext.toUpperCase()} isn't supported. Try PDF, Word or an image.`);
+        return;
+      }
+      if (file.size > MAX_FILE_SIZE_MB * 1024 * 1024) {
+        showTransientNotice(container, `That file is over ${MAX_FILE_SIZE_MB} MB. Try a smaller one.`);
+        return;
+      }
+
+      if (showFileChip) {
+        fileChip.classList.add("visible");
+        fileChipName.textContent = file.name;
+      }
+      handleFileSelect(file.name);
+    });
+
+    fileChipRemove.addEventListener("click", () => {
+      fileChip.classList.remove("visible");
+      fileChipName.textContent = "";
+    });
+
+    micBtn.addEventListener("click", () => {
+      listening = !listening;
+      syncMicState();
+    });
+
+    function syncMicState() {
+      if (listening) {
+        micBtn.classList.add("mic-active");
+        micBtn.innerHTML = ICONS.stop;
+        micBtn.setAttribute("aria-pressed", "true");
+        listeningIndicator.classList.add("visible");
+      } else {
+        micBtn.classList.remove("mic-active");
+        micBtn.innerHTML = ICONS.mic;
+        micBtn.setAttribute("aria-pressed", "false");
+        listeningIndicator.classList.remove("visible");
+      }
+    }
+
+    return { textInput, sendBtn, syncMicState, refreshSendState };
+  }
+
+  function showTransientNotice(container, message) {
+    let notice = container.querySelector(".input-notice");
+    if (!notice) {
+      notice = document.createElement("div");
+      notice.className = "input-notice";
+      notice.style.cssText = "font-size:12.5px;color:var(--danger,#b91c1c);margin-bottom:6px;padding:0 4px;";
+      notice.setAttribute("role", "alert");
+      container.insertBefore(notice, container.firstChild);
+    }
+    notice.textContent = message;
+    clearTimeout(notice._timer);
+    notice._timer = setTimeout(() => notice.remove(), 3500);
+  }
+
+  const landingBar = buildInputBar(document.getElementById("landing-input-container"), { showFileChip: true });
+  const chatBar = buildInputBar(document.getElementById("chat-input-container"), { showFileChip: false });
+
+  // Autofocus the landing input for keyboard users.
+  landingBar.textInput.focus();
+
+  // Suggestion chips prefill and submit.
+  document.querySelectorAll(".suggestion-chip").forEach(chip => {
+    chip.addEventListener("click", () => {
+      const prompt = chip.getAttribute("data-prompt");
+      if (prompt) handleUserSubmit(prompt);
+    });
+  });
+
+  newChatBtn.addEventListener("click", resetToLanding);
+
+  // -----------------------------------------------------------------------
+  // View transitions
+  // -----------------------------------------------------------------------
+  function enterChatMode() {
+    if (chatStarted) return;
+    chatStarted = true;
+    landingView.style.display = "none";
+    chatView.style.display = "flex";
+    newChatBtn.style.display = "inline-block";
+    requestAnimationFrame(() => chatBar.textInput.focus());
+  }
+
+  function resetToLanding() {
+    chatStarted = false;
+    messagesInner.innerHTML = "";
+    chatView.style.display = "none";
+    landingView.style.display = "flex";
+    newChatBtn.style.display = "none";
+    requestAnimationFrame(() => landingBar.textInput.focus());
+  }
+
+  // -----------------------------------------------------------------------
+  // Message rendering
+  // -----------------------------------------------------------------------
+  function scrollToBottom() {
+    messagesScroll.scrollTop = messagesScroll.scrollHeight;
+  }
+
+  function renderUserMessage(text) {
+    const row = document.createElement("div");
+    row.className = "msg-row user";
+    const bubble = document.createElement("div");
+    bubble.className = "bubble-user";
+    bubble.textContent = text;
+    row.appendChild(bubble);
+    messagesInner.appendChild(row);
+    scrollToBottom();
+  }
+
+  function renderTypingIndicator() {
+    const row = document.createElement("div");
+    row.className = "msg-row ai typing-row";
+    row.innerHTML = `
+      <div class="avatar">NS</div>
+      <div class="typing-bubble" role="status" aria-label="Legal Lens is typing">
+        <span class="td"></span><span class="td"></span><span class="td"></span>
+      </div>
+    `;
+    messagesInner.appendChild(row);
+    scrollToBottom();
+    return row;
+  }
+
+  function renderSections(container, sections) {
+    (sections || []).forEach(s => {
+      const block = document.createElement("div");
+      block.className = "section-block";
+      const listTag = s.type === "numbered" ? "ol" : "ul";
+      const itemsHtml = s.items.map((item, i) => {
+        const marker = s.type === "numbered"
+          ? `<span class="num-marker">${i + 1}.</span>`
+          : `<span class="bullet-dot"></span>`;
+        return `<li>${marker}<span></span></li>`;
+      }).join("");
+      block.innerHTML = `<div class="section-title"></div><${listTag} class="section-list">${itemsHtml}</${listTag}>`;
+      block.querySelector(".section-title").textContent = s.title;
+      block.querySelectorAll(".section-list li span:last-child").forEach((el, i) => {
+        el.textContent = s.items[i];
+      });
+      container.appendChild(block);
+    });
+  }
+
+  function renderAiMessage(response) {
+    const row = document.createElement("div");
+    row.className = "msg-row ai";
+
+    const avatar = document.createElement("div");
+    avatar.className = "avatar";
+    avatar.textContent = "LL";
+
+    const bubble = document.createElement("div");
+    bubble.className = "bubble-ai";
+
+    const p = document.createElement("p");
+    p.textContent = response.text;
+    bubble.appendChild(p);
+
+    renderSections(bubble, response.sections);
+
+    if (response.cta) {
+      const cta = document.createElement("div");
+      cta.className = "cta-row";
+      cta.innerHTML = `<span>Need professional legal help?</span><a href="lawyer-connect.html">Find a lawyer →</a>`;
+      bubble.appendChild(cta);
+    }
+
+    row.appendChild(avatar);
+    row.appendChild(bubble);
+    messagesInner.appendChild(row);
+    scrollToBottom();
+  }
+
+  function renderFileMessage(fileName) {
+    const row = document.createElement("div");
+    row.className = "msg-row file";
+    row.innerHTML = `
+      <div class="bubble-file">
+        <div class="file-row">${ICONS.file}<span></span></div>
+        <div class="file-status"><span class="spinner"></span><span>Reading your document…</span></div>
+      </div>
+    `;
+    row.querySelector(".file-row span").textContent = fileName;
+    messagesInner.appendChild(row);
+    scrollToBottom();
+    return row.querySelector(".file-status");
+  }
+
+  // -----------------------------------------------------------------------
+  // Event handlers
+  // -----------------------------------------------------------------------
+  function handleUserSubmit(text) {
+    enterChatMode();
+    renderUserMessage(text);
+    const typingRow = renderTypingIndicator();
+    const response = getMockResponse(text);
+    setTimeout(() => {
+      typingRow.remove();
+      renderAiMessage(response);
+    }, 600);
+  }
+
+  function handleFileSelect(fileName) {
+    enterChatMode();
+    const statusEl = renderFileMessage(fileName);
+    setTimeout(() => {
+      statusEl.innerHTML = `${ICONS.check}<span>Document ready to simplify.</span>`;
+      statusEl.style.color = "var(--ink-soft)";
+      const typingRow = renderTypingIndicator();
+      setTimeout(() => {
+        typingRow.remove();
+        renderAiMessage({
+          text: "Your document is ready. You can ask me to explain it, or check what to be careful about before you proceed.",
+          sections: [],
+          cta: false
+        });
+      }, 500);
+    }, 1200);
+  }
+})();
+</script>
+
+</body>
+</html>

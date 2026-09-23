@@ -1,0 +1,1356 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Legal Lens — Blog</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --black: #0a0a0a;
+    --white: #ffffff;
+    --off-white: #fafafa;
+    --gray-100: #f5f5f5;
+    --gray-200: #e8e8e8;
+    --gray-300: #d8d8d8;
+    --gray-500: #8f8f8f;
+    --gray-600: #6b6b6b;
+    --gray-800: #2b2b2b;
+    --radius-sm: 10px;
+    --radius-md: 16px;
+    --radius-lg: 22px;
+    --shadow-soft: 0 1px 2px rgba(0,0,0,0.04), 0 10px 28px rgba(0,0,0,0.05);
+    --ease: cubic-bezier(0.4, 0, 0.2, 1);
+    --max-width: 1220px;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    font-family: 'Poppins', sans-serif;
+    background: var(--white);
+    color: var(--black);
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+  }
+
+  .blog-page {
+    max-width: var(--max-width);
+    margin: 0 auto;
+    padding: 0 24px 110px;
+  }
+
+  section { margin-bottom: 100px; }
+
+  .section-head {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    margin-bottom: 36px;
+    gap: 20px;
+    flex-wrap: wrap;
+  }
+
+  .section-head h2 {
+    font-size: 28px;
+    font-weight: 700;
+    margin: 0;
+    letter-spacing: -0.01em;
+  }
+
+  .section-head p {
+    font-size: 14px;
+    color: var(--gray-600);
+    margin: 6px 0 0;
+  }
+
+  .reveal {
+    opacity: 0;
+    transform: translateY(24px);
+    transition: opacity 0.7s var(--ease), transform 0.7s var(--ease);
+  }
+
+  .reveal.in-view { opacity: 1; transform: translateY(0); }
+
+  /* ================= HERO ================= */
+  .blog-hero {
+    position: relative;
+    text-align: center;
+    max-width: 760px;
+    margin: 0 auto 44px;
+    padding-top: 0;
+  }
+
+  .blog-hero-bg {
+    position: absolute;
+    inset: -60px -40px auto -40px;
+    height: 420px;
+    z-index: -1;
+    opacity: 0.9;
+    pointer-events: none;
+  }
+
+  .eyebrow {
+    font-size: 12.5px;
+    font-weight: 600;
+    letter-spacing: 0.16em;
+    color: var(--gray-600);
+    margin-bottom: 20px;
+    opacity: 0;
+    animation: fadeSlideUp 0.7s var(--ease) forwards;
+    animation-delay: 0.1s;
+  }
+
+  .blog-hero h1 {
+    font-size: 50px;
+    font-weight: 800;
+    line-height: 1.14;
+    margin: 0 0 20px;
+    letter-spacing: -0.02em;
+    opacity: 0;
+    animation: fadeSlideUp 0.8s var(--ease) forwards;
+    animation-delay: 0.2s;
+  }
+
+  .blog-hero p.hero-sub {
+    font-size: 16px;
+    line-height: 1.7;
+    color: var(--gray-600);
+    margin: 0 0 40px;
+    opacity: 0;
+    animation: fadeSlideUp 0.8s var(--ease) forwards;
+    animation-delay: 0.32s;
+  }
+
+  @keyframes fadeSlideUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .blog-search {
+    position: relative;
+    max-width: 560px;
+    margin: 0 auto;
+    opacity: 0;
+    animation: fadeSlideUp 0.8s var(--ease) forwards;
+    animation-delay: 0.44s;
+  }
+
+  .blog-search input {
+    width: 100%;
+    padding: 17px 46px 17px 50px;
+    border: 1px solid var(--gray-300);
+    border-radius: 999px;
+    font-family: 'Poppins', sans-serif;
+    font-size: 14.5px;
+    color: var(--black);
+    outline: none;
+    transition: border-color 0.2s var(--ease), box-shadow 0.2s var(--ease);
+    background: var(--white);
+  }
+
+  .blog-search input::placeholder { color: var(--gray-500); }
+
+  .blog-search input:focus {
+    border-color: var(--black);
+    box-shadow: 0 0 0 3px rgba(0,0,0,0.06);
+  }
+
+  .blog-search svg.search-icon {
+    position: absolute;
+    left: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 17px;
+    height: 17px;
+    stroke: var(--gray-500);
+    pointer-events: none;
+  }
+
+  .search-clear {
+    position: absolute;
+    right: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    border: none;
+    background: var(--gray-100);
+    cursor: pointer;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s var(--ease);
+  }
+
+  .search-clear.visible { display: flex; }
+  .search-clear:hover { background: var(--gray-200); }
+
+  .search-clear svg { width: 11px; height: 11px; stroke: var(--gray-600); }
+
+  /* ================= CATEGORY NAV ================= */
+  .category-nav {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 64px;
+  }
+
+  .cat-btn {
+    font-family: 'Poppins', sans-serif;
+    font-size: 13.5px;
+    font-weight: 500;
+    padding: 10px 18px;
+    border-radius: 999px;
+    border: 1px solid var(--black);
+    background: var(--white);
+    color: var(--black);
+    cursor: pointer;
+    white-space: nowrap;
+    transition: background 0.2s var(--ease), color 0.2s var(--ease), transform 0.15s var(--ease);
+  }
+
+  .cat-btn:hover { transform: translateY(-1px); }
+  .cat-btn.active { background: var(--black); color: var(--white); }
+
+  /* ================= FEATURED ARTICLE ================= */
+  .featured-article {
+    display: grid;
+    grid-template-columns: 1.05fr 0.95fr;
+    gap: 0;
+    border: 1px solid var(--gray-200);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    cursor: pointer;
+    transition: box-shadow 0.3s var(--ease), transform 0.3s var(--ease), border-color 0.3s var(--ease);
+  }
+
+  .featured-article:hover {
+    box-shadow: 0 20px 50px rgba(0,0,0,0.08);
+    transform: translateY(-3px);
+    border-color: var(--gray-300);
+  }
+
+  .featured-visual {
+    background: var(--black);
+    position: relative;
+    min-height: 340px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+  }
+
+  .featured-visual svg {
+    width: 100px;
+    height: 100px;
+    stroke: rgba(255,255,255,0.18);
+    fill: none;
+    transition: transform 0.6s var(--ease);
+  }
+
+  .featured-article:hover .featured-visual svg { transform: scale(1.08) rotate(-2deg); }
+
+  .featured-visual::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      linear-gradient(rgba(255,255,255,0.05) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.05) 1px, transparent 1px);
+    background-size: 42px 42px;
+  }
+
+  .featured-body {
+    padding: 44px 48px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  .badge {
+    display: inline-block;
+    font-size: 11.5px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    padding: 6px 13px;
+    border: 1px solid var(--black);
+    border-radius: 999px;
+    margin-bottom: 20px;
+    align-self: flex-start;
+    width: fit-content;
+  }
+
+  .featured-body h3 {
+    font-size: 27px;
+    font-weight: 700;
+    line-height: 1.28;
+    margin: 0 0 14px;
+    letter-spacing: -0.01em;
+  }
+
+  .featured-body .desc {
+    font-size: 14.5px;
+    line-height: 1.7;
+    color: var(--gray-600);
+    margin: 0 0 24px;
+  }
+
+  .meta-row {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    font-size: 12.5px;
+    color: var(--gray-500);
+    margin-bottom: 26px;
+  }
+
+  .meta-row .dot { width: 3px; height: 3px; border-radius: 50%; background: var(--gray-500); }
+
+  .read-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--black);
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    width: fit-content;
+  }
+
+  .read-link svg { width: 15px; height: 15px; transition: transform 0.25s var(--ease); }
+  .featured-article:hover .read-link svg,
+  .article-card:hover .read-link svg { transform: translateX(4px); }
+
+  /* ================= ARTICLE GRID ================= */
+  .article-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 22px;
+  }
+
+  .article-card {
+    border: 1px solid var(--gray-200);
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    cursor: pointer;
+    background: var(--white);
+    transition: box-shadow 0.3s var(--ease), transform 0.3s var(--ease), border-color 0.3s var(--ease);
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
+  .article-card.card-in { opacity: 1; transform: translateY(0); }
+
+  .article-card:hover {
+    box-shadow: var(--shadow-soft);
+    transform: translateY(-4px);
+    border-color: var(--gray-300);
+  }
+
+  .card-visual {
+    background: var(--gray-100);
+    height: 168px;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .card-visual svg {
+    width: 46px;
+    height: 46px;
+    stroke: var(--gray-300);
+    fill: none;
+    transition: transform 0.5s var(--ease);
+  }
+
+  .article-card:hover .card-visual svg { transform: scale(1.12); }
+
+  .card-body { padding: 22px 22px 24px; }
+
+  .card-badge {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.03em;
+    color: var(--gray-600);
+    margin-bottom: 12px;
+  }
+
+  .card-body h3 {
+    font-size: 16.5px;
+    font-weight: 600;
+    line-height: 1.4;
+    margin: 0 0 10px;
+  }
+
+  .card-body .desc {
+    font-size: 13.5px;
+    line-height: 1.65;
+    color: var(--gray-600);
+    margin: 0 0 18px;
+  }
+
+  .card-meta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 12px;
+    color: var(--gray-500);
+  }
+
+  .card-meta .read-link { font-size: 13px; }
+
+  /* ================= NO RESULTS ================= */
+  .no-results {
+    display: none;
+    text-align: center;
+    padding: 60px 20px;
+    color: var(--gray-500);
+    font-size: 15px;
+  }
+
+  .no-results.visible { display: block; }
+
+  /* ================= GUIDES ================= */
+  .guides-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+  }
+
+  .guide-card {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    border: 1px solid var(--gray-200);
+    border-radius: var(--radius-md);
+    padding: 22px;
+    cursor: pointer;
+    transition: box-shadow 0.25s var(--ease), transform 0.2s var(--ease), border-color 0.2s var(--ease);
+  }
+
+  .guide-card:hover {
+    box-shadow: var(--shadow-soft);
+    transform: translateY(-3px);
+    border-color: var(--gray-300);
+  }
+
+  .guide-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    border: 1px solid var(--black);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .guide-icon svg { width: 19px; height: 19px; stroke: var(--black); fill: none; }
+
+  .guide-text h4 {
+    font-size: 14.5px;
+    font-weight: 600;
+    margin: 0 0 4px;
+  }
+
+  .guide-text p {
+    font-size: 12.5px;
+    color: var(--gray-600);
+    margin: 0;
+    line-height: 1.5;
+  }
+
+  .guide-arrow {
+    margin-left: auto;
+    width: 15px;
+    height: 15px;
+    stroke: var(--gray-500);
+    flex-shrink: 0;
+    transition: transform 0.25s var(--ease);
+  }
+
+  .guide-card:hover .guide-arrow { transform: translateX(3px); stroke: var(--black); }
+
+  /* ================= EDITORIAL / TRUST ================= */
+  .editorial-section {
+    background: var(--black);
+    color: var(--white);
+    border-radius: var(--radius-lg);
+    padding: 72px 56px;
+    text-align: center;
+  }
+
+  .editorial-section h2 {
+    font-size: 32px;
+    font-weight: 700;
+    max-width: 620px;
+    margin: 0 auto 22px;
+    line-height: 1.3;
+    letter-spacing: -0.01em;
+  }
+
+  .editorial-section p {
+    font-size: 15px;
+    line-height: 1.75;
+    color: rgba(255,255,255,0.65);
+    max-width: 560px;
+    margin: 0 auto;
+  }
+
+  /* ================= ARTICLE MODAL ================= */
+  .modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(10,10,10,0.5);
+    backdrop-filter: blur(2px);
+    display: none;
+    align-items: flex-start;
+    justify-content: center;
+    z-index: 1000;
+    opacity: 0;
+    transition: opacity 0.3s var(--ease);
+    overflow-y: auto;
+    padding: 40px 20px;
+  }
+
+  .modal-overlay.active { display: flex; opacity: 1; }
+
+  .article-modal {
+    background: var(--white);
+    border-radius: var(--radius-lg);
+    max-width: 760px;
+    width: 100%;
+    margin-top: 20px;
+    transform: translateY(24px);
+    transition: transform 0.35s var(--ease);
+    position: relative;
+  }
+
+  .modal-overlay.active .article-modal { transform: translateY(0); }
+
+  .modal-close {
+    position: sticky;
+    top: 20px;
+    float: right;
+    margin: 20px 20px 0 0;
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    border: 1px solid var(--gray-300);
+    background: var(--white);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s var(--ease), transform 0.2s var(--ease);
+    z-index: 2;
+  }
+
+  .modal-close:hover { background: var(--black); transform: rotate(90deg); }
+  .modal-close:hover svg { stroke: var(--white); }
+  .modal-close svg { width: 15px; height: 15px; stroke: var(--black); transition: stroke 0.2s var(--ease); }
+
+  .modal-hero-visual {
+    background: var(--black);
+    border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+    height: 220px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+    margin-top: -58px;
+  }
+
+  .modal-hero-visual::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      linear-gradient(rgba(255,255,255,0.05) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.05) 1px, transparent 1px);
+    background-size: 38px 38px;
+  }
+
+  .modal-hero-visual svg { width: 70px; height: 70px; stroke: rgba(255,255,255,0.2); fill: none; }
+
+  .article-reader {
+    max-width: 620px;
+    margin: 0 auto;
+    padding: 40px 32px 56px;
+  }
+
+  .article-reader .badge { margin-bottom: 18px; }
+
+  .article-reader h1 {
+    font-size: 30px;
+    font-weight: 700;
+    line-height: 1.32;
+    margin: 0 0 16px;
+    letter-spacing: -0.01em;
+  }
+
+  .article-reader .meta-row { margin-bottom: 32px; }
+
+  .article-reader .article-body p {
+    font-size: 15.5px;
+    line-height: 1.85;
+    color: var(--gray-800);
+    margin: 0 0 22px;
+  }
+
+  .article-reader .article-body h3 {
+    font-size: 19px;
+    font-weight: 600;
+    margin: 34px 0 14px;
+  }
+
+  .article-reader .article-body ul {
+    margin: 0 0 22px;
+    padding-left: 20px;
+  }
+
+  .article-reader .article-body li {
+    font-size: 15px;
+    line-height: 1.8;
+    color: var(--gray-800);
+    margin-bottom: 8px;
+  }
+
+  .legal-note {
+    border-left: 2px solid var(--black);
+    padding: 4px 0 4px 18px;
+    margin: 26px 0;
+    font-size: 14px;
+    color: var(--gray-800);
+    line-height: 1.7;
+  }
+
+  .takeaways-box {
+    border: 1px solid var(--gray-200);
+    border-radius: var(--radius-md);
+    padding: 26px 28px;
+    margin: 34px 0;
+  }
+
+  .takeaways-box h3 {
+    font-size: 15px;
+    font-weight: 600;
+    margin: 0 0 14px;
+  }
+
+  .takeaways-box ul { margin: 0; padding-left: 18px; }
+  .takeaways-box li { font-size: 14px; line-height: 1.75; color: var(--gray-800); margin-bottom: 6px; }
+
+  .related-section { margin-top: 48px; }
+
+  .related-section h3 {
+    font-size: 15px;
+    font-weight: 600;
+    margin: 0 0 18px;
+  }
+
+  .related-list { display: flex; flex-direction: column; gap: 10px; }
+
+  .related-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 18px;
+    border: 1px solid var(--gray-200);
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition: border-color 0.2s var(--ease), background 0.2s var(--ease);
+  }
+
+  .related-item:hover { border-color: var(--black); background: var(--gray-100); }
+  .related-item span.title { font-size: 13.5px; font-weight: 500; }
+  .related-item svg { width: 14px; height: 14px; stroke: var(--gray-600); flex-shrink: 0; }
+
+  .back-to-blog {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13.5px;
+    font-weight: 500;
+    color: var(--gray-600);
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    margin-bottom: 26px;
+    transition: color 0.2s var(--ease);
+  }
+
+  .back-to-blog:hover { color: var(--black); }
+  .back-to-blog svg { width: 14px; height: 14px; transition: transform 0.2s var(--ease); }
+  .back-to-blog:hover svg { transform: translateX(-3px); }
+
+  .modal-disclaimer {
+    margin-top: 42px;
+    padding-top: 22px;
+    border-top: 1px solid var(--gray-200);
+    font-size: 11.5px;
+    color: var(--gray-500);
+    line-height: 1.6;
+  }
+
+  /* ================= PAGE DISCLAIMER ================= */
+  .page-disclaimer {
+    text-align: center;
+    font-size: 12px;
+    color: var(--gray-500);
+    line-height: 1.6;
+    max-width: 640px;
+    margin: 0 auto;
+  }
+
+  /* ================= RESPONSIVE ================= */
+  @media (max-width: 980px) {
+    .article-grid { grid-template-columns: repeat(2, 1fr); }
+    .guides-grid { grid-template-columns: repeat(2, 1fr); }
+    .featured-article { grid-template-columns: 1fr; }
+    .featured-visual { min-height: 220px; }
+    .featured-body { padding: 36px 32px; }
+  }
+
+  @media (max-width: 700px) {
+    .blog-page { padding: 56px 20px 90px; }
+    section { margin-bottom: 72px; }
+    .blog-hero h1 { font-size: 32px; }
+    .blog-hero p.hero-sub { font-size: 14.5px; }
+    .article-grid { grid-template-columns: 1fr; }
+    .guides-grid { grid-template-columns: 1fr; }
+    .category-nav {
+      flex-wrap: nowrap;
+      overflow-x: auto;
+      justify-content: flex-start;
+      margin: 0 -20px 48px;
+      padding: 0 20px 4px;
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+    .category-nav::-webkit-scrollbar { display: none; }
+    .featured-body { padding: 28px 22px; }
+    .featured-body h3 { font-size: 22px; }
+    .editorial-section { padding: 48px 26px; }
+    .editorial-section h2 { font-size: 24px; }
+    .section-head h2 { font-size: 22px; }
+    .article-reader { padding: 32px 20px 44px; }
+    .article-reader h1 { font-size: 24px; }
+    .modal-overlay { padding: 0; }
+    .article-modal { border-radius: 0; min-height: 100vh; margin-top: 0; }
+    .modal-hero-visual { border-radius: 0; margin-top: 0; }
+    .modal-close { top: 16px; margin: 16px 16px 0 0; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    * { transition: none !important; animation: none !important; }
+    .reveal, .article-card { opacity: 1 !important; transform: none !important; }
+  }
+
+  button:focus-visible, input:focus-visible, [tabindex]:focus-visible {
+    outline: 2px solid var(--black);
+    outline-offset: 2px;
+  }
+</style>
+</head>
+<body>
+
+<div class="blog-page">
+
+  <!-- HERO -->
+  <section class="blog-hero-section">
+    <div class="blog-hero">
+      <svg class="blog-hero-bg" id="heroCanvas" viewBox="0 0 1000 420" preserveAspectRatio="none" aria-hidden="true"></svg>
+      <h1>Legal Knowledge, Made Simple</h1>
+      <p class="hero-sub">Understand your rights, legal documents, government processes and important legal updates in simple language.</p>
+      <div class="blog-search">
+        <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="11" cy="11" r="7"></circle>
+          <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+        </svg>
+        <input type="text" id="blogSearchInput" placeholder="Search legal articles..." autocomplete="off" aria-label="Search legal articles">
+        <button class="search-clear" id="searchClearBtn" aria-label="Clear search">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2.4" stroke-linecap="round"><line x1="4" y1="4" x2="16" y2="16"></line><line x1="16" y1="4" x2="4" y2="16"></line></svg>
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- CATEGORY NAV -->
+  <nav class="category-nav" id="categoryNav" aria-label="Article categories">
+    <button class="cat-btn active" data-category="all">All</button>
+    <button class="cat-btn" data-category="legal-basics">Legal Basics</button>
+    <button class="cat-btn" data-category="documents">Documents</button>
+    <button class="cat-btn" data-category="courts">Court & e-Courts</button>
+    <button class="cat-btn" data-category="property">Property</button>
+    <button class="cat-btn" data-category="tenancy">Tenancy</button>
+    <button class="cat-btn" data-category="consumer">Consumer Rights</button>
+    <button class="cat-btn" data-category="cyber">Cyber Law</button>
+    <button class="cat-btn" data-category="schemes">Government Schemes</button>
+    <button class="cat-btn" data-category="awareness">Legal Awareness</button>
+  </nav>
+
+  <!-- FEATURED ARTICLE -->
+  <section class="featured-section reveal" id="featuredSection">
+    <div class="featured-article" id="featuredArticle" data-id="fir-guide" tabindex="0" role="button" aria-label="Read featured article">
+      <div class="featured-visual">
+        <svg viewBox="0 0 24 24" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="8" y1="13" x2="16" y2="13"></line><line x1="8" y1="17" x2="16" y2="17"></line></svg>
+      </div>
+      <div class="featured-body">
+        <span class="badge">LEGAL BASICS</span>
+        <h3>Filing an FIR: What Every Citizen Should Know</h3>
+        <p class="desc">A clear, practical walkthrough of what an FIR is, when you should file one, what to expect from the police, and your rights during the process.</p>
+        <div class="meta-row"><span>Sept 2, 2026</span><span class="dot"></span><span>7 min read</span></div>
+        <button class="read-link">Read Article <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg></button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ARTICLE GRID -->
+  <section class="articles-section">
+    <div class="section-head reveal">
+      <div>
+        <h2>Latest Articles</h2>
+        <p>Practical, plain-language explainers on everyday legal topics.</p>
+      </div>
+    </div>
+    <div class="article-grid" id="articleGrid"></div>
+    <div class="no-results" id="noResults">No matching articles found.</div>
+  </section>
+
+  <!-- POPULAR GUIDES -->
+  <section class="guides-section reveal">
+    <div class="section-head">
+      <div>
+        <h2>Popular Legal Guides</h2>
+        <p>Step-by-step reference guides for common legal situations.</p>
+      </div>
+    </div>
+    <div class="guides-grid" id="guidesGrid"></div>
+  </section>
+
+  <!-- EDITORIAL / TRUST -->
+  <section class="editorial-wrap reveal">
+    <div class="editorial-section">
+      <h2>"Legal information shouldn't feel complicated."</h2>
+      <p>Legal Lens helps you understand legal documents and everyday legal situations in simpler language. For matters specific to your situation, we always encourage verifying details through official sources or a qualified legal professional.</p>
+    </div>
+  </section>
+
+  <p class="page-disclaimer">Legal Lens provides general legal information for educational purposes only. It does not constitute legal advice. For matters specific to your situation, consult a qualified legal professional.</p>
+
+</div>
+
+<!-- ARTICLE MODAL -->
+<div class="modal-overlay" id="modalOverlay">
+  <div class="article-modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <button class="modal-close" id="modalCloseBtn" aria-label="Close article">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round"><line x1="4" y1="4" x2="16" y2="16"></line><line x1="16" y1="4" x2="4" y2="16"></line></svg>
+    </button>
+    <div class="modal-hero-visual">
+      <svg viewBox="0 0 24 24" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
+    </div>
+    <div class="article-reader">
+      <button class="back-to-blog" id="backToBlogBtn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+        Back to Blog
+      </button>
+      <span class="badge" id="modalBadge">CATEGORY</span>
+      <h1 id="modalTitle">Article Title</h1>
+      <div class="meta-row"><span id="modalDate">Date</span><span class="dot"></span><span id="modalReadTime">Read time</span></div>
+      <div class="article-body" id="modalBody"></div>
+      <div class="related-section">
+        <h3>Related Articles</h3>
+        <div class="related-list" id="relatedList"></div>
+      </div>
+      <p class="modal-disclaimer">Legal Lens provides general legal information for educational purposes only. It does not constitute legal advice. For matters specific to your situation, consult a qualified legal professional.</p>
+    </div>
+  </div>
+</div>
+
+<script>
+(function () {
+
+  /* =========================================================
+     ARTICLE DATA
+     ========================================================= */
+  const articles = [
+    {
+      id: 'fir-guide',
+      category: 'legal-basics',
+      categoryLabel: 'Legal Basics',
+      title: 'Filing an FIR: What Every Citizen Should Know',
+      desc: 'A clear, practical walkthrough of what an FIR is, when you should file one, what to expect from the police, and your rights during the process.',
+      date: 'Sept 2, 2026',
+      readTime: '7 min read',
+      body: [
+        { type: 'p', text: 'An FIR, or First Information Report, is the document police prepare when they receive information about a cognizable offence. It is usually the first formal step in the criminal justice process.' },
+        { type: 'h3', text: 'When should you file an FIR?' },
+        { type: 'p', text: 'You should consider filing an FIR as soon as possible after a cognizable offence occurs, such as theft, assault, or fraud. Prompt reporting helps preserve evidence and strengthens the case.' },
+        { type: 'ul', items: ['Visit the nearest police station with jurisdiction over the incident.', 'Provide a clear, factual account of what happened.', 'Ask for a free copy of the FIR once it is registered.'] },
+        { type: 'legal-note', text: 'Police are generally required to register an FIR for cognizable offences. If they refuse, citizens can escalate the matter to a senior officer or approach the relevant magistrate.' },
+        { type: 'h3', text: 'What happens after filing?' },
+        { type: 'p', text: 'Once registered, the FIR triggers an investigation. You may be asked for further statements or evidence. Keeping your copy of the FIR and any acknowledgment is important for future reference.' }
+      ],
+      takeaways: ['An FIR is the formal starting point for a police investigation.', 'You are entitled to a free copy of a registered FIR.', 'Refusal to register a valid FIR can be escalated to higher authorities.']
+    },
+    {
+      id: 'legal-notice',
+      category: 'documents',
+      categoryLabel: 'Documents',
+      title: 'How to Read and Respond to a Legal Notice',
+      desc: 'Understand the structure of a legal notice, what it typically demands, and the general steps to consider before responding.',
+      date: 'Aug 28, 2026',
+      readTime: '6 min read',
+      body: [
+        { type: 'p', text: 'A legal notice is a formal communication, often sent through a lawyer, informing you of a grievance and typically requesting specific action within a stated timeframe.' },
+        { type: 'h3', text: 'Key parts of a legal notice' },
+        { type: 'ul', items: ['Sender and recipient details', 'A statement of facts and grievance', 'The specific relief or action being demanded', 'A deadline for response'] },
+        { type: 'legal-note', text: 'Ignoring a legal notice does not make the underlying issue disappear. It is generally advisable to review it carefully and respond within the given timeframe.' },
+        { type: 'p', text: 'Before responding, it helps to gather any related documents, timelines, or correspondence relevant to the matter, and to consider consulting a qualified professional for anything with significant consequences.' }
+      ],
+      takeaways: ['A legal notice usually includes a stated deadline for response.', 'Gathering supporting documents early makes responding easier.', 'Significant or unclear notices are worth professional review.']
+    },
+    {
+      id: 'property-documents',
+      category: 'property',
+      categoryLabel: 'Property',
+      title: 'Understanding Property Documents Before You Buy',
+      desc: 'A plain-language look at the key documents involved in property transactions and why each one matters.',
+      date: 'Aug 21, 2026',
+      readTime: '8 min read',
+      body: [
+        { type: 'p', text: 'Property transactions typically involve several documents that establish ownership history, legal status, and any existing encumbrances on the property.' },
+        { type: 'h3', text: 'Common documents to review' },
+        { type: 'ul', items: ['Title deed, confirming ownership', 'Encumbrance certificate, showing any existing loans or claims', 'Property tax receipts', 'Approved building plan, where applicable'] },
+        { type: 'legal-note', text: 'Verifying documents through official land records or government portals is an important step before finalizing any property transaction.' },
+        { type: 'p', text: 'Because property transactions often involve significant value and long-term consequences, many buyers choose to have documents reviewed by a qualified legal professional.' }
+      ],
+      takeaways: ['A clear title deed is central to establishing ownership.', 'An encumbrance certificate reveals existing claims on a property.', 'Official verification reduces the risk of later disputes.']
+    },
+    {
+      id: 'tenant-rights',
+      category: 'tenancy',
+      categoryLabel: 'Tenancy',
+      title: 'Tenant Rights: What Renters Should Know',
+      desc: 'An overview of common tenant protections, security deposit practices, and what a rental agreement should typically cover.',
+      date: 'Aug 15, 2026',
+      readTime: '6 min read',
+      body: [
+        { type: 'p', text: 'Rental agreements set out the terms of the relationship between landlord and tenant, including rent, duration, and responsibilities of each party.' },
+        { type: 'h3', text: 'What a rental agreement should cover' },
+        { type: 'ul', items: ['Monthly rent and payment terms', 'Security deposit amount and refund conditions', 'Notice period for termination', 'Maintenance responsibilities'] },
+        { type: 'legal-note', text: 'Tenancy laws vary by state, so it is worth checking locally applicable rules regarding notice periods and deposit limits.' },
+        { type: 'p', text: 'Keeping a signed copy of the agreement and documenting the property condition at move-in can help prevent disputes later.' }
+      ],
+      takeaways: ['A written rental agreement protects both landlord and tenant.', 'Security deposit terms should be clearly stated upfront.', 'Documenting property condition at move-in helps avoid disputes.']
+    },
+    {
+      id: 'e-courts-guide',
+      category: 'courts',
+      categoryLabel: 'Court & e-Courts',
+      title: 'How e-Courts Work: A Citizen\u2019s Guide',
+      desc: 'Learn how India\u2019s e-Courts services let citizens track case status, view orders, and access court information online.',
+      date: 'Aug 9, 2026',
+      readTime: '5 min read',
+      body: [
+        { type: 'p', text: 'e-Courts services allow citizens to check case status, view cause lists, and access certain court orders through official online portals.' },
+        { type: 'h3', text: 'What you can typically do online' },
+        { type: 'ul', items: ['Search for a case using the case number or party name', 'View the current stage of proceedings', 'Check upcoming hearing dates', 'Download available orders and judgments'] },
+        { type: 'legal-note', text: 'Official e-Courts portals should be treated as the authoritative source for case status information.' }
+      ],
+      takeaways: ['e-Courts portals let you track case status without visiting the court in person.', 'Cause lists show upcoming hearing schedules.', 'Always verify critical case details on the official portal.']
+    },
+    {
+      id: 'consumer-complaint',
+      category: 'consumer',
+      categoryLabel: 'Consumer Rights',
+      title: 'Filing a Consumer Complaint: Step-by-Step',
+      desc: 'A practical overview of how consumer complaints are typically filed and what information you should prepare in advance.',
+      date: 'Aug 3, 2026',
+      readTime: '6 min read',
+      body: [
+        { type: 'p', text: 'Consumer protection frameworks exist to help resolve disputes between consumers and businesses over defective goods, deficient services, or unfair trade practices.' },
+        { type: 'h3', text: 'Before filing a complaint' },
+        { type: 'ul', items: ['Gather receipts, invoices, and communication records', 'Attempt to resolve the issue directly with the seller first', 'Note the specific relief you are seeking'] },
+        { type: 'legal-note', text: 'Consumer complaints can often be filed through official consumer helpline platforms or consumer forums, depending on the nature and value of the dispute.' }
+      ],
+      takeaways: ['Keep all receipts and communication as evidence.', 'Attempting direct resolution first is often a useful step.', 'Complaints are generally filed based on the value and nature of the dispute.']
+    },
+    {
+      id: 'cybercrime-report',
+      category: 'cyber',
+      categoryLabel: 'Cyber Law',
+      title: 'Reporting Cybercrime: What to Do First',
+      desc: 'Practical first steps if you experience online fraud, hacking, or harassment, and how official cybercrime reporting works.',
+      date: 'Jul 27, 2026',
+      readTime: '6 min read',
+      body: [
+        { type: 'p', text: 'Cybercrime can range from financial fraud to online harassment. Acting quickly and documenting evidence improves the chances of a successful resolution.' },
+        { type: 'h3', text: 'Immediate steps to consider' },
+        { type: 'ul', items: ['Take screenshots of relevant messages, transactions, or content', 'Note dates, times, and any account or transaction IDs', 'Report the incident through the official cybercrime reporting portal'] },
+        { type: 'legal-note', text: 'For financial fraud, contacting your bank promptly may help in attempting to halt or trace unauthorized transactions.' }
+      ],
+      takeaways: ['Document evidence immediately with screenshots and timestamps.', 'Official cybercrime portals are the primary reporting channel.', 'For financial fraud, contact your bank as soon as possible.']
+    },
+    {
+      id: 'gov-schemes',
+      category: 'schemes',
+      categoryLabel: 'Government Schemes',
+      title: 'Legal Aid Schemes You May Not Know About',
+      desc: 'An overview of government-backed legal aid services designed to make legal assistance more accessible.',
+      date: 'Jul 20, 2026',
+      readTime: '5 min read',
+      body: [
+        { type: 'p', text: 'Several government-backed schemes exist to provide free or subsidized legal assistance to citizens who qualify, particularly for those facing financial hardship.' },
+        { type: 'h3', text: 'What legal aid can include' },
+        { type: 'ul', items: ['Free legal representation in eligible cases', 'Legal advice and consultation services', 'Assistance with drafting basic legal documents'] },
+        { type: 'legal-note', text: 'Eligibility criteria and available services vary, so checking with your local legal services authority is the best way to confirm what applies to your situation.' }
+      ],
+      takeaways: ['Legal aid schemes can provide free or subsidized legal help.', 'Eligibility is typically based on income and case type.', 'Local legal services authorities can confirm what is available to you.']
+    },
+    {
+      id: 'know-your-rights',
+      category: 'awareness',
+      categoryLabel: 'Legal Awareness',
+      title: 'Everyday Rights Every Citizen Should Understand',
+      desc: 'A general overview of fundamental rights and protections that apply to citizens in common everyday situations.',
+      date: 'Jul 12, 2026',
+      readTime: '7 min read',
+      body: [
+        { type: 'p', text: 'Understanding your basic rights helps you navigate everyday interactions with authorities, employers, and institutions with more confidence.' },
+        { type: 'h3', text: 'Areas worth understanding' },
+        { type: 'ul', items: ['Rights during police interactions', 'Basic workplace protections', 'Rights as a consumer', 'Right to access information through official channels'] },
+        { type: 'legal-note', text: 'Specific rights and procedures can vary by situation and jurisdiction, so official sources should always be the final reference point.' }
+      ],
+      takeaways: ['Basic rights apply across many everyday situations.', 'Understanding these rights helps you respond confidently.', 'Always confirm specifics through official sources when it matters.']
+    }
+  ];
+
+  const guides = [
+    { title: 'How to Read a Legal Notice', desc: 'Understand structure, tone, and required action.', id: 'legal-notice', icon: 'doc' },
+    { title: 'Understanding an FIR', desc: 'What it is and how the process works.', id: 'fir-guide', icon: 'shield' },
+    { title: 'Tenant Rights in India', desc: 'Know what your rental agreement should cover.', id: 'tenant-rights', icon: 'home' },
+    { title: 'How e-Courts Works', desc: 'Track your case status online.', id: 'e-courts-guide', icon: 'scale' },
+    { title: 'Understanding Property Documents', desc: 'Key papers to verify before buying.', id: 'property-documents', icon: 'doc' },
+    { title: 'Consumer Complaint Guide', desc: 'Steps to file a complaint effectively.', id: 'consumer-complaint', icon: 'shield' }
+  ];
+
+  const guideIcons = {
+    doc: '<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline>',
+    shield: '<path d="M12 2 4 5v6c0 5.25 3.4 9.74 8 11 4.6-1.26 8-5.75 8-11V5z"></path>',
+    home: '<path d="M3 11 12 3l9 8"></path><path d="M5 10v10h14V10"></path>',
+    scale: '<path d="M12 3v18M5 8l-3 6a4 4 0 0 0 6 0zM19 8l-3 6a4 4 0 0 0 6 0zM5 8h14M8 3h8"></path>'
+  };
+
+  /* =========================================================
+     HERO BACKGROUND (subtle animated lines, grayscale SVG)
+     ========================================================= */
+  const heroCanvas = document.getElementById('heroCanvas');
+  const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const lineCount = 6;
+  for (let i = 0; i < lineCount; i++) {
+    const y = 40 + i * 65;
+    const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+    line.setAttribute('x1', '0');
+    line.setAttribute('y1', y);
+    line.setAttribute('x2', '1000');
+    line.setAttribute('y2', y);
+    line.setAttribute('stroke', 'rgba(10,10,10,0.045)');
+    line.setAttribute('stroke-width', '1');
+    if (!prefersReducedMotion) {
+      line.style.animation = `driftLine ${14 + i * 2}s linear infinite`;
+      line.style.animationDelay = `${i * -2}s`;
+    }
+    heroCanvas.appendChild(line);
+  }
+  const styleTag = document.createElement('style');
+  styleTag.textContent = `
+    @keyframes driftLine {
+      0% { transform: translateX(-30px); }
+      50% { transform: translateX(30px); }
+      100% { transform: translateX(-30px); }
+    }
+  `;
+  document.head.appendChild(styleTag);
+
+  /* =========================================================
+     RENDER ARTICLE GRID (excluding featured)
+     ========================================================= */
+  const grid = document.getElementById('articleGrid');
+  const noResults = document.getElementById('noResults');
+  const gridArticles = articles.filter(a => a.id !== 'fir-guide');
+
+  function cardIcon() {
+    return '<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="8" y1="13" x2="16" y2="13"></line><line x1="8" y1="17" x2="16" y2="17"></line>';
+  }
+
+  function renderGrid(list) {
+    grid.innerHTML = '';
+    if (list.length === 0) {
+      noResults.classList.add('visible');
+      return;
+    }
+    noResults.classList.remove('visible');
+
+    list.forEach((a, i) => {
+      const card = document.createElement('div');
+      card.className = 'article-card';
+      card.tabIndex = 0;
+      card.setAttribute('role', 'button');
+      card.setAttribute('aria-label', 'Read article: ' + a.title);
+      card.dataset.id = a.id;
+      card.innerHTML = `
+        <div class="card-visual"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">${cardIcon()}</svg></div>
+        <div class="card-body">
+          <div class="card-badge">${a.categoryLabel.toUpperCase()}</div>
+          <h3>${a.title}</h3>
+          <p class="desc">${a.desc}</p>
+          <div class="card-meta">
+            <span>${a.date} · ${a.readTime}</span>
+            <button class="read-link" tabindex="-1">Read <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg></button>
+          </div>
+        </div>
+      `;
+      card.addEventListener('click', () => openArticle(a.id));
+      card.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openArticle(a.id); }
+      });
+      grid.appendChild(card);
+
+      setTimeout(() => card.classList.add('card-in'), 40 * i);
+    });
+  }
+
+  renderGrid(gridArticles);
+
+  /* =========================================================
+     RENDER GUIDES
+     ========================================================= */
+  const guidesGrid = document.getElementById('guidesGrid');
+  guides.forEach(g => {
+    const el = document.createElement('div');
+    el.className = 'guide-card';
+    el.tabIndex = 0;
+    el.setAttribute('role', 'button');
+    el.setAttribute('aria-label', 'Read guide: ' + g.title);
+    el.innerHTML = `
+      <div class="guide-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">${guideIcons[g.icon]}</svg></div>
+      <div class="guide-text"><h4>${g.title}</h4><p>${g.desc}</p></div>
+      <svg class="guide-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+    `;
+    el.addEventListener('click', () => openArticle(g.id));
+    el.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openArticle(g.id); }
+    });
+    guidesGrid.appendChild(el);
+  });
+
+  /* =========================================================
+     CATEGORY FILTERING
+     ========================================================= */
+  const categoryButtons = document.querySelectorAll('.cat-btn');
+  const searchInput = document.getElementById('blogSearchInput');
+  const searchClearBtn = document.getElementById('searchClearBtn');
+  let activeCategory = 'all';
+
+  function applyFilters() {
+    const query = searchInput.value.trim().toLowerCase();
+    let list = gridArticles;
+
+    if (activeCategory !== 'all') {
+      list = list.filter(a => a.category === activeCategory);
+    }
+
+    if (query !== '') {
+      list = list.filter(a =>
+        a.title.toLowerCase().includes(query) ||
+        a.desc.toLowerCase().includes(query) ||
+        a.categoryLabel.toLowerCase().includes(query)
+      );
+    }
+
+    renderGrid(list);
+  }
+
+  categoryButtons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      categoryButtons.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      activeCategory = btn.dataset.category;
+      applyFilters();
+    });
+  });
+
+  searchInput.addEventListener('input', () => {
+    searchClearBtn.classList.toggle('visible', searchInput.value.length > 0);
+    applyFilters();
+  });
+
+  searchClearBtn.addEventListener('click', () => {
+    searchInput.value = '';
+    searchClearBtn.classList.remove('visible');
+    applyFilters();
+    searchInput.focus();
+  });
+
+  /* =========================================================
+     FEATURED ARTICLE CLICK
+     ========================================================= */
+  const featuredArticle = document.getElementById('featuredArticle');
+  featuredArticle.addEventListener('click', () => openArticle('fir-guide'));
+  featuredArticle.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openArticle('fir-guide'); }
+  });
+
+  /* =========================================================
+     ARTICLE MODAL
+     ========================================================= */
+  const modalOverlay = document.getElementById('modalOverlay');
+  const modalBadge = document.getElementById('modalBadge');
+  const modalTitle = document.getElementById('modalTitle');
+  const modalDate = document.getElementById('modalDate');
+  const modalReadTime = document.getElementById('modalReadTime');
+  const modalBody = document.getElementById('modalBody');
+  const relatedList = document.getElementById('relatedList');
+  const modalCloseBtn = document.getElementById('modalCloseBtn');
+  const backToBlogBtn = document.getElementById('backToBlogBtn');
+  let lastFocusedElement = null;
+
+  function renderBody(article) {
+    modalBody.innerHTML = '';
+    article.body.forEach(block => {
+      if (block.type === 'p') {
+        const p = document.createElement('p');
+        p.textContent = block.text;
+        modalBody.appendChild(p);
+      } else if (block.type === 'h3') {
+        const h = document.createElement('h3');
+        h.textContent = block.text;
+        modalBody.appendChild(h);
+      } else if (block.type === 'ul') {
+        const ul = document.createElement('ul');
+        block.items.forEach(item => {
+          const li = document.createElement('li');
+          li.textContent = item;
+          ul.appendChild(li);
+        });
+        modalBody.appendChild(ul);
+      } else if (block.type === 'legal-note') {
+        const note = document.createElement('div');
+        note.className = 'legal-note';
+        note.textContent = block.text;
+        modalBody.appendChild(note);
+      }
+    });
+
+    if (article.takeaways && article.takeaways.length) {
+      const box = document.createElement('div');
+      box.className = 'takeaways-box';
+      const h = document.createElement('h3');
+      h.textContent = 'Key Takeaways';
+      box.appendChild(h);
+      const ul = document.createElement('ul');
+      article.takeaways.forEach(t => {
+        const li = document.createElement('li');
+        li.textContent = t;
+        ul.appendChild(li);
+      });
+      box.appendChild(ul);
+      modalBody.appendChild(box);
+    }
+  }
+
+  function renderRelated(article) {
+    relatedList.innerHTML = '';
+    const related = articles.filter(a => a.id !== article.id && a.category === article.category).slice(0, 3);
+    const fallback = related.length ? related : articles.filter(a => a.id !== article.id).slice(0, 3);
+
+    fallback.forEach(r => {
+      const item = document.createElement('div');
+      item.className = 'related-item';
+      item.tabIndex = 0;
+      item.setAttribute('role', 'button');
+      item.innerHTML = `<span class="title">${r.title}</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>`;
+      item.addEventListener('click', () => openArticle(r.id));
+      item.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openArticle(r.id); }
+      });
+      relatedList.appendChild(item);
+    });
+  }
+
+  function openArticle(id) {
+    const article = articles.find(a => a.id === id);
+    if (!article) return;
+
+    lastFocusedElement = document.activeElement;
+
+    modalBadge.textContent = article.categoryLabel.toUpperCase();
+    modalTitle.textContent = article.title;
+    modalDate.textContent = article.date;
+    modalReadTime.textContent = article.readTime;
+    renderBody(article);
+    renderRelated(article);
+
+    modalOverlay.classList.add('active');
+    document.body.style.overflow = 'hidden';
+    modalOverlay.scrollTop = 0;
+    modalCloseBtn.focus();
+  }
+
+  function closeModal() {
+    modalOverlay.classList.remove('active');
+    document.body.style.overflow = '';
+    if (lastFocusedElement) lastFocusedElement.focus();
+  }
+
+  modalCloseBtn.addEventListener('click', closeModal);
+  backToBlogBtn.addEventListener('click', closeModal);
+
+  modalOverlay.addEventListener('click', (e) => {
+    if (e.target === modalOverlay) closeModal();
+  });
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && modalOverlay.classList.contains('active')) {
+      closeModal();
+    }
+  });
+
+  /* =========================================================
+     SCROLL REVEAL
+     ========================================================= */
+  const revealEls = document.querySelectorAll('.reveal');
+  if ('IntersectionObserver' in window && !prefersReducedMotion) {
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('in-view');
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.12 });
+
+    revealEls.forEach(el => observer.observe(el));
+  } else {
+    revealEls.forEach(el => el.classList.add('in-view'));
+  }
+})();
+</script>
+
+</body>
+</html>

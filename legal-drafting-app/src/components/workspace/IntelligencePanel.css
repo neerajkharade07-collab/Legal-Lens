@@ -1,0 +1,96 @@
+.intel {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
+}
+
+.intel__head {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-4) var(--space-4) var(--space-2);
+}
+.intel__title {
+  font-size: var(--text-md);
+}
+.intel__head .badge {
+  height: 20px;
+  font-size: 10px;
+}
+.intel__collapse {
+  margin-left: auto;
+}
+
+.intel__tabs.tabs {
+  /* 7 tools in a two-row grid so every tool stays visible beside the A4 page */
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 2px;
+  margin: 0 var(--space-3);
+  padding: 2px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-bg-subtle);
+  overflow: visible;
+}
+.intel__tabs .tabs__tab {
+  justify-content: center;
+  height: 30px;
+  padding: 0 4px;
+  border-radius: var(--radius-sm);
+  font-size: var(--text-xs);
+}
+.intel__tabs .tabs__tab:hover {
+  background: var(--color-bg);
+}
+.intel__tabs .tabs__tab.is-active {
+  background: var(--color-black);
+  color: var(--color-white);
+}
+.intel__tabs .tabs__tab.is-active::after {
+  display: none;
+}
+.intel__tabs .tabs__tab:focus-visible {
+  box-shadow: 0 0 0 2px var(--color-black);
+}
+.intel__tabs .tabs__tab.is-active:focus-visible {
+  box-shadow:
+    0 0 0 2px var(--color-bg),
+    0 0 0 4px var(--color-black);
+}
+
+.intel__body {
+  margin-top: var(--space-2);
+  border-top: 1px solid var(--color-border);
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: var(--space-4) var(--space-4) var(--space-10);
+}
+
+/* Collapsed rail */
+.intel-rail {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-1);
+  padding: var(--space-3) 0;
+}
+.intel-rail__btn {
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-md);
+  color: var(--color-text-secondary);
+}
+.intel-rail__btn:hover {
+  background: var(--color-bg-muted);
+  color: var(--color-text);
+}
+.intel-rail__btn.is-active {
+  color: var(--color-text);
+  background: var(--color-bg-muted);
+}

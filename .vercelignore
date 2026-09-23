@@ -1,0 +1,4 @@
+node_modules
+legal-drafting-app/node_modules
+legal-drafting-app/dist
+.env

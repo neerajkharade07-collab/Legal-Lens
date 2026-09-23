@@ -1,0 +1,111 @@
+/* ==========================================================================
+   Print — A4. All application chrome is removed; only the document prints.
+   Two cases:
+     1. The court-ready preview is open  → print its A4 pages (body.has-court-preview)
+     2. Printing from the workspace      → print the editor page only
+   ========================================================================== */
+@media print {
+  @page {
+    size: A4;
+    margin: 0;
+  }
+
+  html,
+  body {
+    background: #fff !important;
+  }
+
+  .navbar,
+  .footer,
+  .mobile-nav-layer,
+  .toast-viewport,
+  .ws-header,
+  .ws-mobile-nav,
+  .ws-side,
+  .ws-scrim,
+  .ws-preview-bar,
+  .editor-toolbar,
+  .selection-actions,
+  .ws-canvas__notes,
+  .skip-link,
+  .modal-root {
+    display: none !important;
+  }
+
+  /* ---------- 1. Court-ready preview ---------- */
+  body.has-court-preview > #root {
+    display: none !important;
+  }
+  body.has-court-preview .court-preview {
+    position: static;
+    display: block;
+    background: #fff;
+  }
+  .court-preview__bar,
+  .court-preview__options,
+  .court-preview__notice,
+  .cr-measure {
+    display: none !important;
+  }
+  .court-preview__layout {
+    display: block;
+  }
+  .court-preview__scroll {
+    overflow: visible;
+    padding: 0;
+  }
+  .court-preview__pages {
+    display: block;
+  }
+  .cr-page-frame {
+    width: auto;
+    height: auto;
+  }
+  .cr-page {
+    width: 210mm;
+    height: 297mm;
+    box-shadow: none !important;
+    transform: none !important;
+    break-after: page;
+    page-break-after: always;
+    break-inside: avoid;
+  }
+  .cr-page:last-child {
+    break-after: auto;
+    page-break-after: auto;
+  }
+
+  /* ---------- 2. Straight from the workspace ---------- */
+  body:not(.has-court-preview) .ws,
+  body:not(.has-court-preview) .ws__body,
+  body:not(.has-court-preview) .ws-center,
+  body:not(.has-court-preview) .ws-canvas {
+    display: block !important;
+    overflow: visible !important;
+    height: auto !important;
+    max-height: none !important;
+    padding: 0 !important;
+    background: #fff !important;
+  }
+  body:not(.has-court-preview) .a4-page {
+    width: 210mm;
+    max-width: none;
+    min-height: 0;
+    margin: 0;
+    padding: 20mm 25mm;
+    border: 0;
+    box-shadow: none;
+  }
+  body:not(.has-court-preview) .ws-canvas__disclaimer {
+    margin-top: 12mm;
+    color: #444;
+    font-size: 8pt;
+  }
+  body:not(.has-court-preview) .field-token {
+    border-bottom-color: #111;
+  }
+
+  a[href]::after {
+    content: '';
+  }
+}

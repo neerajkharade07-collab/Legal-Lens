@@ -1,0 +1,98 @@
+.type-picker {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  min-width: 0;
+}
+
+.type-picker__grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: var(--space-2);
+}
+
+.type-picker__option {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding: var(--space-3);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-bg);
+  cursor: pointer;
+  transition:
+    border-color var(--duration-fast) var(--ease-out),
+    background-color var(--duration-fast) var(--ease-out);
+}
+.type-picker__option:hover {
+  border-color: var(--color-border-strong);
+  background: var(--color-bg-subtle);
+}
+.type-picker__option.is-selected {
+  border-color: var(--color-black);
+  background: var(--color-bg);
+  box-shadow: inset 0 0 0 1px var(--color-black);
+}
+.type-picker__option:has(input:focus-visible) {
+  box-shadow: var(--focus-ring);
+}
+.type-picker.is-invalid .type-picker__option {
+  border-color: var(--color-danger);
+}
+
+.type-picker__icon {
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-md);
+  background: var(--color-bg-muted);
+}
+.type-picker__option.is-selected .type-picker__icon {
+  background: var(--color-black);
+  color: var(--color-white);
+}
+
+.type-picker__text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+.type-picker__name {
+  font-weight: var(--weight-semibold);
+  font-size: var(--text-sm);
+  line-height: 1.3;
+}
+.type-picker__category {
+  color: var(--color-text-muted);
+  font-size: var(--text-xs);
+}
+
+.type-picker__check {
+  position: absolute;
+  top: var(--space-3);
+  right: var(--space-3);
+  display: grid;
+  place-items: center;
+  width: 18px;
+  height: 18px;
+  border: 1px solid var(--color-border-strong);
+  border-radius: 50%;
+}
+.type-picker__option.is-selected .type-picker__check {
+  border-color: var(--color-black);
+  background: var(--color-black);
+  color: var(--color-white);
+}
+
+@media (max-width: 760px) {
+  .type-picker__grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .type-picker__option {
+    flex-direction: row;
+    align-items: center;
+    padding-right: var(--space-8);
+  }
+}

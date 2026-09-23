@@ -1,0 +1,25 @@
+.doc-types {
+  padding-top: var(--space-16);
+}
+
+.doc-types__grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: var(--space-5);
+}
+
+@media (max-width: 1180px) {
+  .doc-types__grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 640px) {
+  .doc-types {
+    padding-top: var(--space-10);
+  }
+  .doc-types__grid {
+    grid-template-columns: 1fr;
+    gap: var(--space-4);
+  }
+}
