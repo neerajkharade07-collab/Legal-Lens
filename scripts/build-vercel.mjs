@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Builds the complete Legal Lens site for Vercel (Build Output API v3):
  *
  *   /                    main Legal Lens website (static HTML/CSS/JS, unchanged)
@@ -58,7 +58,7 @@ function run(command, args, cwd) {
 }
 
 // ---- 1. backend origin (for the /api proxy) ----
-const apiOrigin = (process.env.LEGAL_LENS_API_ORIGIN || '')
+const apiOrigin = (process.env.VERCEL_ENV === 'preview' ? 'https://legal-lens-backend-staging.onrender.com' : (process.env.LEGAL_LENS_API_ORIGIN || ''))
   .trim()
   .replace(/\/+$/, '')
   .replace(/\/api$/, '');
@@ -70,12 +70,12 @@ if (apiOrigin && !/^https?:\/\/[^/]+$/.test(apiOrigin)) {
 if (!apiOrigin) {
   if (process.env.VERCEL) {
     console.error(
-      '[build] LEGAL_LENS_API_ORIGIN is not set. Add it in Vercel → Project → Settings → Environment Variables\n' +
+      '[build] LEGAL_LENS_API_ORIGIN is not set. Add it in Vercel â†’ Project â†’ Settings â†’ Environment Variables\n' +
         '        (the public URL of your Legal Lens backend, e.g. https://legal-lens-api.onrender.com).',
     );
     process.exit(1);
   }
-  log('LEGAL_LENS_API_ORIGIN not set — /api will not be proxied by this build (fine for `npm start`, which proxies itself).');
+  log('LEGAL_LENS_API_ORIGIN not set â€” /api will not be proxied by this build (fine for `npm start`, which proxies itself).');
 }
 
 // ---- 2. build the Legal Drafting Assistant V2 ----
@@ -87,7 +87,7 @@ if (!skipAppBuild) {
 }
 const appDist = path.join(APP, 'dist');
 if (!fs.existsSync(path.join(appDist, 'index.html'))) {
-  console.error('[build] legal-drafting-app/dist/index.html is missing — the app build did not run.');
+  console.error('[build] legal-drafting-app/dist/index.html is missing â€” the app build did not run.');
   process.exit(1);
 }
 
@@ -121,9 +121,10 @@ const routes = [
   { src: `^/${APP_BASE}$`, status: 308, headers: { Location: `/${APP_BASE}/` } },
   { src: '^/$', dest: '/index.html' },
   { handle: 'filesystem' },
-  // Client-side routes of the drafting app (/legal-drafting/documents, /legal-drafting/draft/:id, …)
+  // Client-side routes of the drafting app (/legal-drafting/documents, /legal-drafting/draft/:id, â€¦)
   { src: `^/${APP_BASE}/(.*)$`, dest: `/${APP_BASE}/index.html` },
 ];
 
 fs.writeFileSync(path.join(OUT, 'config.json'), JSON.stringify({ version: 3, routes }, null, 2));
-log(`done → .vercel/output (API proxy: ${apiOrigin ? `${apiOrigin}/api` : 'none'})`);
+log(`done â†’ .vercel/output (API proxy: ${apiOrigin ? `${apiOrigin}/api` : 'none'})`);
+
