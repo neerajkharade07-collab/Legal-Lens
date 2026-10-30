@@ -2,7 +2,7 @@ import { PanelRightClose } from 'lucide-react';
 import { INTELLIGENCE_TOOLS } from '../../data/intelligenceTools';
 import { TOOL_ICONS } from './toolIcons';
 import { Tabs } from '../common/Tabs';
-import { DemoBadge } from '../common/Badge';
+import { Badge, DemoBadge } from '../common/Badge';
 import { OverviewTool } from '../intelligence/OverviewTool';
 import { HealthTool } from '../intelligence/HealthTool';
 import { ClausesTool } from '../intelligence/ClausesTool';
@@ -11,6 +11,7 @@ import { CitationsTool } from '../intelligence/CitationsTool';
 import { ResearchTool } from '../intelligence/ResearchTool';
 import { AssistantTool } from '../intelligence/AssistantTool';
 import { cn } from '../../utils/cn';
+import { intelPanelBadge } from '../../utils/intelLabels';
 import './IntelligencePanel.css';
 
 /**
@@ -27,12 +28,20 @@ export function IntelligencePanel({
 }) {
   const tool = INTELLIGENCE_TOOLS.find((t) => t.id === activeTool) ?? INTELLIGENCE_TOOLS[0];
   const props = { intel, nav, documentTypeName, onOpenTool: onToolChange };
+  // "Demo" for simulated tools; an AI label only on the real (signed-in) AI assistant.
+  const badge = intelPanelBadge(tool.id, intel?.assistantActions);
 
   return (
     <div className="intel">
       <div className="intel__head">
         <h2 className="intel__title">Legal assistant</h2>
-        <DemoBadge>Demo</DemoBadge>
+        {badge.demo ? (
+          <DemoBadge title={badge.title}>{badge.text}</DemoBadge>
+        ) : (
+          <Badge tone="outline" title={badge.title}>
+            {badge.text}
+          </Badge>
+        )}
         {onCollapse && (
           <button
             type="button"

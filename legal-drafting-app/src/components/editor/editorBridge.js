@@ -92,6 +92,17 @@ export function createEditorBridge(editor) {
       return true;
     },
 
+    /**
+     * First match of `text` inside one paragraph → { from, to, text } with the text exactly as it
+     * is in the editor (for replaceRange's "unchanged" check), or null. Does not move the cursor.
+     */
+    findTextRange(text) {
+      if (!alive()) return null;
+      const hit = findText(editor.state.doc, text);
+      if (!hit) return null;
+      return { ...hit, text: editor.state.doc.textBetween(hit.from, hit.to, '\n') };
+    },
+
     /** Select and scroll to the first token bound to `key`. */
     locateToken(key) {
       if (!alive()) return false;

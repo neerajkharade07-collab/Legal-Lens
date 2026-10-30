@@ -11,7 +11,7 @@ import { DescriptionDetail } from './DescriptionDetail';
 import { LanguagePicker } from './LanguagePicker';
 import { FrameworkOption } from './FrameworkOption';
 import './DraftSetupModal.css';
-import { DRAFTING_GUEST_MODE } from '../../services/config';
+import { useAuth } from '../../hooks/useAuth';
 
 const MAX_LENGTH = 5000;
 const GENERIC_PLACEHOLDER =
@@ -28,6 +28,9 @@ export function DraftSetupModal({ initialTypeId, onClose, onSubmit }) {
   const [description, setDescription] = useState('');
   const [language, setLanguage] = useState(DEFAULT_LANGUAGE);
   const [useBnsFramework, setUseBnsFramework] = useState(true);
+  const { status: authStatus } = useAuth();
+  // AI drafting runs on the CASEONE server for signed-in customers and lawyers only.
+  const aiAvailable = authStatus === 'authenticated';
   const [useAi, setUseAi] = useState(false);
   const [status, setStatus] = useState('idle'); // idle | submitting | error
   const [submitError, setSubmitError] = useState(null);
@@ -108,7 +111,7 @@ export function DraftSetupModal({ initialTypeId, onClose, onSubmit }) {
         description,
         language,
         useBnsFramework: isFir ? useBnsFramework : null,
-        useAi,
+        useAi: useAi && aiAvailable,
         descriptionDetail: {
           score: analysis.score,
           level: analysis.level.id,
@@ -207,23 +210,27 @@ export function DraftSetupModal({ initialTypeId, onClose, onSubmit }) {
           <DescriptionDetail analysis={analysis} id="draft-detail" />
 
           <div className={isFir ? 'setup__options setup__options--split' : 'setup__options'}>
-            <LanguagePicker value={language} onChange={setLanguage} />
+            <LanguagePicker
+              value={language}
+              onChange={setLanguage}
+              aiDrafting={useAi && aiAvailable}
+            />
             {isFir && <FrameworkOption checked={useBnsFramework} onChange={setUseBnsFramework} />}
           </div>
 
           <label className="setup__ai">
             <input
               type="checkbox"
-              checked={useAi}
-              disabled={DRAFTING_GUEST_MODE}
+              checked={useAi && aiAvailable}
+              disabled={!aiAvailable}
               onChange={(e) => setUseAi(e.target.checked)}
             />
             <span>
               <strong>Write the full draft with AI</strong>
               <span className="setup__ai-hint">
-                {DRAFTING_GUEST_MODE
-                  ? 'Not connected in Demo Mode (AI drafting needs a signed-in Legal Lens server session). This demo creates the structured template with live case-detail fields.'
-                  : 'Uses the Legal Lens server (OpenAI). Missing facts are left as [DETAIL REQUIRED]; the AI must not invent sections, citations or deadlines. Leave unticked for the structured template with live case-detail fields.'}
+                {aiAvailable
+                  ? 'Written on the CASEONE server with Google Gemini and saved to your account. Missing facts are left as [DETAIL REQUIRED]; drafts that add laws, sections, links or numbers you did not give are rejected, never saved. Leave unticked for the structured template with live case-detail fields.'
+                  : 'Off in Demo Mode — AI drafting needs a signed-in CASEONE customer or lawyer account. Demo Mode creates the structured template with live case-detail fields.'}
               </span>
             </span>
           </label>
@@ -233,7 +240,7 @@ export function DraftSetupModal({ initialTypeId, onClose, onSubmit }) {
               <TriangleAlert size={16} strokeWidth={1.75} aria-hidden="true" />
               <span>
                 {submitError}
-                {useAi
+                {useAi && aiAvailable
                   ? ' You can untick “Write the full draft with AI” to create a template draft instead.'
                   : ' Please try again.'}
               </span>
@@ -266,9 +273,11 @@ export function DraftSetupModal({ initialTypeId, onClose, onSubmit }) {
           <>
             <p className="setup__privacy">
               <Lock size={13} strokeWidth={1.75} aria-hidden="true" />
-              {DRAFTING_GUEST_MODE
-                ? 'Demo Mode: drafts are saved only in this browser.'
-                : 'Drafts are saved to your Legal Lens account.'}
+              {aiAvailable
+                ? 'Drafts are saved to your CASEONE account.'
+                : authStatus === 'anonymous'
+                  ? 'Demo Mode: drafts are saved only in this browser.'
+                  : 'Your CASEONE session is not ready, so this draft cannot be saved yet. Log in again (top right) first.'}
             </p>
             <div className="setup__actions">
               <Button variant="secondary" onClick={requestClose} disabled={submitting}>
@@ -283,7 +292,7 @@ export function DraftSetupModal({ initialTypeId, onClose, onSubmit }) {
               >
                 {submitting && <span className="setup__spinner" aria-hidden="true" />}
                 {submitting
-                  ? useAi
+                  ? useAi && aiAvailable
                     ? 'Writing with AI…'
                     : 'Creating…'
                   : 'Generate Preliminary Draft'}

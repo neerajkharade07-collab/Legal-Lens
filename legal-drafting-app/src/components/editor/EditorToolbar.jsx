@@ -13,9 +13,14 @@ import {
   AlignJustify,
   Undo2,
   Redo2,
+  Heading3,
+  IndentIncrease,
+  IndentDecrease,
+  SeparatorHorizontal,
 } from 'lucide-react';
 import { FONT_FAMILIES, FONT_SIZES, LINE_SPACINGS } from '../../data/editorOptions';
 import { cn } from '../../utils/cn';
+import { LEGAL_BLOCKS, legalBlockContent } from '../../data/legalBlocks';
 import './EditorToolbar.css';
 
 const isMac = typeof navigator !== 'undefined' && /Mac|iPhone|iPad/.test(navigator.platform);
@@ -53,11 +58,15 @@ export function EditorToolbar({ editor, lineHeight, onLineHeightChange, disabled
         underline: e.isActive('underline'),
         h1: e.isActive('heading', { level: 1 }),
         h2: e.isActive('heading', { level: 2 }),
+        h3: e.isActive('heading', { level: 3 }),
         bullet: e.isActive('bulletList'),
         ordered: e.isActive('orderedList'),
         align: ['center', 'right', 'justify'].find((a) => e.isActive({ textAlign: a })) ?? 'left',
         fontFamily: style.fontFamily ?? null,
         fontSize: style.fontSize ?? null,
+        pageBreak: e.isActive({ pageBreakBefore: true }),
+        canIndent: e.can().sinkListItem('listItem'),
+        canOutdent: e.can().liftListItem('listItem'),
         canUndo: e.can().undo(),
         canRedo: e.can().redo(),
       };
@@ -188,6 +197,13 @@ export function EditorToolbar({ editor, lineHeight, onLineHeightChange, disabled
           disabled={disabled}
           onClick={() => chain().toggleHeading({ level: 2 }).run()}
         />
+        <ToolbarButton
+          icon={Heading3}
+          label="Heading 3"
+          active={state.h3}
+          disabled={disabled}
+          onClick={() => chain().toggleHeading({ level: 3 }).run()}
+        />
       </div>
       <Divider />
       <div className="tb-group">
@@ -204,6 +220,20 @@ export function EditorToolbar({ editor, lineHeight, onLineHeightChange, disabled
           active={state.ordered}
           disabled={disabled}
           onClick={() => chain().toggleOrderedList().run()}
+        />
+        <ToolbarButton
+          icon={IndentIncrease}
+          label="Indent (sub-clause)"
+          shortcut="Tab"
+          disabled={disabled || !state.canIndent}
+          onClick={() => chain().sinkListItem('listItem').run()}
+        />
+        <ToolbarButton
+          icon={IndentDecrease}
+          label="Outdent"
+          shortcut="Shift+Tab"
+          disabled={disabled || !state.canOutdent}
+          onClick={() => chain().liftListItem('listItem').run()}
         />
       </div>
       <Divider />
@@ -236,6 +266,36 @@ export function EditorToolbar({ editor, lineHeight, onLineHeightChange, disabled
           disabled={disabled}
           onClick={() => chain().setTextAlign('justify').run()}
         />
+      </div>
+      <Divider />
+      <div className="tb-group">
+        <ToolbarButton
+          icon={SeparatorHorizontal}
+          label="Page break"
+          shortcut={`${mod}+Enter`}
+          active={state.pageBreak}
+          disabled={disabled}
+          onClick={() => chain().togglePageBreak().run()}
+        />
+        <label className="tb-select tb-select--insert" title="Insert a section with placeholders to fill in">
+          <span className="visually-hidden">Insert section</span>
+          <select
+            value=""
+            disabled={disabled}
+            onChange={(event) => {
+              const nodes = legalBlockContent(event.target.value);
+              event.target.value = '';
+              if (nodes) chain().insertContent(nodes).run();
+            }}
+          >
+            <option value="">Insert…</option>
+            {LEGAL_BLOCKS.map((b) => (
+              <option key={b.id} value={b.id} title={b.description}>
+                {b.label}
+              </option>
+            ))}
+          </select>
+        </label>
       </div>
     </div>
   );

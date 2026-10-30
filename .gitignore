@@ -7,3 +7,14 @@ legal-drafting-app/dist/
 .DS_Store
 
 .vercel
+
+# CASEONE local backups
+.caseone-backup/
+legal-drafting.before-*/
+legal-drafting-backup-*/
+*.bak
+*.lint-backup
+# Temporary archives
+*.zip
+# Local diagnostic files
+*.log

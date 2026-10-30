@@ -3,6 +3,7 @@ import { Badge } from '../common/Badge';
 import { Button } from '../common/Button';
 import { StatusMark, ToolHeader, ToolLoading, ToolError, DemoNotice } from './IntelShared';
 import './ComplianceTool.css';
+import { AiCompliance } from './AiReview';
 
 function ItemAction({ item, nav }) {
   const loc = item.location;
@@ -25,7 +26,7 @@ function ItemAction({ item, nav }) {
   );
 }
 
-export function ComplianceTool({ intel, nav }) {
+function DemoComplianceTool({ intel, nav }) {
   const state = intel.results.compliance;
   const { run } = intel;
 
@@ -112,4 +113,12 @@ export function ComplianceTool({ intel, nav }) {
       )}
     </div>
   );
+}
+
+/**
+ * Signed-in account document: the real review (Phase 3, CASEONE server).
+ * Otherwise (Demo Mode, document review page): the existing demo tool, unchanged.
+ */
+export function ComplianceTool(props) {
+  return props.intel?.aiReview ? <AiCompliance {...props} /> : <DemoComplianceTool {...props} />;
 }

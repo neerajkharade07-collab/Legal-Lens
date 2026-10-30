@@ -19,7 +19,7 @@ import { DocumentPreviewModal } from '../components/documents/DocumentPreviewMod
 import { LocalImportBanner } from '../components/documents/LocalImportBanner';
 import '../components/documents/Documents.css';
 import './MyDocuments.css';
-import { SAVE_LOCATION } from '../services/config';
+import { saveLocation } from '../services/config';
 
 const STATUS_TABS = ['all', 'draft', 'needs-review', 'reviewed', 'completed'];
 const TYPE_OPTIONS = [
@@ -229,7 +229,7 @@ export default function MyDocuments() {
         aria-labelledby={`mydocs-tab-${statusTab}`}
         className="mydocs__panel"
       >
-        {loadStatus === 'loading' && (
+        {(loadStatus === 'loading' || loadStatus === 'idle') && (
           <div className="mydocs__loading" aria-busy="true" aria-label="Loading documents">
             {[0, 1, 2, 3].map((n) => (
               <Skeleton key={n} height={56} />
@@ -254,7 +254,7 @@ export default function MyDocuments() {
           <EmptyState
             icon={FolderOpen}
             title="No documents yet"
-            description={`Create a draft or start from a template. Documents are saved ${SAVE_LOCATION}.`}
+            description={`Create a draft or start from a template. Documents are saved ${saveLocation()}.`}
             action={
               <div className="mydocs__empty-actions">
                 <Button icon={FilePlus2} onClick={() => openDraftSetup()}>

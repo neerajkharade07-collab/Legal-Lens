@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Lawyer Connect — Legal Lens</title>
-<meta name="description" content="Find the right legal professional for your needs, or join Legal Lens as a lawyer." />
+<title>Lawyer Connect — CASEONE</title>
+<meta name="description" content="Find a paid lawyer or apply for free legal assistance on CASEONE." />
 
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -14,7 +14,7 @@
 </head>
 <style>
   /* ============================================================
-   LEGAL LENS — LAWYER CONNECT
+   CASEONE — LAWYER CONNECT
    Strict black & white theme. Poppins. CSS variables throughout.
    ============================================================ */
 
@@ -677,6 +677,21 @@ button{ font-family: inherit; cursor: pointer; }
 
   .lc-timeline-line-fill{ width: 100% !important; }
 }
+/* ---------- Lawyer Connect v2 additions ---------- */
+a.lc-card-btn{ display:inline-flex; white-space:nowrap; font-size:14px; font-weight:600; line-height:1.2; }
+.lc-card-btn .lc-arrow{ width:18px; height:18px; flex-shrink:0; }
+.lc-card-points{ margin: 18px 0 0; padding: 0; display: grid; gap: 8px; }
+.lc-card-points li{ position: relative; padding-left: 20px; font-size: 13.5px; color: var(--gray-600); line-height: 1.5; }
+.lc-card-points li::before{ content:""; position:absolute; left:0; top:8px; width:10px; height:1px; background: currentColor; }
+.lc-card--register .lc-card-points li{ color: rgba(255,255,255,0.72); }
+.lc-requests-line{ max-width:1160px; margin: 22px auto 0; padding: 0 32px; font-size: 14px; color: var(--gray-600); }
+.lc-requests-line a{ color: var(--black); font-weight: 600; border-bottom: 1px solid var(--black); }
+.lc-official{ padding: 0 0 88px; }
+.lc-official-box{ border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 32px; background: var(--gray-50); }
+.lc-official-box h2{ margin: 0 0 10px; font-size: 20px; }
+.lc-official-box p{ margin: 0 0 10px; font-size: 14.5px; line-height: 1.7; color: var(--gray-700); }
+.lc-official-links a{ color: var(--black); font-weight: 600; border-bottom: 1px solid var(--black); }
+@media (max-width: 640px){ .lc-official-box{ padding: 24px 20px; } .lc-requests-line{ padding: 0 20px; } .lc-official{ padding-bottom: 56px; } }
 </style>
 <body>
 
@@ -685,13 +700,14 @@ button{ font-family: inherit; cursor: pointer; }
      ============================================================ -->
 <header class="lc-header" id="lcHeader">
   <div class="lc-header-inner">
-    <a href="index.html" class="lc-brand">Legal Lens</a>
+    <a href="index.html" class="lc-brand">CASEONE</a>
 
     <nav class="lc-nav" aria-label="Lawyer Connect navigation">
       <a href="index.html" class="lc-nav-link">Home</a>
       <a href="about.html" class="lc-nav-link">About</a>
       <a href="contact.html" class="lc-nav-link">Contact</a>
-      <a href="index.html" class="lc-nav-link lc-nav-back">Back to Legal Lens</a>
+      <a href="my-requests.html" class="lc-nav-link">My Requests</a>
+      <a href="lawyer-portal.html" class="lc-nav-link lc-nav-back">For Lawyers</a>
     </nav>
 
     <button class="lc-menu-btn" id="lcMenuBtn" aria-label="Open menu" aria-expanded="false" aria-controls="lcMobileNav">
@@ -703,160 +719,129 @@ button{ font-family: inherit; cursor: pointer; }
     <a href="index.html">Home</a>
     <a href="about.html">About</a>
     <a href="contact.html">Contact</a>
-    <a href="index.html" class="lc-nav-back">Back to Legal Lens</a>
+    <a href="my-requests.html">My Requests</a>
+    <a href="lawyer-portal.html" class="lc-nav-back">For Lawyers</a>
   </nav>
 </header>
 
 <main>
-
-  <!-- ============================================================
-       HERO
-       ============================================================ -->
   <section class="lc-hero reveal" data-reveal>
     <div class="lc-hero-inner">
-      <p class="lc-eyebrow">LEGAL LENS</p>
+      <p class="lc-eyebrow">CASEONE</p>
       <h1 class="lc-hero-heading">Lawyer Connect</h1>
-      <p class="lc-hero-sub">Connect with the right legal professional for your needs — or join Legal Lens as a lawyer.</p>
+      <p class="lc-hero-sub">Choose the help you need, find an advocate, and send a request. Nothing is booked until the lawyer accepts.</p>
       <div class="lc-hero-rule" aria-hidden="true"></div>
     </div>
   </section>
 
-  <!-- ============================================================
-       TWO MAIN OPTIONS
-       ============================================================ -->
-  <section class="lc-options">
+  <section class="lc-options" aria-label="Choose the help you need">
     <div class="lc-options-inner">
-
       <article class="lc-card lc-card--find reveal" data-reveal>
         <div class="lc-card-top">
           <span class="lc-card-index">01 / 02</span>
-          <span class="lc-card-label">NEED LEGAL HELP?</span>
+          <span class="lc-card-label">PAID CONSULTATION</span>
         </div>
-        <h2 class="lc-card-title">Find a Lawyer</h2>
-        <p class="lc-card-desc">Find legal professionals based on your legal issue, location, language, experience and consultation preferences.</p>
-        <button type="button" class="lc-card-btn" id="findLawyerBtn">
-          <span>Find a Lawyer</span>
-          <svg class="lc-arrow" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-            <path d="M4 10H16M16 10L11 5M16 10L11 15" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
-        </button>
+        <h2 class="lc-card-title">Find a Paid Lawyer</h2>
+        <p class="lc-card-desc">Search advocates registered on CASEONE by name, city, specialization, language, experience and fee. Fees are shown before you send a request.</p>
+        <ul class="lc-card-points">
+          <li>Review status shown on every profile</li>
+          <li>Consultation fee shown upfront</li>
+          <li>Track the lawyer's response in My Requests</li>
+        </ul>
+        <a href="find-a-lawyer.html" class="lc-card-btn" id="findLawyerBtn">
+          <span>Find a Paid Lawyer</span>
+          <svg class="lc-arrow" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M4 10H16M16 10L11 5M16 10L11 15" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </a>
       </article>
 
       <article class="lc-card lc-card--register reveal" data-reveal>
         <div class="lc-card-top">
           <span class="lc-card-index">02 / 02</span>
-          <span class="lc-card-label">ARE YOU A LAWYER?</span>
+          <span class="lc-card-label">FREE · ₹0</span>
         </div>
-        <h2 class="lc-card-title">Register as a Lawyer</h2>
-        <p class="lc-card-desc">Join the Legal Lens network, create your professional profile and connect with people looking for legal assistance.</p>
-        <button type="button" class="lc-card-btn" id="registerLawyerBtn">
-          <span>Register as Lawyer</span>
-          <svg class="lc-arrow" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-            <path d="M4 10H16M16 10L11 5M16 10L11 15" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
-        </button>
+        <h2 class="lc-card-title">Find Free Legal Assistance</h2>
+        <p class="lc-card-desc">If you cannot afford a lawyer, apply to the CASEONE volunteer program. Our team reviews your application; once approved you can request help from advocates offering free consultations.</p>
+        <ul class="lc-card-points">
+          <li>Short guided application (about 5 minutes)</li>
+          <li>Documents stored privately, seen only by reviewers</li>
+          <li>Free consultations are always ₹0</li>
+        </ul>
+        <a href="free-legal-assistance.html" class="lc-card-btn" id="freeAidBtn">
+          <span>Apply for Free Assistance</span>
+          <svg class="lc-arrow" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M4 10H16M16 10L11 5M16 10L11 15" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </a>
       </article>
-
     </div>
+    <p class="lc-requests-line" id="lcRequestsLine" hidden>You are signed in. <a href="my-requests.html">View your requests and their status →</a></p>
   </section>
 
-  <!-- ============================================================
-       HOW LAWYER CONNECT WORKS
-       ============================================================ -->
   <section class="lc-timeline-section reveal" data-reveal>
     <div class="lc-section-inner">
-      <h2 class="lc-section-heading">How Lawyer Connect Works</h2>
-
+      <h2 class="lc-section-heading">How it works</h2>
       <div class="lc-timeline" id="lcTimeline">
         <div class="lc-timeline-line" aria-hidden="true"><span class="lc-timeline-line-fill"></span></div>
-
         <div class="lc-step reveal" data-reveal>
           <span class="lc-step-num">01</span>
-          <h3 class="lc-step-title">Find</h3>
-          <p class="lc-step-desc">Search for lawyers based on your requirements.</p>
+          <h3 class="lc-step-title">Choose</h3>
+          <p class="lc-step-desc">Paid consultation, or free assistance if you are eligible.</p>
         </div>
-
         <div class="lc-step reveal" data-reveal>
           <span class="lc-step-num">02</span>
-          <h3 class="lc-step-title">Review</h3>
-          <p class="lc-step-desc">Explore lawyer profiles, expertise and professional information.</p>
+          <h3 class="lc-step-title">Find</h3>
+          <p class="lc-step-desc">Compare advocates by specialization, city, language and fee, and see whether CASEONE has reviewed each profile.</p>
         </div>
-
         <div class="lc-step reveal" data-reveal>
           <span class="lc-step-num">03</span>
-          <h3 class="lc-step-title">Connect</h3>
-          <p class="lc-step-desc">Send a consultation request to the lawyer.</p>
+          <h3 class="lc-step-title">Request</h3>
+          <p class="lc-step-desc">Send a short request. It stays “Pending” until the lawyer responds.</p>
         </div>
-
         <div class="lc-step reveal" data-reveal>
           <span class="lc-step-num">04</span>
           <h3 class="lc-step-title">Consult</h3>
-          <p class="lc-step-desc">Once accepted, continue with the consultation.</p>
+          <p class="lc-step-desc">Once the lawyer accepts, the request shows as “Accepted” in My Requests.</p>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- ============================================================
-       TRUST / SAFETY
-       ============================================================ -->
   <section class="lc-trust-section reveal" data-reveal>
     <div class="lc-section-inner">
-      <h2 class="lc-section-heading">Designed for Transparent Discovery</h2>
-      <p class="lc-section-sub">Legal Lens is built to make finding and understanding a legal professional more transparent — before you ever reach out.</p>
-
+      <h2 class="lc-section-heading">What you can rely on</h2>
+      <p class="lc-section-sub">CASEONE lists advocates factually. There are no paid placements, rankings or star ratings.</p>
       <div class="lc-trust-grid">
         <div class="lc-trust-item reveal" data-reveal>
-          <span class="lc-trust-icon" aria-hidden="true">
-            <svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="8" r="3.4" stroke="currentColor" stroke-width="1.4"/><path d="M5 20c0-3.6 3.1-6.5 7-6.5s7 2.9 7 6.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
-          </span>
-          <h3>Professional Profiles</h3>
-          <p>View relevant professional information before connecting.</p>
+          <span class="lc-trust-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M12 3l7 3v6c0 4.5-3 7.8-7 9-4-1.2-7-4.5-7-9V6l7-3z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/><path d="M9 12l2 2 4-4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+          <h3>Review status shown</h3>
+          <p>Advocates are listed when they register. Profiles marked “Credentials reviewed by CASEONE” have had a basic check by our team (not official Bar Council verification), and only those accept requests. You can report any profile.</p>
         </div>
-
         <div class="lc-trust-item reveal" data-reveal>
-          <span class="lc-trust-icon" aria-hidden="true">
-            <svg viewBox="0 0 24 24" fill="none"><circle cx="10.5" cy="10.5" r="6.5" stroke="currentColor" stroke-width="1.4"/><path d="M19.5 19.5L15.3 15.3" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
-          </span>
-          <h3>Better Discovery</h3>
-          <p>Find lawyers using practical filters such as legal issue, location and language.</p>
+          <span class="lc-trust-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><rect x="4" y="4" width="16" height="16" rx="2" stroke="currentColor" stroke-width="1.4"/><path d="M8 12h8M8 16h5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></span>
+          <h3>Clear fees</h3>
+          <p>Paid consultation fees are listed on every profile. Free consultations are always ₹0.</p>
         </div>
-
         <div class="lc-trust-item reveal" data-reveal>
-          <span class="lc-trust-icon" aria-hidden="true">
-            <svg viewBox="0 0 24 24" fill="none"><rect x="4" y="4" width="16" height="16" rx="2" stroke="currentColor" stroke-width="1.4"/><path d="M8 12h8M8 16h5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
-          </span>
-          <h3>Transparent Connection</h3>
-          <p>Users can understand who they are connecting with before requesting consultation.</p>
+          <span class="lc-trust-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><rect x="5" y="10" width="14" height="10" rx="2" stroke="currentColor" stroke-width="1.4"/><path d="M8 10V7a4 4 0 0 1 8 0v3" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></span>
+          <h3>Private documents</h3>
+          <p>Documents you upload are stored privately and are visible only to authorised reviewers.</p>
         </div>
-
         <div class="lc-trust-item reveal" data-reveal>
-          <span class="lc-trust-icon" aria-hidden="true">
-            <svg viewBox="0 0 24 24" fill="none"><path d="M12 3l7 3v6c0 4.5-3 7.8-7 9-4-1.2-7-4.5-7-9V6l7-3z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/><path d="M9 12l2 2 4-4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          </span>
-          <h3>Verification</h3>
-          <p>Verification status is displayed clearly on lawyer profiles.</p>
+          <span class="lc-trust-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="8.5" stroke="currentColor" stroke-width="1.4"/><path d="M12 8v4l2.5 2.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></span>
+          <h3>Honest status</h3>
+          <p>A request is never shown as confirmed until the lawyer has actually accepted it.</p>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- ============================================================
-       LAWYER REGISTRATION CTA
-       ============================================================ -->
-  <section class="lc-cta reveal" data-reveal>
-    <div class="lc-cta-inner">
-      <h2>Are You a Lawyer?</h2>
-      <p>Join Legal Lens and make your professional services easier to discover.</p>
-      <button type="button" class="lc-cta-btn" id="registerLawyerBtnCta">
-        <span>Register as a Lawyer</span>
-        <svg class="lc-arrow" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-          <path d="M4 10H16M16 10L11 5M16 10L11 15" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
-      </button>
+  <section class="lc-official reveal" data-reveal aria-labelledby="lcOfficialTitle">
+    <div class="lc-section-inner">
+      <div class="lc-official-box">
+        <h2 id="lcOfficialTitle">Looking for government legal aid?</h2>
+        <p>CASEONE free assistance is a volunteer program run on this platform with independent advocates. It is <strong>not</strong> government legal aid, and CASEONE does not appoint legal-aid advocates. Free legal services under the Legal Services Authorities Act, 1987 are provided by the National Legal Services Authority (NALSA) and your State, District or Taluka Legal Services Authority.</p>
+        <p class="lc-official-links"><a href="https://nalsa.gov.in/" target="_blank" rel="noopener noreferrer">nalsa.gov.in</a> · National legal aid helpline: <strong>15100</strong></p>
+      </div>
     </div>
   </section>
-
 </main>
 
 <!-- ============================================================
@@ -865,7 +850,7 @@ button{ font-family: inherit; cursor: pointer; }
 <footer class="lc-footer">
   <div class="lc-footer-inner">
     <div class="lc-footer-col lc-footer-brand">
-      <span class="lc-footer-logo">Legal Lens</span>
+      <span class="lc-footer-logo">CASEONE</span>
     </div>
 
     <div class="lc-footer-col">
@@ -897,13 +882,15 @@ button{ font-family: inherit; cursor: pointer; }
   </div>
 
   <div class="lc-footer-bottom">
-    <p>&copy; 2026 Legal Lens. All rights reserved.</p>
+    <p>&copy; 2026 CASEONE. All rights reserved.</p>
   </div>
 </footer>
 
+<script src="config.js"></script>
+<script src="auth.js"></script>
 <script>
     /* ============================================================
-   LEGAL LENS — lawyer-connect.js
+   CASEONE — lawyer-connect.js
    ============================================================ */
 
 document.addEventListener('DOMContentLoaded', function(){
@@ -959,20 +946,13 @@ document.addEventListener('DOMContentLoaded', function(){
     }
   }
 
-  // ---------- Find a Lawyer / Register as Lawyer ----------
-  function wireButton(id, destination){
-    var btn = document.getElementById(id);
-    if(!btn) return;
-    btn.addEventListener('click', function(){
-      window.location.href = destination;
+  // ---------- Signed-in customers: show the My Requests shortcut ----------
+  if (typeof getCustomerSession === 'function') {
+    getCustomerSession().then(function(user){
+      var line = document.getElementById('lcRequestsLine');
+      if (user && line) line.hidden = false;
     });
   }
-
-  wireButton('findLawyerBtn', 'find-a-lawyer.html');
-  // Register as a Lawyer opens the Lawyer Dashboard directly (no lawyer login/signup step).
-  wireButton('registerLawyerBtn', 'lawyer-dashboard.html');
-  wireButton('registerLawyerBtnCta', 'lawyer-dashboard.html');
-
 });
 </script>
 </body>

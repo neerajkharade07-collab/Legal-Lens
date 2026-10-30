@@ -10,7 +10,7 @@ import './SignInPanel.css';
  * Sign-in for the Legal Drafting app, using the existing Legal Lens accounts
  * (customer or lawyer). Accounts are created on the main Legal Lens site.
  */
-export function SignInPanel() {
+export function SignInPanel({ embedded = false } = {}) {
   const { signIn } = useAuth();
   const [hints] = useState(getMainSiteHints);
   const [role, setRole] = useState(hints.role);
@@ -39,12 +39,15 @@ export function SignInPanel() {
   }
 
   return (
-    <div className="signin container">
+    <div className={embedded ? 'signin signin--embedded' : 'signin container'}>
       <form className="signin__card" onSubmit={handleSubmit} noValidate>
         <p className="eyebrow">Legal Drafting Assistant</p>
-        <h1 className="signin__title">Sign in to your drafts</h1>
+        <h1 id="signin-title" className="signin__title">
+          Sign in to your drafts
+        </h1>
         <p className="signin__lead">
-          Use your Legal Lens account. Your documents and version history are saved to your account.
+          Use your CASEONE customer or lawyer account. Your documents, version history and AI drafts
+          are then saved to your account.
         </p>
 
         <div className="signin__roles" role="radiogroup" aria-label="Account type">

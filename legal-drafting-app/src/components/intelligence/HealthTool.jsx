@@ -11,6 +11,7 @@ import {
 } from './IntelShared';
 import { cn } from '../../utils/cn';
 import './HealthTool.css';
+import { AiHealth } from './AiReview';
 
 const CATEGORY_LABEL = {
   completeness: 'Completeness',
@@ -65,7 +66,7 @@ function FindingCard({ finding, nav, onDismiss, locateLabel }) {
   );
 }
 
-export function HealthTool({ intel, nav, locateLabel = 'Go to document' }) {
+function DemoHealthTool({ intel, nav, locateLabel = 'Go to document' }) {
   const state = intel.results.health;
   const { run } = intel;
   const [filter, setFilter] = useState('all');
@@ -164,4 +165,12 @@ export function HealthTool({ intel, nav, locateLabel = 'Go to document' }) {
       )}
     </div>
   );
+}
+
+/**
+ * Signed-in account document: the real review (Phase 3, CASEONE server).
+ * Otherwise (Demo Mode, document review page): the existing demo tool, unchanged.
+ */
+export function HealthTool(props) {
+  return props.intel?.aiReview ? <AiHealth {...props} /> : <DemoHealthTool {...props} />;
 }

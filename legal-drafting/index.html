@@ -2,6 +2,26 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
+    <script>
+      // Refresh-safe asset URLs (Phase 1 fix). The build uses relative asset
+      // paths ("./assets/…"), so on a nested page such as …/legal-drafting/draft/<id>
+      // they would resolve to …/legal-drafting/draft/assets/… and fail after a
+      // refresh. Point the document base at the app folder, wherever the site is
+      // served from (/legal-drafting/ on Vercel, /<project folder>/legal-drafting/
+      // on a local static server). Pages outside that folder are left unchanged.
+      (function () {
+        try {
+          var path = window.location.pathname;
+          var at = path.indexOf('/legal-drafting/');
+          if (at < 0) return;
+          var base = document.createElement('base');
+          base.setAttribute('href', path.slice(0, at) + '/legal-drafting/');
+          document.head.insertBefore(base, document.head.firstChild);
+        } catch (e) {
+          // Leave the page unchanged if this fails.
+        }
+      })();
+    </script>
     <link rel="icon" type="image/svg+xml" href="./favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="theme-color" content="#000000" />
@@ -16,8 +36,30 @@
       rel="stylesheet"
     />
     <title>Legal Lens — Legal Drafting Assistant</title>
-    <script type="module" crossorigin src="./assets/index-D1MZij0B.js"></script>
-    <link rel="stylesheet" crossorigin href="./assets/index-BhG9AO9E.css">
+    <script>
+      // Homepage "Upload Your Document" opens /legal-drafting/?view=review.
+      // Redirect to the existing /review route before React starts.
+      // (Previously only in the copied build; kept here so a rebuild keeps it.)
+      (function () {
+        try {
+          var params = new URLSearchParams(window.location.search);
+          var path = window.location.pathname;
+          if (params.get('view') === 'review' && /\/legal-drafting\/(index\.html)?$/.test(path)) {
+            params.delete('view');
+            var query = params.toString();
+            window.history.replaceState(
+              window.history.state,
+              '',
+              path.replace(/(index\.html)?$/, 'review') + (query ? '?' + query : '') + window.location.hash
+            );
+          }
+        } catch (e) {
+          // Leave the URL unchanged if this fails.
+        }
+      })();
+    </script>
+    <script type="module" crossorigin src="./assets/index-DIWFa2kR.js"></script>
+    <link rel="stylesheet" crossorigin href="./assets/index-B_ENClTP.css">
   </head>
   <body>
     <div id="root"></div>

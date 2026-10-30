@@ -28,12 +28,14 @@ export function setMainSiteFlags(user) {
 }
 
 export function clearMainSiteFlags() {
-  // userName / userEmail are intentionally kept, like the main site does,
-  // so the sign-in form can be prefilled next time.
+  // Same as the main site's clearUiConvenienceFlags(): name and email are personal
+  // details and are not kept after signing out.
   safe(() => {
     localStorage.removeItem('loggedIn');
     localStorage.removeItem('userRole');
     localStorage.removeItem('currentLawyerId');
+    localStorage.removeItem('userName');
+    localStorage.removeItem('userEmail');
   });
 }
 

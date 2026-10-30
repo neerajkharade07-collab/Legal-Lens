@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Legal Lens — Lawyer Profile</title>
-<meta name="description" content="View a lawyer's profile, practice areas, and request a consultation on Legal Lens.">
+<title>CASEONE — Lawyer Profile</title>
+<meta name="description" content="View a lawyer's profile, practice areas, and request a consultation on CASEONE.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
@@ -17,13 +17,14 @@
   <div class="navbar-inner">
     <a href="index.html" class="nav-brand">
       <svg viewBox="0 0 24 24" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 4 6v6c0 5 3.4 9.2 8 10 4.6-.8 8-5 8-10V6z"></path></svg>
-      Legal Lens
+      CASEONE
     </a>
 
     <nav aria-label="Main navigation">
       <ul class="nav-links">
         <li><a href="index.html">Home</a></li>
-        <li><a href="find-a-lawyer.html" class="current">Lawyer Connect</a></li>
+        <li><a href="lawyer-connect.html" class="current">Lawyer Connect</a></li>
+        <li><a href="my-requests.html">My Requests</a></li>
         <li><a href="about.html">About Us</a></li>
         <li><a href="contact.html">Contact Us</a></li>
       </ul>
@@ -36,7 +37,8 @@
       </button>
 
       <div id="navLoggedOut" style="display:flex; gap:10px;">
-        <a href="lawyer-dashboard.html" class="nav-btn solid">Register as a Lawyer</a>
+        <a href="lawyer-portal.html" class="nav-btn">For Lawyers</a>
+        <a href="login.html" class="nav-btn solid">Sign in</a>
       </div>
 
       <button class="nav-user" id="navUser" style="display:none;">
@@ -63,15 +65,15 @@
     <div class="not-found-box">
       <div class="icon-circle"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg></div>
       <h1>Lawyer Not Found</h1>
-      <p>We couldn't find a lawyer profile matching this link. It may have been removed, or the link may be incorrect.</p>
-      <a class="btn-apply" href="find-a-lawyer.html">Back to Find a Lawyer</a>
+      <p>This lawyer profile is not available. The advocate may not have finished registering, the profile may have been removed, or the link may be incorrect.</p>
+      <a class="btn-apply" href="find-a-lawyer.html">Back to Find a Paid Lawyer</a>
     </div>
   </div>
 
   <!-- ================= PROFILE CONTENT ================= -->
   <div id="profileContent" style="display:none;">
 
-    <div class="breadcrumb"><a href="find-a-lawyer.html">Find a Lawyer</a> / <span id="breadcrumbName">Lawyer Profile</span></div>
+    <div class="breadcrumb"><a href="lawyer-connect.html">Lawyer Connect</a> / <a href="find-a-lawyer.html">Find a Paid Lawyer</a> / <span id="breadcrumbName">Lawyer Profile</span></div>
 
     <a href="find-a-lawyer.html" class="back-link">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
@@ -84,6 +86,7 @@
       <div class="profile-hero-right">
         <h1 id="heroName">Lawyer Name</h1>
         <span class="verified-badge" id="heroVerifiedBadge"></span>
+        <p class="review-note" id="heroReviewNote" hidden>Listed automatically when the advocate registered. These details are provided by the advocate and have not been independently checked yet. Requests open after a CASEONE review.</p>
         <p class="hero-practice-areas" id="heroPracticeAreas">—</p>
 
         <div class="hero-meta-row">
@@ -116,11 +119,11 @@
       </div>
       <div class="stat-block">
         <div class="stat-val" id="statRating">—</div>
-        <div class="stat-label">RATING</div>
+        <div class="stat-label">PAID CONSULTATION</div>
       </div>
       <div class="stat-block">
         <div class="stat-val" id="statConsultations">—</div>
-        <div class="stat-label">CONSULTATIONS</div>
+        <div class="stat-label">FREE CONSULTATION</div>
       </div>
     </section>
 
@@ -132,6 +135,21 @@
         <div class="profile-section reveal">
           <h2>About</h2>
           <p id="aboutText">—</p>
+        </div>
+
+        <div class="profile-section reveal">
+          <h2>Bar Council &amp; Qualifications</h2>
+          <dl class="fact-list" id="barFacts"></dl>
+        </div>
+
+        <div class="profile-section reveal" id="servicesSection">
+          <h2>Consultation Services</h2>
+          <div id="servicesText"></div>
+        </div>
+
+        <div class="profile-section reveal" id="availabilitySection" hidden>
+          <h2>Availability</h2>
+          <p id="availabilityText">—</p>
         </div>
 
         <div class="profile-section reveal">
@@ -155,12 +173,13 @@
         </div>
 
         <div class="trust-section reveal">
-          <h3>Why Connect Through Legal Lens</h3>
+          <h3>Why Connect Through CASEONE</h3>
           <ul class="trust-list">
-            <li><svg viewBox="0 0 24 24" fill="none" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg> Verification status shown clearly on every profile</li>
-            <li><svg viewBox="0 0 24 24" fill="none" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg> Review practice areas and experience before reaching out</li>
-            <li><svg viewBox="0 0 24 24" fill="none" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg> Consultation requests go directly to the lawyer</li>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg> Every profile shows its review status. Advocates are listed when they register; requests open after a basic CASEONE review</li>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg> No rankings, paid placements or star ratings</li>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg> Requests stay “Pending” until the advocate accepts</li>
           </ul>
+          <p class="listing-disclosure" id="listingDisclosure">Advocates list themselves on CASEONE. Profile details, including Bar Council enrollment, are provided by the advocate and have not been independently checked unless the profile is marked “Credentials reviewed by CASEONE” (a basic check by our team, not official Bar Council or government verification). See something wrong? Use “Report this profile”.</p>
         </div>
 
       </div>
@@ -173,6 +192,9 @@
         <div class="consult-types" id="panelConsultTypes"></div>
 
         <button class="btn-request-lg full" id="panelRequestBtn">Request Consultation</button>
+        <a class="btn-save-lg full free-help-btn" id="panelFreeBtn" href="free-legal-assistance.html" hidden>Request free help (₹0)</a>
+        <p class="panel-note" id="panelNote">No payment is taken on CASEONE. Nothing is booked until the advocate accepts.</p>
+        <button type="button" class="btn-report" id="panelReportBtn">Report this profile</button>
         <button class="btn-save-lg full" id="panelSaveBtn" aria-pressed="false">
           <svg viewBox="0 0 24 24" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21 12 16 5 21V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path></svg>
           <span id="panelSaveLabel">Save Lawyer</span>
@@ -187,7 +209,7 @@
       <div class="similar-grid" id="similarGrid"></div>
     </section>
 
-    <p class="page-disclaimer">Legal Lens helps users discover and connect with legal professionals. Information shown in this prototype is for demonstration purposes and does not constitute legal advice.</p>
+    <p class="page-disclaimer">CASEONE helps users discover and connect with legal professionals. Information shown in this prototype is for demonstration purposes and does not constitute legal advice.</p>
 
   </div>
 
@@ -200,7 +222,7 @@
       <div>
         <div class="footer-brand">
           <svg viewBox="0 0 24 24" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 4 6v6c0 5 3.4 9.2 8 10 4.6-.8 8-5 8-10V6z"></path></svg>
-          Legal Lens
+          CASEONE
         </div>
         <p class="footer-tagline">AI-powered legal guidance and lawyer connections, made simple for every citizen.</p>
       </div>
@@ -209,7 +231,7 @@
         <ul>
           <li><a href="legal-help-dashboard/index.html">AI Legal Guidance</a></li>
           <li><a href="find-a-lawyer.html">Lawyer Connect</a></li>
-          <li><a href="/legal-drafting/">Legal Drafting Assistant</a></li>
+          <li><a href="legal-drafting/">Legal Drafting Assistant</a></li>
         </ul>
       </div>
       <div class="footer-col">
@@ -229,8 +251,8 @@
       </div>
     </div>
     <div class="footer-bottom">
-      <p>Legal Lens provides general educational information and AI-assisted guidance. It does not constitute legal advice. Always consult a qualified legal professional for advice regarding your specific situation.</p>
-      <span class="footer-copy">© 2026 Legal Lens</span>
+      <p>CASEONE provides general educational information and AI-assisted guidance. It does not constitute legal advice. Always consult a qualified legal professional for advice regarding your specific situation.</p>
+      <span class="footer-copy">© 2026 CASEONE</span>
     </div>
   </div>
 </footer>
@@ -248,7 +270,8 @@
 
       <div class="consult-form-body" id="consultFormBody">
         <h2 class="form-title" id="consultTitle">Request Consultation</h2>
-        <p class="form-sub" id="consultSub">Demo Mode: requests are saved in this browser only and are not sent to the lawyer.</p>
+        <p class="form-sub" id="consultSub">Your request is sent to the lawyer. It stays “Pending” until they accept.</p>
+        <div class="form-error" id="consultError" role="alert" hidden></div>
 
         <form id="consultForm">
           <div class="form-row">
@@ -271,17 +294,17 @@
           <div class="form-row form-row-split">
             <div>
               <label for="consultDate">Preferred Date</label>
-              <input type="date" id="consultDate" required>
+              <input type="date" id="consultDate">
             </div>
             <div>
               <label for="consultTime">Preferred Time</label>
-              <input type="time" id="consultTime" required>
+              <input type="time" id="consultTime">
             </div>
           </div>
 
           <div class="form-row">
             <label for="consultDesc">Brief Description of Legal Problem</label>
-            <textarea id="consultDesc" placeholder="Describe your situation briefly..." required></textarea>
+            <textarea id="consultDesc" placeholder="Describe your situation briefly (do not include ID numbers or passwords)" maxlength="2000" required></textarea>
           </div>
 
           <div class="form-row">
@@ -299,15 +322,15 @@
 
           <div class="form-row">
             <label>Consultation Type</label>
-            <div class="consult-type-group" id="consultTypeGroup">
-              <div class="consult-type-option" data-type="Video">Video</div>
-              <div class="consult-type-option" data-type="Phone">Phone</div>
-              <div class="consult-type-option" data-type="In-Person">In-Person</div>
+            <div class="consult-type-group" id="consultTypeGroup" role="radiogroup" aria-label="Consultation type">
+              <div class="consult-type-option" data-type="Video" role="radio" tabindex="0" aria-checked="false">Video</div>
+              <div class="consult-type-option" data-type="Phone" role="radio" tabindex="0" aria-checked="false">Phone</div>
+              <div class="consult-type-option" data-type="In-Person" role="radio" tabindex="0" aria-checked="false">In-Person</div>
             </div>
           </div>
 
           <div class="modal-form-actions">
-            <button type="submit" class="btn-send" id="sendConsultBtn">Save Demo Request</button>
+            <button type="submit" class="btn-send" id="sendConsultBtn">Send Request</button>
             <button type="button" class="btn-cancel" id="cancelConsultBtn">Cancel</button>
           </div>
         </form>
@@ -315,19 +338,36 @@
 
       <div class="consult-success" id="consultSuccess">
         <div class="check-circle"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg></div>
-        <h2>Demo Request Saved</h2>
-        <p>Demo Mode: this consultation request was saved only in this browser. It has <strong>not</strong> been sent to the lawyer and no notification will be sent.</p>
-        <button class="btn-send" id="consultDoneBtn">Done</button>
+        <h2>Request sent</h2>
+        <p>Your request has been sent. It is <strong>pending</strong> — the consultation is not confirmed until the lawyer accepts it.</p>
+        <div class="modal-form-actions" style="justify-content:center;">
+          <a class="btn-send" href="my-requests.html">View My Requests</a>
+          <button class="btn-cancel" id="consultDoneBtn">Close</button>
+        </div>
       </div>
 
     </div>
   </div>
 </div>
 
+<script src="config.js"></script>
+<script src="auth.js"></script>
 <script src="lawyer-data.js"></script>
+<script src="lawyer-report.js"></script>
 <script src="lawyer-profile.js"></script>
 <!-- SIH demo: the mobile menu button previously had no click handler (dead button). -->
 <style>
+  /* Automatic listing: review status, disclosure, report */
+  .review-note { font-size: 12.5px; line-height: 1.6; color: #555; border-left: 2px solid #d4d4d4; padding: 2px 0 2px 10px; margin: 6px 0 12px; max-width: 60ch; }
+  .listing-disclosure { font-size: 12.5px; line-height: 1.65; color: #555; border: 1px solid #e5e5e5; border-radius: 12px; padding: 10px 14px; margin: 18px 0 0; background: #fff; }
+  .btn-report { background: none; border: 0; padding: 8px 0 0; font: inherit; font-size: 12.5px; color: #555; text-decoration: underline; cursor: pointer; display: block; }
+  .btn-report:hover { color: #000; }
+  .btn-report:focus-visible { outline: 2px solid #000; outline-offset: 2px; border-radius: 4px; }
+  .btn-request-lg:disabled { background: #fff !important; color: #777 !important; border: 1px solid #d4d4d4 !important; cursor: not-allowed; transform: none !important; box-shadow: none !important; }
+  .pending-badge { display: inline-flex; align-items: center; gap: 5px; font-size: 12px; font-weight: 500; color: #666; }
+  .pending-badge svg { width: 12px; height: 12px; }
+  .similar-card .avatar-circle { overflow: hidden; }
+  .similar-card .avatar-circle img, .avatar-circle-lg img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; display: block; }
   @media (max-width: 900px) {
     .site-navbar.nav-open .nav-links { display: flex; flex-direction: column; align-items: flex-start; gap: 14px;
       position: absolute; top: 100%; left: 0; right: 0; padding: 16px 24px; background: #fff;

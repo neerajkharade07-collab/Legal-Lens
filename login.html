@@ -703,8 +703,9 @@
           <div class="field-error" id="passwordError">Please enter your password.</div>
         </div>
 
-        <div class="form-row-between">
-          <label class="remember-me">
+        <div class="form-row-between" style="justify-content:flex-end;">
+          <!-- Remember Me hidden for this phase (sessions last until logout or refresh-token expiry). -->
+          <label class="remember-me" style="display:none;" aria-hidden="true">
             <input type="checkbox" id="rememberMe">
             <span>Remember me</span>
           </label>
@@ -714,7 +715,7 @@
         <button type="submit" class="signin-btn" id="signinBtn">
           <span class="btn-spinner"></span>
           <svg class="btn-check" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
-          <span id="signinBtnText">Login In</span>
+          <span id="signinBtnText">Log In</span>
         </button>
       </form>
 
@@ -870,7 +871,9 @@
     signinBtn.classList.add('loading');
     signinBtnText.textContent = 'Signing In...';
 
-    loginUser('customer', emailInput.value.trim(), passwordInput.value)
+    // Promise.resolve().then(...) also catches the case where auth.js failed to load.
+    Promise.resolve()
+      .then(() => loginUser('customer', emailInput.value.trim(), passwordInput.value))
       .then(() => {
         signinBtn.classList.remove('loading');
         signinBtn.classList.add('success');
@@ -881,22 +884,44 @@
         signinBtn.disabled = false;
         signinBtn.classList.remove('loading');
         signinBtnText.textContent = 'Log In';
-        setError(passwordGroup, passwordError, err.message || 'Invalid email or password.');
+        showLoginError(err);
       });
   });
 
-  /* ---------- Placeholder interactions ---------- */
+  // Friendly, field-specific messages for API errors (status codes from auth.js).
+  function showLoginError(err) {
+    const status = err && err.statusCode;
+    const fieldErrors = (err && err.details && Array.isArray(err.details.errors)) ? err.details.errors : [];
+    if (status === 422 && fieldErrors.length) {
+      fieldErrors.forEach((fe) => {
+        if (fe.field === 'email') setError(emailGroup, emailError, fe.message);
+        else setError(passwordGroup, passwordError, fe.message);
+      });
+      return;
+    }
+    let message;
+    // This page signs in CUSTOMER accounts; lawyer accounts use the Lawyer Login page.
+    if (status === 401) message = 'Incorrect email or password. If you registered as a lawyer, please use the Lawyer Login page.';
+    else if (status === 403) message = (err && err.message) || 'This account has been deactivated.';
+    else if (status === 429) message = 'Too many attempts. Please wait a few minutes and try again.';
+    else if (!status) message = 'Unable to reach Legal Lens right now. Please check your connection and try again.';
+    else message = 'Something went wrong. Please try again.';
+    setError(passwordGroup, passwordError, message);
+  }
+
+  /* ---------- Forgot password ---------- */
   document.getElementById('forgotPasswordBtn').addEventListener('click', () => {
-    alertInline('Password reset would open here.');
+    // Pre-fill the email on the next page (kept in this tab only, never in the URL).
+    const typed = emailInput.value.trim();
+    try {
+      if (emailPattern.test(typed)) sessionStorage.setItem('resetEmailPrefill', typed);
+      else sessionStorage.removeItem('resetEmailPrefill');
+    } catch (e) { /* storage blocked: the field just starts empty */ }
+    window.location.href = 'forgot-password.html';
   });
 
-  document.getElementById('createAccountBtn').addEventListener('click', () => {
-    alertInline('Account creation would open here.');
-  });
-
-  document.getElementById('googleBtn').addEventListener('click', () => {
-    alertInline('Google sign-in would open here.');
-  });
+  // Toast used by the Google sign-in code below (same look as before).
+  window.legalLensToast = alertInline;
 
   function alertInline(message) {
     // Non-blocking, unobtrusive placeholder feedback (no browser alert())
@@ -935,5 +960,129 @@ document.getElementById("createAccountBtn").addEventListener("click", function (
 </script>
 <script src="config.js"></script>
 <script src="auth.js"></script>
+<script>
+  /* ---------- Continue with Google ----------
+     Google Identity Services, authorization-code flow in a popup: the button
+     opens Google's OWN account chooser (accounts.google.com). The one-time
+     code is sent to our backend, which verifies it with Google before any
+     account is signed in. The client id comes from the backend config. */
+  (function () {
+    const btn = document.getElementById('googleBtn');
+    const label = btn.querySelector('span');
+    const toast = (msg) => (window.legalLensToast ? window.legalLensToast(msg) : null);
+    let codeClient = null;
+    let state = null;
+    let status = 'loading'; // loading | ready | disabled | failed
+    let busy = false;
+
+    function setBusy(on) {
+      busy = on;
+      btn.disabled = on;
+      btn.setAttribute('aria-busy', on ? 'true' : 'false');
+      label.textContent = on ? 'Signing in with Google…' : 'Continue with Google';
+    }
+
+    function randomState() {
+      const bytes = new Uint8Array(16);
+      crypto.getRandomValues(bytes);
+      return Array.from(bytes, (b) => b.toString(16).padStart(2, '0')).join('');
+    }
+
+    function onCode(response) {
+      if (!response || response.error) {
+        if (response && response.error === 'access_denied') toast('Google sign-in was cancelled.');
+        else toast('Google sign-in did not complete. Please try again.');
+        return;
+      }
+      // Google's popup flow is protected by the X-Requested-With header the
+      // backend requires; state is an extra check whenever Google echoes it.
+      if (response.state !== undefined && response.state !== state) {
+        toast('Google sign-in could not be verified. Please try again.');
+        return;
+      }
+      setBusy(true);
+      signInWithGoogleCode(response.code).then((data) => {
+        if (data && data.linked) showLinkedNotice(data.message);
+      }).catch((err) => {
+        setBusy(false);
+        const s = err && err.statusCode;
+        if (!s) toast('Unable to reach Legal Lens right now. Please check your connection and try again.');
+        else if (s === 429) toast('Too many attempts. Please wait a few minutes and try again.');
+        else toast((err && err.message) || 'Google sign-in failed. Please try again.');
+      });
+    }
+
+    // Shown (instead of a short toast) when Google was linked to an existing
+    // account and its old password was switched off; auth.js redirects after it.
+    function showLinkedNotice(message) {
+      const note = document.createElement('div');
+      note.id = 'googleLinkedNotice';
+      note.setAttribute('role', 'status');
+      note.textContent = (message || 'Google sign-in was added to your account.') + ' Continuing…';
+      note.style.cssText = 'margin-top:14px;padding:12px 14px;border:1px solid var(--black);border-radius:11px;background:var(--white);font-size:13px;line-height:1.55;color:var(--gray-800);';
+      btn.insertAdjacentElement('afterend', note);
+      label.textContent = 'Signed in with Google';
+    }
+
+    function onPopupError(err) {
+      const type = err && err.type;
+      if (type === 'popup_failed_to_open') toast('The Google window was blocked. Please allow pop-ups for this site and try again.');
+      else if (type === 'popup_closed') toast('Google sign-in was closed before it finished.');
+      else toast('Google sign-in did not complete. Please try again.');
+    }
+
+    function loadGoogleScript() {
+      return new Promise((resolve, reject) => {
+        if (window.google && google.accounts && google.accounts.oauth2) return resolve();
+        const tag = document.createElement('script');
+        tag.src = 'https://accounts.google.com/gsi/client';
+        tag.async = true;
+        tag.onload = () => resolve();
+        tag.onerror = () => reject(new Error('gsi'));
+        document.head.appendChild(tag);
+      });
+    }
+
+    // Prepared on page load, so the click can open the popup immediately
+    // (browsers block pop-ups that are not opened directly by a click).
+    Promise.resolve()
+      .then(() => getGoogleSignInConfig())
+      .then((cfg) => {
+        if (!cfg || !cfg.enabled || !cfg.clientId) { status = 'disabled'; return null; }
+        return loadGoogleScript().then(() => {
+          state = randomState();
+          codeClient = google.accounts.oauth2.initCodeClient({
+            client_id: cfg.clientId,
+            scope: 'openid email profile',
+            ux_mode: 'popup',
+            // Always show Google's account chooser, so the user picks the account.
+            select_account: true,
+            state,
+            callback: onCode,
+            error_callback: onPopupError
+          });
+          status = 'ready';
+        });
+      })
+      .catch(() => { status = status === 'disabled' ? 'disabled' : 'failed'; });
+
+    btn.addEventListener('click', () => {
+      if (busy) return;
+      if (status === 'ready' && codeClient) { codeClient.requestCode(); return; }
+      if (status === 'loading') toast('Google sign-in is still loading. Please try again in a moment.');
+      else if (status === 'disabled') toast('Google sign-in is not set up yet. Please log in with your email and password.');
+      else toast('Google sign-in could not be loaded. Check your connection or ad blocker, then reload the page.');
+    });
+  })();
+</script>
+<script>
+  // Already signed in as a customer? Go to the pending page or the dashboard.
+  if (typeof getCustomerSession === 'function') {
+    getCustomerSession().then((user) => {
+      // A pending protected page wins; otherwise the customer's dashboard.
+      if (user) window.location.replace((typeof takePostLoginRedirect === 'function' && takePostLoginRedirect()) || 'index.html');
+    });
+  }
+</script>
 </body>
 </html>

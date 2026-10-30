@@ -9,7 +9,6 @@
 import { getDocumentType } from '../data/documentTypes';
 import { getLanguage } from '../data/draftLanguages';
 import { defaultDocumentTitle } from '../utils/defaultTitle';
-import { DEMO_META } from './config';
 
 /**
  * @param {{ typeId:string, description:string, language:string, useBnsFramework:boolean|null,
@@ -43,8 +42,10 @@ export async function generatePreliminaryDraft(input) {
       source: input.source ?? 'unknown',
       descriptionDetail: input.descriptionDetail ?? null,
     },
+    // A structured template draft built in the browser — no AI involved.
     generation: {
-      ...DEMO_META,
+      source: 'template',
+      verificationStatus: 'unverified',
       status: 'preliminary',
       generatedAt: now.toISOString(),
     },

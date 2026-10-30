@@ -102,6 +102,10 @@
 .save-status--unsaved {
   color: var(--color-warning);
 }
+.save-status--failed,
+.save-status--conflict {
+  color: var(--color-danger, var(--color-warning));
+}
 .save-status__spinner {
   width: 12px;
   height: 12px;

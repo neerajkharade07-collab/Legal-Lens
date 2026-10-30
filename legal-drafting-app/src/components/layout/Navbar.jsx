@@ -1,6 +1,17 @@
 import { useEffect, useRef, useState } from 'react';
-import { NavLink, useLocation } from 'react-router-dom';
-import { Menu, X, Plus, UserRound, LogOut, House } from 'lucide-react';
+import { NavLink, useLocation, useNavigate } from 'react-router-dom';
+import {
+  Menu,
+  X,
+  Plus,
+  UserRound,
+  LogOut,
+  House,
+  LogIn,
+  FileText,
+  LayoutDashboard,
+  RefreshCw,
+} from 'lucide-react';
 import { PRIMARY_NAV } from '../../data/navigation';
 import { NAV_ICONS } from './navIcons';
 import { BrandMark } from './BrandMark';
@@ -8,7 +19,9 @@ import { Button } from '../common/Button';
 import { DropdownMenu } from '../common/DropdownMenu';
 import { useAuth } from '../../hooks/useAuth';
 import { MAIN_SITE_URL } from '../../services/siteConfig';
-import { DRAFTING_GUEST_MODE } from '../../services/config';
+import { ConfirmDialog } from '../common/ConfirmDialog';
+import { dashboardPageFor, mainSitePage, roleLabel } from '../../utils/caseoneAccount';
+import { useToast } from '../../hooks/useToast';
 import { useLockBodyScroll } from '../../hooks/useLockBodyScroll';
 import { useDraftSetup } from '../../hooks/useDraftSetup';
 import { cn } from '../../utils/cn';
@@ -21,8 +34,64 @@ export function Navbar() {
   const menuButtonRef = useRef(null);
   const drawerRef = useRef(null);
   const { openDraftSetup } = useDraftSetup();
-  const { status: authStatus, user, signOut } = useAuth();
-  const firstName = user?.name?.split(' ')[0] ?? 'Account';
+  const navigate = useNavigate();
+  const {
+    status: authStatus,
+    user,
+    otherAccount,
+    signOut,
+    logIn,
+    retry,
+    continueInDemoMode,
+    notice,
+    dismissNotice,
+  } = useAuth();
+  const { toast } = useToast();
+  const [expiredDismissed, setExpiredDismissed] = useState(false);
+  const firstName = user?.name?.split(' ')[0] || 'My Account';
+  // Signed out (or an account type that cannot use drafting): browser-only Demo Mode.
+  // A signed-in customer/lawyer, an unreachable server or an ended session is never Demo Mode.
+  const isDemo = authStatus === 'anonymous';
+  const isAdminVisitor = isDemo && Boolean(otherAccount);
+
+  // Session messages (server unreachable, account type not supported) are shown once.
+  useEffect(() => {
+    if (!notice) return;
+    toast({
+      title: notice.kind === 'unavailable' ? "Can't reach CASEONE" : 'Legal Drafting',
+      description: notice.text,
+      variant: 'default',
+    });
+    dismissNotice();
+  }, [notice, toast, dismissNotice]);
+
+  useEffect(() => {
+    if (authStatus !== 'expired') setExpiredDismissed(false);
+  }, [authStatus]);
+
+  const accountMenu = [
+    { id: 'documents', label: 'My Documents', icon: FileText, onSelect: () => navigate('/documents') },
+    {
+      id: 'dashboard',
+      label: 'My CASEONE dashboard',
+      icon: LayoutDashboard,
+      onSelect: () => window.location.assign(mainSitePage(dashboardPageFor(user?.role), MAIN_SITE_URL)),
+    },
+    {
+      id: 'home',
+      label: 'CASEONE home',
+      icon: House,
+      onSelect: () => window.location.assign(MAIN_SITE_URL),
+    },
+    { id: 'signout', label: 'Sign out', icon: LogOut, onSelect: signOut },
+  ];
+  const accountCard = user && (
+    <div className="navbar__account-card">
+      <span className="navbar__account-name">{user.name || 'CASEONE account'}</span>
+      {user.email && <span className="navbar__account-email">{user.email}</span>}
+      <span className="navbar__account-role">{roleLabel(user.role)}</span>
+    </div>
+  );
 
   function startNewDraft() {
     setMenuOpen(false);
@@ -80,46 +149,83 @@ export function Navbar() {
           </nav>
 
           <div className="navbar__actions">
-            {authStatus === 'authenticated' ? (
+            {authStatus === 'authenticated' && (
               <>
                 <DropdownMenu
                   icon={UserRound}
                   label={firstName}
-                  buttonLabel={`Account: ${user?.name ?? ''}`}
+                  buttonLabel={`My Account: ${user?.name ?? ''} (${roleLabel(user?.role)})`}
                   buttonClassName="navbar__account"
-                  items={[
-                    {
-                      id: 'home',
-                      label: 'Legal Lens home',
-                      icon: House,
-                      onSelect: () => window.location.assign(MAIN_SITE_URL),
-                    },
-                    { id: 'signout', label: 'Sign out', icon: LogOut, onSelect: signOut },
-                  ]}
+                  header={accountCard}
+                  items={accountMenu}
                 />
                 <Button size="sm" icon={Plus} className="navbar__cta" onClick={startNewDraft}>
                   New Draft
                 </Button>
               </>
-            ) : (
+            )}
+            {authStatus === 'expired' && (
               <>
-                {DRAFTING_GUEST_MODE && (
-                  <span
-                    className="navbar__demo-badge"
-                    title="Demo Mode: no sign-in. Drafts are saved only in this browser."
-                  >
-                    Demo Mode
-                  </span>
-                )}
+                <span className="navbar__session-state" role="status">
+                  Session ended
+                </span>
+                <Button size="sm" icon={LogIn} onClick={() => logIn()}>
+                  Log in again
+                </Button>
+              </>
+            )}
+            {authStatus === 'unavailable' && (
+              <>
+                <span
+                  className="navbar__session-state"
+                  role="status"
+                  title="The CASEONE server could not be reached, so your sign-in could not be checked."
+                >
+                  Server unreachable
+                </span>
+                <Button size="sm" variant="secondary" icon={RefreshCw} onClick={retry}>
+                  Retry
+                </Button>
+                <Button
+                  size="sm"
+                  variant="secondary"
+                  className="navbar__cta"
+                  onClick={continueInDemoMode}
+                  title="Work without an account: drafts stay only in this browser and AI is off."
+                >
+                  Use Demo Mode
+                </Button>
+              </>
+            )}
+            {isDemo && (
+              <>
+                <span
+                  className="navbar__demo-badge"
+                  title={
+                    isAdminVisitor
+                      ? 'Signed in on CASEONE as an admin. Legal Drafting works with customer and lawyer accounts, so only the browser-only Demo Mode is available here.'
+                      : 'Demo Mode: you are not signed in. Drafts are saved only in this browser and AI drafting is off.'
+                  }
+                >
+                  {isAdminVisitor ? 'Admin · Demo Mode' : 'Demo Mode'}
+                </span>
                 <a className="navbar__home-link" href={MAIN_SITE_URL}>
-                  Legal Lens home
+                  CASEONE home
                 </a>
-                {DRAFTING_GUEST_MODE && (
-                  <Button size="sm" icon={Plus} className="navbar__cta" onClick={startNewDraft}>
-                    New Draft
+                {!isAdminVisitor && (
+                  <Button size="sm" variant="secondary" icon={LogIn} onClick={() => logIn('customer')}>
+                    Log in
                   </Button>
                 )}
+                <Button size="sm" icon={Plus} className="navbar__cta" onClick={startNewDraft}>
+                  New Draft
+                </Button>
               </>
+            )}
+            {authStatus === 'checking' && (
+              <a className="navbar__home-link" href={MAIN_SITE_URL}>
+                CASEONE home
+              </a>
             )}
             <button
               ref={menuButtonRef}
@@ -176,19 +282,74 @@ export function Navbar() {
             </ul>
           </nav>
           <div className="mobile-nav__footer">
-            <Button icon={Plus} fullWidth onClick={startNewDraft}>
-              New Draft
-            </Button>
+            {/* On phones the header's "CASEONE home" link is hidden to fit; it is offered here. */}
+            <a className="btn btn--secondary btn--md btn--full mobile-nav__home" href={MAIN_SITE_URL}>
+              <span className="btn__label">CASEONE home</span>
+            </a>
+            {(authStatus === 'authenticated' || isDemo) && (
+              <Button icon={Plus} fullWidth onClick={startNewDraft}>
+                New Draft
+              </Button>
+            )}
+            {authStatus === 'authenticated' && (
+              <Button
+                variant="secondary"
+                icon={LogOut}
+                fullWidth
+                onClick={() => {
+                  setMenuOpen(false);
+                  signOut();
+                }}
+              >
+                Sign out
+              </Button>
+            )}
+            {isDemo && !isAdminVisitor && (
+              <Button variant="secondary" icon={LogIn} fullWidth onClick={() => logIn('customer')}>
+                Log in on CASEONE
+              </Button>
+            )}
+            {authStatus === 'expired' && (
+              <Button icon={LogIn} fullWidth onClick={() => logIn()}>
+                Log in again
+              </Button>
+            )}
+            {authStatus === 'unavailable' && (
+              <>
+                <Button variant="secondary" icon={RefreshCw} fullWidth onClick={retry}>
+                  Retry
+                </Button>
+                <Button variant="secondary" fullWidth onClick={continueInDemoMode}>
+                  Use Demo Mode (this browser only)
+                </Button>
+              </>
+            )}
             <p className="mobile-nav__note">
               {authStatus === 'authenticated'
-                ? `Signed in as ${user?.email ?? ''}. Documents are saved to your account.`
-                : DRAFTING_GUEST_MODE
-                  ? 'Demo Mode — no sign-in needed. Drafts are saved only in this browser.'
-                  : 'Sign in with your Legal Lens account to save documents.'}
+                ? `Signed in as ${user?.name || user?.email || ''} (${roleLabel(user?.role)}). Documents are saved to your CASEONE account.`
+                : authStatus === 'expired'
+                  ? 'Your CASEONE session has ended. Log in again to keep saving; you will come back here.'
+                  : authStatus === 'unavailable'
+                    ? "Can't reach the CASEONE server, so your sign-in could not be checked."
+                    : isAdminVisitor
+                      ? 'Signed in as an admin. Legal Drafting works with customer and lawyer accounts; this is the browser-only Demo Mode.'
+                      : isDemo
+                        ? 'Demo Mode — you are not signed in. Drafts are saved only in this browser and AI drafting is off. Log in on CASEONE to save to your account.'
+                        : 'Checking your session…'}
             </p>
           </div>
         </div>
       </div>
+
+      <ConfirmDialog
+        open={authStatus === 'expired' && !expiredDismissed}
+        title="Your CASEONE session has ended"
+        description="Log in again on CASEONE to keep saving to your account — you will come back to this page. Changes made since the last save have not been saved; copy anything important before you leave."
+        confirmLabel="Log in again"
+        cancelLabel="Stay on this page"
+        onConfirm={() => logIn()}
+        onCancel={() => setExpiredDismissed(true)}
+      />
     </>
   );
 }

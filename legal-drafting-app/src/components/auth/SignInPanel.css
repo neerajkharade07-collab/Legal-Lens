@@ -76,3 +76,13 @@
     padding: var(--space-5);
   }
 }
+
+/* Inside the navbar's sign-in dialog: no page padding or second border. */
+.signin--embedded {
+  padding-block: 0;
+}
+.signin--embedded .signin__card {
+  max-width: none;
+  border: 0;
+  padding: var(--space-2) var(--space-6) var(--space-6);
+}

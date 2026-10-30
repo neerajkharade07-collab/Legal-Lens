@@ -9,7 +9,7 @@ import { BlockPreview } from '../intelligence/BlockPreview';
 import { formatDate, formatRelative } from '../../utils/date';
 import '../intelligence/IntelShared.css';
 import './VersionHistory.css';
-import { SAVE_LOCATION } from '../../services/config';
+import { saveLocation } from '../../services/config';
 
 const timeOf = (value) =>
   new Date(value).toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' });
@@ -74,7 +74,7 @@ export function VersionHistoryDrawer({
         </header>
 
         <p className="version-drawer__note">
-          Saved {SAVE_LOCATION} at meaningful events — manual saves, inserted clauses, accepted
+          Saved {saveLocation()} at meaningful events — manual saves, inserted clauses, accepted
           assistant edits, large edits, regeneration and restores.
         </p>
 

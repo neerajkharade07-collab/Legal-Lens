@@ -8,7 +8,7 @@ import { docToText } from '../utils/textToDoc';
 import { buildReviewedDocumentPayload } from '../utils/reviewedDocument';
 import { useDocuments } from './useDocuments';
 import { useToast } from './useToast';
-import { SAVE_LOCATION } from '../services/config';
+import { saveLocation } from '../services/config';
 
 const IDLE_REVIEW = { status: 'idle', data: null, error: null };
 
@@ -145,7 +145,7 @@ export function useDocumentReview() {
       (doc) => {
         toast({
           title: 'Opened in the drafting editor',
-          description: `Saved ${SAVE_LOCATION}.`,
+          description: `Saved ${saveLocation()}.`,
           variant: 'success',
         });
         navigate(`/draft/${doc.id}`);

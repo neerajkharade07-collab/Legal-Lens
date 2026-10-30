@@ -51,6 +51,8 @@ export function SeverityLabel({ severity }) {
   );
 }
 
+const SOURCE_LABEL = { ai: 'AI review', rules: 'Rule-based check' };
+
 /** Tool heading row with run/refresh button and freshness information. */
 export function ToolHeader({ title, description, onRun, runLabel = 'Run check', state, stale }) {
   const running = state?.status === 'loading';
@@ -74,7 +76,7 @@ export function ToolHeader({ title, description, onRun, runLabel = 'Run check', 
       {description && <p className="tool-header__desc">{description}</p>}
       {generatedAt && (
         <p className={cn('tool-header__meta', stale && 'is-stale')}>
-          Demo analysis · {formatRelative(generatedAt)}
+          {SOURCE_LABEL[state?.data?.meta?.source] ?? 'Demo analysis'} · {formatRelative(generatedAt)}
           {stale && ' · document changed since this run'}
         </p>
       )}

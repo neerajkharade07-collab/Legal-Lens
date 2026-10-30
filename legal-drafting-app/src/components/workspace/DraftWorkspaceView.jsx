@@ -17,14 +17,18 @@ import { ConfirmDialog } from '../common/ConfirmDialog';
 import { DemoBadge } from '../common/Badge';
 import { RenameDialog } from '../documents/RenameDialog';
 import { CourtPreview } from '../export/CourtPreview';
+import { FinalizeDialog } from '../export/FinalizeDialog';
+import { useFinalization } from '../../hooks/useFinalization';
 import { VersionHistoryDrawer } from './VersionHistoryDrawer';
+import { SaveConflictDialog } from './SaveConflictDialog';
 import { WorkspaceHeader } from './WorkspaceHeader';
 import { WorkspaceMobileNav } from './WorkspaceMobileNav';
 import { CaseDetailsPanel } from './CaseDetailsPanel';
 import { IntelligencePanel, IntelligenceRail } from './IntelligencePanel';
 import { cn } from '../../utils/cn';
 import './DraftWorkspaceView.css';
-import { SAVE_LOCATION } from '../../services/config';
+import { saveLocation } from '../../services/config';
+import { draftNotice, draftLanguageNote } from '../../utils/draftLabels';
 
 const MOBILE_QUERY = '(max-width: 767px)';
 const COMPACT_QUERY = '(max-width: 1279px)';
@@ -52,6 +56,7 @@ export function DraftWorkspaceView({ document }) {
   const [mobileView, setMobileView] = useState('document');
   const [courtPreview, setCourtPreview] = useState(null);
   const [historyOpen, setHistoryOpen] = useState(false);
+  const [finalizeOpen, setFinalizeOpen] = useState(false);
   const [renaming, setRenaming] = useState(false);
   const [confirmRegenerate, setConfirmRegenerate] = useState(false);
   const [languageNoteDismissed, setLanguageNoteDismissed] = useState(false);
@@ -92,12 +97,13 @@ export function DraftWorkspaceView({ document }) {
 
   const handleSave = useCallback(() => {
     recordVersion('manual-save').then((result) => {
-      if (!result.ok) return; // the save hook already reported the error
+      if (!result.ok) return; // the save hook already reported the error (or shows the conflict)
+      if (result.versionError) return; // the save hook already said the version was not recorded
       toast({
         title: 'Draft saved',
         description: result.version
-          ? `Saved ${SAVE_LOCATION} as Version ${result.version.number}.`
-          : `Saved ${SAVE_LOCATION}. No changes since the last version.`,
+          ? `Saved ${saveLocation()} as Version ${result.version.number}.`
+          : `Saved ${saveLocation()}. No changes since the last version.`,
         variant: 'success',
         duration: 2500,
       });
@@ -185,6 +191,47 @@ export function DraftWorkspaceView({ document }) {
     });
   }, [editor, document.name, ws.formatting.lineHeight, toast]);
 
+  const fin = useFinalization({ document, ws, editor });
+
+  /** Real .docx from the server (account documents). Errors are shown, never a false success. */
+  const handleExportDocx = useCallback(
+    async (versionId) => {
+      try {
+        const { filename, unsupported } = await fin.exportWord(versionId);
+        toast({
+          title: 'Word document downloaded',
+          description: unsupported.length
+            ? `${filename} — some elements were exported as plain text (${unsupported.join(', ')}).`
+            : filename,
+          variant: 'success',
+        });
+      } catch (err) {
+        toast({
+          title: 'Word export failed',
+          description: err?.message || 'The Word file could not be created.',
+          variant: 'error',
+        });
+      }
+    },
+    [fin, toast],
+  );
+
+  const handleExportPdf = useCallback(() => {
+    fin.printPdf().then(
+      () =>
+        toast({
+          title: 'Print dialog opened',
+          description: 'Choose “Save as PDF” as the destination to save a PDF.',
+        }),
+      (err) =>
+        toast({
+          title: 'Could not open the print dialog',
+          description: err?.message || 'Try again, or open Preview and print from there.',
+          variant: 'error',
+        }),
+    );
+  }, [fin, toast]);
+
   /** The court-ready preview renders the saved JSON, so pending edits are saved first. */
   const openCourtPreview = useCallback(
     (autoPrint = false) => {
@@ -230,14 +277,19 @@ export function DraftWorkspaceView({ document }) {
         onOpenHistory={() => setHistoryOpen(true)}
         onPreview={() => openCourtPreview(false)}
         onPrint={() => openCourtPreview(true)}
-        onExportPdf={() => openCourtPreview(false)}
+        onExportPdf={handleExportPdf}
         onExportWord={handleExportWord}
+        docxAvailable={fin.serverDoc}
         onExportDocx={() =>
-          toast({
-            title: 'DOCX export is not available',
-            description: exportService.EXPORT_CAPABILITIES.docx.reason,
-          })
+          fin.serverDoc
+            ? handleExportDocx()
+            : toast({
+                title: 'DOCX export needs a CASEONE account',
+                description: exportService.EXPORT_CAPABILITIES.docx.reason,
+              })
         }
+        docStatus={fin.status}
+        onFinalize={() => setFinalizeOpen(true)}
       />
 
       <WorkspaceMobileNav
@@ -310,12 +362,12 @@ export function DraftWorkspaceView({ document }) {
           />
           <div className="ws-canvas">
             <div className="ws-canvas__notes">
-              <DemoBadge>Preliminary demo draft — review before use</DemoBadge>
+              <DemoBadge>{draftNotice(document)}</DemoBadge>
               {language.id !== 'en' && !languageNoteDismissed && (
                 <p className="ws-canvas__lang">
                   <Info size={14} strokeWidth={1.75} aria-hidden="true" />
-                  Draft language: {language.label} ({language.nativeLabel}). Demo drafts are
-                  prepared in English for now.
+                  Draft language: {language.label} ({language.nativeLabel}).{' '}
+                  {draftLanguageNote(document)}
                   <button type="button" onClick={() => setLanguageNoteDismissed(true)}>
                     Dismiss
                   </button>
@@ -332,7 +384,12 @@ export function DraftWorkspaceView({ document }) {
               onTokenClick={handleTokenClick}
               onPresentKeysChange={setPresentKeys}
             />
-            <SelectionActions editor={editor} onAction={handleSelectionAction} />
+            <SelectionActions
+              editor={editor}
+              onAction={handleSelectionAction}
+              actions={intel.selectionActions}
+              disabled={intel.assistant.status === 'loading'}
+            />
             <p className="ws-canvas__disclaimer">
               Legal Lens provides AI-assisted drafting tools and informational assistance. Drafts
               and legal information should be reviewed by a qualified legal professional where
@@ -452,13 +509,44 @@ export function DraftWorkspaceView({ document }) {
 
       {courtPreview && (
         <CourtPreview
-          title={document.name}
+          title={courtPreview.title ?? document.name}
+          draftLabel={courtPreview.label ?? draftNotice(document)}
           content={courtPreview.content}
           autoPrint={courtPreview.autoPrint}
           onClose={() => setCourtPreview(null)}
-          onDownloadWord={handleExportWord}
+          onDownloadWord={courtPreview.versionId ? undefined : handleExportWord}
+          onDownloadDocx={fin.serverDoc ? () => handleExportDocx(courtPreview.versionId) : undefined}
+          docxNote="A real Word (.docx) file needs a document saved to a signed-in CASEONE account."
         />
       )}
+
+      <SaveConflictDialog
+        conflict={ws.conflict}
+        onResolve={async (choice) => {
+          await ws.resolveConflict(choice);
+          toast({
+            title: choice === 'latest' ? 'Latest version loaded' : 'Your version is saved',
+            description: 'The other text was kept in Version history.',
+            variant: 'success',
+          });
+        }}
+      />
+
+      <FinalizeDialog
+        open={finalizeOpen}
+        onClose={() => setFinalizeOpen(false)}
+        document={document}
+        fin={fin}
+        nav={nav}
+        toast={toast}
+        loadVersion={ws.loadVersion}
+        onExportWordHtml={handleExportWord}
+        onPreview={(snapshot) =>
+          snapshot
+            ? setCourtPreview({ content: snapshot.content, title: snapshot.title, label: snapshot.label, versionId: snapshot.versionId })
+            : openCourtPreview(false)
+        }
+      />
     </div>
   );
 }

@@ -1,406 +1,531 @@
 import { useState } from 'react';
-import { Calculator, Copy, Info, RotateCcw, TriangleAlert } from 'lucide-react';
+import { Calculator, Copy, ExternalLink, Info, Plus, RotateCcw, Trash2, TriangleAlert } from 'lucide-react';
 import { useDocumentTitle } from '../hooks/useDocumentTitle';
 import { useToast } from '../hooks/useToast';
 import { limitationService } from '../services';
 import {
-  DEMO_COUNTING_NOTE,
-  DEMO_PERIOD,
-  LIMITATION_WARNING,
-  MATTER_TYPES,
-  PERIOD_UNITS,
-} from '../data/limitation/demoLimitationRules';
+  ACK_KINDS,
+  CIRCUMSTANCES,
+  MATTERS,
+  STATUS_LABELS,
+  displayDate,
+  getMatter,
+  visibleFields,
+} from '../utils/limitationEngine';
 import { Button } from '../components/common/Button';
-import { Badge, DemoBadge } from '../components/common/Badge';
-import { formatDate } from '../utils/date';
+import { Badge } from '../components/common/Badge';
 import { copyText } from '../utils/clipboard';
+import { cn } from '../utils/cn';
 import './LimitationCalculator.css';
 
-const EMPTY_FORM = {
-  matterTypeId: 'civil-suit',
-  eventDate: '',
-  periodSource: 'demo',
-  periodValue: String(DEMO_PERIOD.value),
-  periodUnit: DEMO_PERIOD.unit,
-  excludedDays: '',
-  notes: '',
-};
+const EMPTY = { matterType: '', answers: {}, acknowledgments: [], circumstances: [] };
 
-const STATUS_TEXT = {
-  upcoming: (n) => `${n} day${n === 1 ? '' : 's'} remaining`,
-  today: () => 'The calculated date is today',
-  passed: (n) => `${Math.abs(n)} day${Math.abs(n) === 1 ? '' : 's'} past the calculated date`,
-};
+const NOTICE =
+  'This calculation is for information only. It depends on the facts you enter being accurate and complete and on the law that applies to your claim, and it is not legal advice. Court holidays, vacations and the exceptions listed with the result are not calculated. Confirm the limitation period with a qualified advocate before relying on it.';
+
+const STATUS_TONE = { tentative: 'outline', outside: 'warning', review: 'warning', unavailable: 'neutral', unsupported: 'neutral' };
+
+function daysText(n) {
+  if (n === 0) return 'The tentative end date is today.';
+  const abs = Math.abs(n);
+  const d = `${abs} day${abs === 1 ? '' : 's'}`;
+  return n > 0 ? `${d} from today.` : `${d} ago.`;
+}
 
 /**
- * Demo limitation framework: deterministic date arithmetic only. No statutory
- * period is asserted — the period is either an illustrative demo value or one
- * the user has verified and entered.
+ * Phase 5 — Indian limitation calculator for a small set of suits under the Limitation Act, 1963.
+ * Deterministic engine (utils/limitationEngine.js); every result shows its legal basis, steps,
+ * assumptions, possible exceptions and sources. Nothing is stored.
  */
 export default function LimitationCalculator() {
-  useDocumentTitle('Limitation Period Calculator');
+  useDocumentTitle('Limitation Calculator');
   const { toast } = useToast();
-  const [form, setForm] = useState(EMPTY_FORM);
+  const [form, setForm] = useState(EMPTY);
   const [errors, setErrors] = useState({});
-  const [result, setResult] = useState(null);
+  const [outcome, setOutcome] = useState(null); // { result, computedBy }
+  const [busy, setBusy] = useState(false);
+  const [failure, setFailure] = useState(null);
 
-  const set = (key, value) => {
-    setForm((current) => ({ ...current, [key]: value }));
-    setErrors((current) => ({ ...current, [key]: undefined }));
+  const matter = getMatter(form.matterType);
+  const fields = visibleFields(form.matterType, form.answers);
+  const mode = limitationService.calculationMode();
+
+  const update = (patch) => {
+    setForm((f) => ({ ...f, ...patch }));
+    setOutcome(null);
+    setFailure(null);
   };
+  const setAnswer = (id, value) => {
+    update({ answers: { ...form.answers, [id]: value } });
+    setErrors((e) => ({ ...e, [id]: undefined }));
+  };
+  const setAck = (i, patch) =>
+    update({ acknowledgments: form.acknowledgments.map((a, n) => (n === i ? { ...a, ...patch } : a)) });
 
-  const usingDemoPeriod = form.periodSource === 'demo';
+  async function run(forceMode) {
+    setBusy(true);
+    setFailure(null);
+    try {
+      const out = await limitationService.calculate(form, forceMode ? { mode: forceMode } : undefined);
+      if (!out.ok) {
+        setErrors(out.errors);
+        setOutcome(null);
+        return;
+      }
+      setErrors({});
+      setOutcome({ result: out.result, computedBy: out.computedBy });
+    } catch (err) {
+      setOutcome(null);
+      setFailure(err?.message || 'The calculation could not be completed.');
+    } finally {
+      setBusy(false);
+    }
+  }
 
-  function handleSubmit(event) {
+  function onSubmit(event) {
     event.preventDefault();
-    const outcome = limitationService.calculateDeadline({
-      matterTypeId: form.matterTypeId,
-      eventDate: form.eventDate,
-      periodSource: form.periodSource,
-      period: usingDemoPeriod
-        ? DEMO_PERIOD
-        : { value: Number(form.periodValue), unit: form.periodUnit },
-      excludedDays: form.excludedDays,
-    });
-    if (!outcome.ok) {
-      setErrors({
-        eventDate: outcome.errors.eventDate,
-        periodValue: outcome.errors.period,
-        excludedDays: outcome.errors.excludedDays,
-      });
-      setResult(null);
+    if (!form.matterType) {
+      setErrors({ matterType: 'Choose a legal matter.' });
       return;
     }
-    setErrors({});
-    setResult({ ...outcome.result, notes: form.notes.trim() });
+    run();
   }
 
-  function handleReset() {
-    setForm(EMPTY_FORM);
+  function reset() {
+    setForm(EMPTY);
     setErrors({});
-    setResult(null);
+    setOutcome(null);
+    setFailure(null);
   }
 
-  async function handleCopy() {
+  async function copySummary() {
+    const r = outcome.result;
     const lines = [
-      `Matter type: ${result.matter?.label ?? '—'}`,
-      `Event date: ${formatDate(result.eventDate)}`,
-      `Period used: ${result.period.value} ${result.period.unit} (${result.period.source === 'demo' ? 'demo value — requires verification' : 'entered by user — requires verification'})`,
-      ...(result.excludedDays ? [`Excluded days added: ${result.excludedDays}`] : []),
-      `Calculated date: ${formatDate(result.deadline)}`,
-      STATUS_TEXT[result.status](result.daysRemaining),
-      ...(result.notes ? [`Notes: ${result.notes}`] : []),
+      `Limitation calculation (CASEONE) — ${r.statusLabel}`,
+      `Matter: ${r.matterLabel}`,
+      ...(r.legalBasis ? [`Provision: ${r.legalBasis.article}, ${r.legalBasis.statute} — period: ${r.legalBasis.periodText}`] : []),
+      ...(r.trigger ? [`Starting event: ${r.trigger.label} — ${displayDate(r.trigger.date)}`] : []),
+      ...(r.tentativeEndDate ? [`Tentative limitation end date: ${displayDate(r.tentativeEndDate)}`] : [r.message || r.reason || '']),
+      ...(r.calculationSteps.length ? ['', 'Calculation:', ...r.calculationSteps.map((s, i) => `${i + 1}. ${s}`)] : []),
+      ...(r.reviewReasons.length ? ['', 'Additional legal review required:', ...r.reviewReasons.map((s) => `- ${s}`)] : []),
+      ...(r.warnings.length ? ['', 'Notes:', ...r.warnings.map((s) => `- ${s}`)] : []),
       '',
-      LIMITATION_WARNING,
+      `Sources: ${r.sourceReferences.map((s) => s.url).join(' ; ')}`,
+      `Calculated on ${displayDate(r.today)}.`,
+      '',
+      NOTICE,
     ];
     const ok = await copyText(lines.join('\n'));
     toast({
       title: ok ? 'Summary copied' : 'Could not copy',
-      description: ok ? 'The verification warning is included.' : 'Copy the text manually instead.',
+      description: ok ? 'Paste it where you need it. The notice is included.' : 'Select and copy the text manually instead.',
       variant: ok ? 'success' : 'error',
     });
   }
+
+  const r = outcome?.result;
 
   return (
     <div className="limit container">
       <header className="limit__head">
         <p className="eyebrow">Tools</p>
-        <h1 className="limit__title">Limitation Period Calculator</h1>
+        <h1 className="limit__title">Limitation Calculator</h1>
         <p className="limit__lead">
-          A date framework for working out an indicative deadline from an event date. It does not
-          supply legal periods.
+          Estimates the limitation period for selected civil suits under the Limitation Act, 1963, and shows the provision,
+          the starting date and every step of the calculation.
         </p>
       </header>
 
-      <p className="limit__warning" role="note">
-        <TriangleAlert size={18} strokeWidth={1.75} aria-hidden="true" />
-        <span>{LIMITATION_WARNING}</span>
-      </p>
-
       <div className="limit__grid">
-        <form className="limit__form panel" onSubmit={handleSubmit} noValidate>
+        <form className="limit__form panel" onSubmit={onSubmit} noValidate aria-labelledby="limit-matter-title">
           <div className="panel__header">
-            <h2 className="panel__title">Calculation inputs</h2>
-            <DemoBadge>Demo framework</DemoBadge>
+            <h2 className="panel__title" id="limit-matter-title">
+              Matter details
+            </h2>
           </div>
 
           <div className="limit__fields">
             <div className="form-field">
-              <label className="form-label" htmlFor="matter-type">
-                Matter type
+              <label className="form-label" htmlFor="limit-matter">
+                Legal matter
               </label>
               <select
-                id="matter-type"
+                id="limit-matter"
                 className="form-select"
-                value={form.matterTypeId}
-                onChange={(e) => set('matterTypeId', e.target.value)}
+                value={form.matterType}
+                aria-invalid={Boolean(errors.matterType)}
+                aria-describedby={errors.matterType ? 'limit-matter-error' : 'limit-matter-hint'}
+                onChange={(e) => {
+                  update({ matterType: e.target.value, answers: {}, acknowledgments: [], circumstances: [] });
+                  setErrors({});
+                }}
               >
-                {MATTER_TYPES.map((m) => (
+                <option value="">Choose a matter…</option>
+                {MATTERS.map((m) => (
                   <option key={m.id} value={m.id}>
                     {m.label}
                   </option>
                 ))}
               </select>
-              <p className="form-hint">
-                Recorded for context. No limitation period is configured for any matter type in this
-                demo.
-              </p>
-            </div>
-
-            <div className="form-field">
-              <label className="form-label" htmlFor="event-date">
-                Event date
-              </label>
-              <input
-                id="event-date"
-                type="date"
-                className="form-input"
-                value={form.eventDate}
-                onChange={(e) => set('eventDate', e.target.value)}
-                aria-invalid={Boolean(errors.eventDate)}
-                aria-describedby={errors.eventDate ? 'event-date-error' : 'event-date-hint'}
-                required
-              />
-              {errors.eventDate ? (
-                <p id="event-date-error" className="form-error" role="alert">
-                  {errors.eventDate}
+              {errors.matterType ? (
+                <p id="limit-matter-error" className="form-error" role="alert">
+                  {errors.matterType}
                 </p>
               ) : (
-                <p id="event-date-hint" className="form-hint">
-                  The date the period runs from — for example the date of the order, refusal or
-                  incident.
+                <p id="limit-matter-hint" className="form-hint">
+                  {matter ? matter.summary : 'Only the matters listed are calculated. Choose “Other matter” for anything else.'}
                 </p>
               )}
             </div>
 
-            <fieldset className="limit__fieldset">
-              <legend className="form-label">Period to apply</legend>
-              <label className="limit__radio">
-                <input
-                  type="radio"
-                  name="period-source"
-                  value="demo"
-                  checked={usingDemoPeriod}
-                  onChange={() => set('periodSource', 'demo')}
-                />
-                <span>
-                  Demo value — {DEMO_PERIOD.value} {DEMO_PERIOD.unit}
-                  <Badge tone="demo" className="limit__inline-badge">
-                    Demo value · Requires verification
-                  </Badge>
-                  <span className="form-hint">
-                    Illustrative only. It is not the limitation period for any proceeding.
-                  </span>
-                </span>
-              </label>
-              <label className="limit__radio">
-                <input
-                  type="radio"
-                  name="period-source"
-                  value="custom"
-                  checked={!usingDemoPeriod}
-                  onChange={() => set('periodSource', 'custom')}
-                />
-                <span>
-                  Period I have verified
-                  <span className="form-hint">
-                    Enter the period from the law or source that applies to your matter.
-                  </span>
-                </span>
-              </label>
-
-              <div className="limit__period">
-                <div className="form-field">
-                  <label className="form-label" htmlFor="period-value">
-                    Length
+            {fields.map((f) => {
+              const id = `limit-f-${f.id}`;
+              const err = errors[f.id];
+              if (f.type === 'choice') {
+                return (
+                  <fieldset key={f.id} className="limit__fieldset" aria-describedby={err ? `${id}-error` : undefined}>
+                    <legend className="form-label">{f.label}</legend>
+                    {f.options.map((o) => (
+                      <label key={o.value} className="limit__radio">
+                        <input
+                          type="radio"
+                          name={id}
+                          value={o.value}
+                          checked={form.answers[f.id] === o.value}
+                          onChange={() => setAnswer(f.id, o.value)}
+                        />
+                        <span>{o.label}</span>
+                      </label>
+                    ))}
+                    {err && (
+                      <p id={`${id}-error`} className="form-error" role="alert">
+                        {err}
+                      </p>
+                    )}
+                  </fieldset>
+                );
+              }
+              return (
+                <div key={f.id} className="form-field">
+                  <label className="form-label" htmlFor={id}>
+                    {f.label}
                   </label>
                   <input
-                    id="period-value"
-                    type="number"
-                    min="1"
+                    id={id}
+                    type="date"
                     className="form-input"
-                    value={usingDemoPeriod ? DEMO_PERIOD.value : form.periodValue}
-                    disabled={usingDemoPeriod}
-                    onChange={(e) => set('periodValue', e.target.value)}
-                    aria-invalid={Boolean(errors.periodValue)}
-                    aria-describedby={errors.periodValue ? 'period-error' : undefined}
+                    min="1964-01-01"
+                    max="2099-12-31"
+                    value={form.answers[f.id] || ''}
+                    aria-invalid={Boolean(err)}
+                    aria-describedby={err ? `${id}-error` : f.hint ? `${id}-hint` : undefined}
+                    onChange={(e) => setAnswer(f.id, e.target.value)}
                   />
+                  {err ? (
+                    <p id={`${id}-error`} className="form-error" role="alert">
+                      {err}
+                    </p>
+                  ) : (
+                    f.hint && (
+                      <p id={`${id}-hint`} className="form-hint">
+                        {f.hint}
+                      </p>
+                    )
+                  )}
                 </div>
-                <div className="form-field">
-                  <label className="form-label" htmlFor="period-unit">
-                    Unit
-                  </label>
-                  <select
-                    id="period-unit"
-                    className="form-select"
-                    value={usingDemoPeriod ? DEMO_PERIOD.unit : form.periodUnit}
-                    disabled={usingDemoPeriod}
-                    onChange={(e) => set('periodUnit', e.target.value)}
+              );
+            })}
+
+            {matter?.ackAllowed && (
+              <fieldset className="limit__fieldset">
+                <legend className="form-label">
+                  Acknowledgment or part payment <span className="form-label__optional">(optional)</span>
+                </legend>
+                <p className="form-hint">
+                  A written, signed acknowledgment of the debt (Section 18) or a part payment acknowledged in writing (Section 19),
+                  made before the period ended, starts a fresh period.
+                </p>
+                {form.acknowledgments.map((a, i) => (
+                  <div key={i} className="limit__ack">
+                    <div className="limit__ack-row">
+                      <div className="form-field">
+                        <label className="form-label" htmlFor={`limit-ack-kind-${i}`}>
+                          Type
+                        </label>
+                        <select id={`limit-ack-kind-${i}`} className="form-select" value={a.kind} onChange={(e) => setAck(i, { kind: e.target.value })}>
+                          {ACK_KINDS.map((k) => (
+                            <option key={k.value} value={k.value}>
+                              {k.label}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+                      <div className="form-field">
+                        <label className="form-label" htmlFor={`limit-ack-date-${i}`}>
+                          Date
+                        </label>
+                        <input
+                          id={`limit-ack-date-${i}`}
+                          type="date"
+                          className="form-input"
+                          value={a.date}
+                          aria-invalid={Boolean(errors[`acknowledgments.${i}.date`])}
+                          onChange={(e) => setAck(i, { date: e.target.value })}
+                        />
+                      </div>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        icon={Trash2}
+                        aria-label={`Remove entry ${i + 1}`}
+                        onClick={() => update({ acknowledgments: form.acknowledgments.filter((_, n) => n !== i) })}
+                      />
+                    </div>
+                    {(errors[`acknowledgments.${i}.date`] || errors[`acknowledgments.${i}.kind`]) && (
+                      <p className="form-error" role="alert">
+                        {errors[`acknowledgments.${i}.date`] || errors[`acknowledgments.${i}.kind`]}
+                      </p>
+                    )}
+                    <label className="limit__radio">
+                      <input type="checkbox" checked={a.confirmed} onChange={(e) => setAck(i, { confirmed: e.target.checked })} />
+                      <span>
+                        {a.kind === 'payment'
+                          ? 'The payment was made by the person liable (or their authorised agent), and it is acknowledged in their handwriting or in a writing signed by them.'
+                          : 'The acknowledgment is in writing and signed by the person liable (or their authorised agent).'}
+                      </span>
+                    </label>
+                  </div>
+                ))}
+                {errors.acknowledgments && (
+                  <p className="form-error" role="alert">
+                    {errors.acknowledgments}
+                  </p>
+                )}
+                {form.acknowledgments.length < 20 && (
+                  <Button
+                    variant="secondary"
+                    size="sm"
+                    icon={Plus}
+                    className="limit__add"
+                    onClick={() => update({ acknowledgments: [...form.acknowledgments, { kind: 'acknowledgment', date: '', confirmed: false }] })}
                   >
-                    {PERIOD_UNITS.map((u) => (
-                      <option key={u.id} value={u.id}>
-                        {u.label}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-              </div>
-              {errors.periodValue && (
-                <p id="period-error" className="form-error" role="alert">
-                  {errors.periodValue}
-                </p>
-              )}
-            </fieldset>
+                    Add acknowledgment or payment
+                  </Button>
+                )}
+              </fieldset>
+            )}
 
-            <div className="form-field">
-              <label className="form-label" htmlFor="excluded-days">
-                Excluded days <span className="form-label__optional">(optional)</span>
-              </label>
-              <input
-                id="excluded-days"
-                type="number"
-                min="0"
-                className="form-input"
-                placeholder="0"
-                value={form.excludedDays}
-                onChange={(e) => set('excludedDays', e.target.value)}
-                aria-invalid={Boolean(errors.excludedDays)}
-                aria-describedby={errors.excludedDays ? 'excluded-error' : 'excluded-hint'}
-              />
-              {errors.excludedDays ? (
-                <p id="excluded-error" className="form-error" role="alert">
-                  {errors.excludedDays}
-                </p>
-              ) : (
-                <p id="excluded-hint" className="form-hint">
-                  Days you have established should be added, for example time taken to obtain a
-                  copy. Whether an exclusion applies is not decided here.
-                </p>
-              )}
-            </div>
-
-            <div className="form-field">
-              <label className="form-label" htmlFor="limit-notes">
-                Notes <span className="form-label__optional">(optional)</span>
-              </label>
-              <textarea
-                id="limit-notes"
-                className="form-textarea"
-                rows={3}
-                value={form.notes}
-                placeholder="Source you verified the period against, file reference, assumptions…"
-                onChange={(e) => set('notes', e.target.value)}
-              />
-            </div>
+            {matter && matter.id !== 'other' && (
+              <fieldset className="limit__fieldset">
+                <legend className="form-label">
+                  Do any of these apply? <span className="form-label__optional">(optional)</span>
+                </legend>
+                <p className="form-hint">They can change the period. They are not calculated; ticking one marks the result for legal review.</p>
+                {CIRCUMSTANCES.map((c) => (
+                  <label key={c.id} className="limit__radio">
+                    <input
+                      type="checkbox"
+                      checked={form.circumstances.includes(c.id)}
+                      onChange={(e) =>
+                        update({
+                          circumstances: e.target.checked
+                            ? [...form.circumstances, c.id]
+                            : form.circumstances.filter((x) => x !== c.id),
+                        })
+                      }
+                    />
+                    <span>
+                      {c.label} <span className="limit__muted">({c.section})</span>
+                    </span>
+                  </label>
+                ))}
+                {errors.circumstances && (
+                  <p className="form-error" role="alert">
+                    {errors.circumstances}
+                  </p>
+                )}
+              </fieldset>
+            )}
           </div>
 
           <div className="limit__actions">
-            <Button type="submit" icon={Calculator}>
-              Calculate date
+            <Button type="submit" icon={Calculator} disabled={busy}>
+              {busy ? 'Calculating…' : 'Calculate'}
             </Button>
-            <Button type="button" variant="secondary" icon={RotateCcw} onClick={handleReset}>
+            <Button type="button" variant="secondary" icon={RotateCcw} onClick={reset}>
               Reset
             </Button>
           </div>
+          <p className="limit__mode">
+            {mode === 'server'
+              ? 'Calculated by the CASEONE server for your account. Nothing is saved.'
+              : 'Demo Mode: calculated in this browser with the same rules. Nothing is saved or sent.'}
+          </p>
         </form>
 
-        <section className="limit__result panel" aria-live="polite" aria-label="Calculation result">
-          {!result ? (
+        <section className="limit__result panel" aria-live="polite" aria-labelledby="limit-result-title">
+          <div className="panel__header">
+            <h2 className="panel__title" id="limit-result-title">
+              Calculation result
+            </h2>
+            {r && (
+              <Badge tone={STATUS_TONE[r.status]} className="limit__status-badge">
+                {r.statusLabel}
+              </Badge>
+            )}
+          </div>
+
+          {failure && (
+            <div className="limit__failure" role="alert">
+              <p>
+                <TriangleAlert size={16} strokeWidth={1.75} aria-hidden="true" /> {STATUS_LABELS.unavailable}: {failure}
+              </p>
+              <Button variant="secondary" size="sm" onClick={() => run('browser')}>
+                Calculate in this browser instead
+              </Button>
+            </div>
+          )}
+
+          {!r && !failure && (
             <div className="limit__placeholder">
               <span className="limit__placeholder-icon" aria-hidden="true">
                 <Calculator size={20} strokeWidth={1.5} />
               </span>
               <p className="limit__placeholder-title">No calculation yet</p>
-              <p className="limit__placeholder-text">
-                Enter an event date and the period to apply. The result shows every step of the
-                arithmetic so it can be checked.
-              </p>
+              <p className="limit__placeholder-text">Choose the matter, answer the questions and enter the dates, then press Calculate.</p>
             </div>
-          ) : (
+          )}
+
+          {r && !r.tentativeEndDate && (
+            <div className="limit__unsupported">
+              <p className="limit__unsupported-title">{r.status === 'unsupported' ? r.message : r.reason}</p>
+              {r.status === 'unsupported' && r.reason && <p className="limit__muted">{r.reason}</p>}
+              {r.status === 'unavailable' && <p className="limit__muted">Consult a qualified legal professional.</p>}
+            </div>
+          )}
+
+          {r && r.tentativeEndDate && (
             <>
-              <div className="panel__header">
-                <h2 className="panel__title">Calculated date</h2>
-                <Badge tone="demo">
-                  {result.period.source === 'demo' ? 'Demo value' : 'User-entered period'} ·
-                  Requires verification
-                </Badge>
+              <div className="limit__headline">
+                <p className="limit__label">{STATUS_LABELS.tentative}</p>
+                <p className="limit__date">{displayDate(r.tentativeEndDate)}</p>
+                <p className={cn('limit__status', r.status === 'outside' && 'limit__status--passed')}>
+                  {r.endWeekday} · {daysText(r.daysRemaining)}
+                  {r.status === 'outside' && ` ${STATUS_LABELS.outside}.`}
+                </p>
               </div>
 
-              <div className="limit__headline">
-                <p className="limit__date">{formatDate(result.deadline)}</p>
-                <p className={`limit__status limit__status--${result.status}`}>
-                  {STATUS_TEXT[result.status](result.daysRemaining)}
-                </p>
-                {result.eventInFuture && (
-                  <p className="limit__flag">The event date is in the future.</p>
-                )}
-              </div>
+              {r.reviewReasons.length > 0 && (
+                <div className="limit__review" role="note">
+                  <h3>
+                    <TriangleAlert size={15} strokeWidth={1.75} aria-hidden="true" /> {STATUS_LABELS.review}
+                  </h3>
+                  <ul>
+                    {r.reviewReasons.map((x) => (
+                      <li key={x}>{x}</li>
+                    ))}
+                  </ul>
+                </div>
+              )}
 
               <dl className="limit__facts">
                 <div>
-                  <dt>Matter type</dt>
-                  <dd>{result.matter?.label ?? '—'}</dd>
+                  <dt>Legal matter</dt>
+                  <dd>{r.matterLabel}</dd>
                 </div>
                 <div>
-                  <dt>Event date</dt>
-                  <dd>{formatDate(result.eventDate)}</dd>
-                </div>
-                <div>
-                  <dt>Period applied</dt>
+                  <dt>Applicable provision</dt>
                   <dd>
-                    {result.period.value} {result.period.unit}
-                    <span className="limit__facts-note">
-                      {result.period.source === 'demo'
-                        ? 'Demo value — requires verification'
-                        : 'Entered by you — requires verification'}
-                    </span>
+                    {r.legalBasis.article}, Schedule
+                    <span className="limit__facts-note">{r.legalBasis.statute}</span>
                   </dd>
                 </div>
                 <div>
-                  <dt>Excluded days added</dt>
-                  <dd>{result.excludedDays}</dd>
+                  <dt>Starting event</dt>
+                  <dd>
+                    {r.trigger.label}
+                    <span className="limit__facts-note">{displayDate(r.trigger.date)}</span>
+                  </dd>
                 </div>
                 <div>
-                  <dt>Days since the event</dt>
-                  <dd>{result.daysElapsed}</dd>
+                  <dt>Limitation period</dt>
+                  <dd>{r.limitationPeriod.label}</dd>
                 </div>
+                {r.adjustedBy.length > 0 && (
+                  <div>
+                    <dt>Ordinary end date</dt>
+                    <dd>
+                      {displayDate(r.ordinaryEndDate)}
+                      <span className="limit__facts-note">Before the acknowledgment / payment</span>
+                    </dd>
+                  </div>
+                )}
                 <div>
-                  <dt>{result.status === 'passed' ? 'Days since that date' : 'Days remaining'}</dt>
-                  <dd>{Math.abs(result.daysRemaining)}</dd>
+                  <dt>Provision text</dt>
+                  <dd className="limit__quote">
+                    “{r.legalBasis.description}” — time runs from: {r.legalBasis.startsText}
+                  </dd>
                 </div>
               </dl>
 
               <div className="limit__steps">
-                <h3>How this date was calculated</h3>
+                <h3>How the date was calculated</h3>
                 <ol>
-                  {result.steps.map((step) => (
-                    <li key={step}>{step}</li>
+                  {r.calculationSteps.map((s) => (
+                    <li key={s}>{s}</li>
                   ))}
                 </ol>
-                <p className="form-hint">{DEMO_COUNTING_NOTE}</p>
               </div>
 
-              {result.weekendNote && (
-                <p className="limit__flag">
-                  <Info size={14} strokeWidth={1.75} aria-hidden="true" />
-                  {result.weekendNote}
+              <div className="limit__steps">
+                <h3>Assumptions</h3>
+                <ul className="limit__list">
+                  {r.assumptions.map((s) => (
+                    <li key={s}>{s}</li>
+                  ))}
+                </ul>
+              </div>
+
+              <div className="limit__steps">
+                <h3>Possible exceptions and notes</h3>
+                <ul className="limit__list">
+                  {r.warnings.map((s) => (
+                    <li key={s}>{s}</li>
+                  ))}
+                  <li>
+                    Not calculated: disability (Section 6), fraud or mistake (Section 17), time in another court (Section 14),
+                    stays, notice or sanction periods and the defendant’s absence from India (Section 15), and pre-institution
+                    mediation in commercial disputes.
+                  </li>
+                </ul>
+              </div>
+            </>
+          )}
+
+          {r && (
+            <>
+              <div className="limit__steps">
+                <h3>Sources</h3>
+                <ul className="limit__sources">
+                  {r.sourceReferences.map((s) => (
+                    <li key={s.id}>
+                      <a href={s.url} target="_blank" rel="noopener noreferrer">
+                        {s.title} <ExternalLink size={12} strokeWidth={1.75} aria-hidden="true" />
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+                <p className="limit__muted">
+                  <Info size={13} strokeWidth={1.75} aria-hidden="true" />{' '}
+                  {r.verificationStatus.verifiedOn
+                    ? `Provision checked against the official text on ${displayDate(r.verificationStatus.verifiedOn)}. Later amendments or court rulings may change it.`
+                    : r.verificationStatus.note}{' '}
+                  {outcome.computedBy === 'server' ? 'Calculated by the CASEONE server' : 'Calculated in this browser'} on{' '}
+                  {displayDate(r.today)}.
                 </p>
-              )}
-
-              {result.notes && (
-                <div className="limit__notes">
-                  <h3>Your notes</h3>
-                  <p>{result.notes}</p>
-                </div>
-              )}
-
-              <p className="limit__warning limit__warning--inline" role="note">
-                <TriangleAlert size={16} strokeWidth={1.75} aria-hidden="true" />
-                <span>{LIMITATION_WARNING}</span>
-              </p>
-
+              </div>
               <div className="limit__actions">
-                <Button variant="secondary" icon={Copy} onClick={handleCopy}>
+                <Button variant="secondary" icon={Copy} onClick={copySummary}>
                   Copy summary
                 </Button>
               </div>
@@ -408,6 +533,16 @@ export default function LimitationCalculator() {
           )}
         </section>
       </div>
+
+      <section className="limit__warning" aria-labelledby="limit-notice-title">
+        <TriangleAlert size={18} strokeWidth={1.75} aria-hidden="true" />
+        <div>
+          <h2 id="limit-notice-title" className="limit__notice-title">
+            Important notice
+          </h2>
+          <p>{NOTICE}</p>
+        </div>
+      </section>
     </div>
   );
 }

@@ -5,6 +5,7 @@ import { Badge } from '../common/Badge';
 import { StatusMark, ToolHeader, ToolLoading, ToolError, DemoNotice } from './IntelShared';
 import { BlockPreview } from './BlockPreview';
 import './ClausesTool.css';
+import { AiClauses } from './AiReview';
 
 const PRIORITY = { high: 'High priority', medium: 'Medium priority', low: 'Low priority' };
 
@@ -66,7 +67,7 @@ function ClauseCard({ clause, added, intel, nav }) {
   );
 }
 
-export function ClausesTool({ intel, nav, documentTypeName }) {
+function DemoClausesTool({ intel, nav, documentTypeName }) {
   const state = intel.results.clauses;
   const { run } = intel;
 
@@ -133,4 +134,12 @@ export function ClausesTool({ intel, nav, documentTypeName }) {
       )}
     </div>
   );
+}
+
+/**
+ * Signed-in account document: the real review (Phase 3, CASEONE server).
+ * Otherwise (Demo Mode, document review page): the existing demo tool, unchanged.
+ */
+export function ClausesTool(props) {
+  return props.intel?.aiReview ? <AiClauses {...props} /> : <DemoClausesTool {...props} />;
 }

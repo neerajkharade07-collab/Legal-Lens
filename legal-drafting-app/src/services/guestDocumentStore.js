@@ -72,7 +72,24 @@ function pushVersion(map, record, reason, detail = '') {
   return version;
 }
 
-const summary = ({ content: _c, ...rest }) => rest;
+/** Copy without the given keys (no unused bindings for lint). */
+const omit = (record, keys) => {
+  const rest = { ...record };
+  keys.forEach((k) => delete rest[k]);
+  return rest;
+};
+
+const summary = (record) => omit(record, ['content']);
+
+/** Raw stored records (backend shape), for copying Demo Mode drafts to an account. Read-only. */
+export function listRecords() {
+  return readDocs().map((record) => clone(record));
+}
+
+/** One raw stored record (backend shape), read-only. */
+export function getRecord(id) {
+  return clone(findRecord(id));
+}
 
 export async function listDocuments() {
   return readDocs()
@@ -136,7 +153,7 @@ export async function deleteDocument(id) {
 
 export async function listVersions(id) {
   const list = readVersions()[id] ?? [];
-  return list.map(({ content: _c, structuredData: _s, ...rest }) => versionFromApi(rest));
+  return list.map((v) => versionFromApi(omit(v, ['content', 'structuredData'])));
 }
 
 export async function getVersion(id, versionId) {

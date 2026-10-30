@@ -18,15 +18,26 @@
          proxied to the backend by Vercel) and http://localhost:5000/api only
          for local static development. -->
     <script src="../config.js"></script>
+    <!-- Shared session helpers (access token in memory + httpOnly refresh cookie).
+         AI Legal Guidance is for logged-in customer accounts. -->
+    <script src="../auth.js"></script>
     <script src="legal-help-data.js"></script>
     <script src="legal-help-service.js"></script>
+    <script src="legal-help-voice.js"></script>
     <script src="legal-help-components.js"></script>
+    <script src="legal-help-sidebar.js"></script>
     <script src="legal-help.js"></script>
     <script>
       LegalHelpDashboard.mount(document.getElementById('legal-help'), {
-        // Legal Lens backend (from ../config.js). The OpenAI key stays in the backend .env.
+        // Legal Lens backend (from ../config.js). The Gemini key stays in the backend .env.
         // Previously hard-coded to http://localhost:5000/api, which fails on the public site.
-        apiBaseUrl: typeof API_BASE_URL !== 'undefined' ? API_BASE_URL : '/api'
+        apiBaseUrl: typeof API_BASE_URL !== 'undefined' ? API_BASE_URL : '/api',
+        // Existing customer login page; it returns here after a successful login.
+        loginUrl: '../login.html',
+        returnPath: 'legal-help-dashboard/index.html',
+        // Lawyer Connect directory and profile pages (lawyer suggestions link here).
+        findLawyerUrl: '../find-a-lawyer.html',
+        lawyerProfileUrl: '../lawyer-profile.html'
       });
     </script>
   </body>

@@ -3,6 +3,7 @@ import TextAlign from '@tiptap/extension-text-align';
 import { TextStyle, FontFamily, FontSize } from '@tiptap/extension-text-style';
 import { Placeholder } from '@tiptap/extensions';
 import { FieldToken } from './extensions/FieldToken';
+import { PageBreak } from './extensions/PageBreak';
 
 /** Minimum set of extensions for the legal document editor. */
 export function createEditorExtensions() {
@@ -25,5 +26,6 @@ export function createEditorExtensions() {
     FontSize,
     Placeholder.configure({ placeholder: 'Start typing your document…' }),
     FieldToken,
+    PageBreak,
   ];
 }

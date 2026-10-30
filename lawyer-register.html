@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CASEONE — Register as a Lawyer</title>
+<meta name="description" content="Register as a lawyer on CASEONE in four steps. Your dashboard opens and your profile is listed in Lawyer Connect straight away.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="lawyer-system.css">
+<link rel="stylesheet" href="lawyer-register.css">
+</head>
+<body class="reg-body">
+<a class="skip-link" href="#regMain">Skip to the form</a>
+
+<div class="reg-shell">
+
+  <!-- ================= RAIL: progress + credential file ================= -->
+  <aside class="reg-rail" aria-label="Registration progress">
+    <a href="index.html" class="reg-brand">
+      <svg viewBox="0 0 24 24" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3 4 6v6c0 5 3.4 9.2 8 10 4.6-.8 8-5 8-10V6z"></path></svg>
+      CASEONE
+    </a>
+
+    <div class="rail-intro">
+      <h1 class="rail-title">Register as a lawyer</h1>
+      <p class="rail-sub">Four short steps. When you finish, your dashboard opens and your profile is listed in Lawyer Connect, marked “Not yet reviewed”. Clients can send requests after a basic CASEONE review.</p>
+    </div>
+
+    <ol class="rail-steps" id="railSteps">
+      <li><button type="button" class="rail-step" data-step="account"><span class="rs-num">1</span><span class="rs-text"><strong>Account</strong><span>Name, email, mobile, password</span></span></button></li>
+      <li><button type="button" class="rail-step" data-step="professional"><span class="rs-num">2</span><span class="rs-text"><strong>Professional profile</strong><span>City, photo, Bar Council, practice, consultations</span></span></button></li>
+      <li><button type="button" class="rail-step" data-step="documents"><span class="rs-num">3</span><span class="rs-text"><strong>Documents</strong><span>Aadhaar, PAN, Sanad, law degree</span></span></button></li>
+      <li><button type="button" class="rail-step" data-step="complete"><span class="rs-num">4</span><span class="rs-text"><strong>Registration complete</strong><span>Your dashboard opens</span></span></button></li>
+    </ol>
+
+    <div class="rail-file">
+      <div class="rail-file-head"><p>Your credential file</p><span id="railDocCount">0 of 4</span></div>
+      <div class="rail-meter" aria-hidden="true"><span id="railMeter"></span></div>
+      <ul class="rail-docs" id="railDocs">
+        <li data-kind="aadhaar_card"><span class="rd-box" aria-hidden="true"></span>Aadhaar card (masked)</li>
+        <li data-kind="pan_card"><span class="rd-box" aria-hidden="true"></span>PAN card</li>
+        <li data-kind="enrollment_certificate"><span class="rd-box" aria-hidden="true"></span>Sanad / enrollment certificate</li>
+        <li data-kind="law_degree"><span class="rd-box" aria-hidden="true"></span>Law degree certificate</li>
+      </ul>
+    </div>
+
+    <div class="rail-mobile" aria-hidden="true">
+      <div class="rm-row"><strong id="rmTitle">Register as a lawyer</strong><span id="rmStep"></span></div>
+      <div class="rail-meter"><span id="rmMeter"></span></div>
+    </div>
+
+    <p class="rail-privacy">
+      <svg viewBox="0 0 24 24" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="10" width="16" height="10" rx="2"></rect><path d="M8 10V7a4 4 0 0 1 8 0v3"></path></svg>
+      <span>Documents are stored privately and are never shown on your public profile. Aadhaar and PAN numbers are never displayed; only the last 4 characters are kept.</span>
+    </p>
+  </aside>
+
+  <!-- ================= MAIN ================= -->
+  <main class="reg-main" id="regMain" tabindex="-1">
+    <div class="reg-inner">
+      <div class="reg-topline">
+        <a href="lawyer-portal.html"><svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>Lawyer Portal</a>
+        <span class="session-box" id="sessionBox" hidden><span id="sessionWho"></span><button type="button" class="link-btn" id="logoutBtn">Log out</button></span>
+      </div>
+
+      <div class="reg-alert" id="globalAlert" role="alert" hidden></div>
+
+      <div class="loading-state" id="loadingState" role="status"><span class="spinner"></span>Loading your registration…</div>
+
+      <!-- ============ STEP 1: ACCOUNT ============ -->
+      <section class="reg-step" id="step-account" hidden aria-labelledby="h-account">
+        <div class="step-head">
+          <p class="step-count">Step 1 of 4</p>
+          <h2 id="h-account">Create your lawyer account</h2>
+          <p id="accountIntro">Use your name exactly as it appears on your Sanad and identity documents. Already started? <a href="lawyer-login.html">Log in to continue</a>.</p>
+        </div>
+        <div class="reg-alert" id="clientSessionNote" hidden>You are signed in with a client account. Log out first to create a separate lawyer account. <button type="button" class="link-btn" id="clientLogout">Log out</button></div>
+        <form id="formAccount" novalidate>
+          <div class="panel">
+            <div class="field" id="f-acName">
+              <label for="acName">Full legal name</label>
+              <input class="input" id="acName" autocomplete="name" maxlength="120" placeholder="As it appears on your Bar Council enrollment" aria-describedby="acName-err">
+              <div class="err" id="acName-err">Enter your full name.</div>
+            </div>
+            <div class="grid-2">
+              <div class="field" id="f-acEmail">
+                <label for="acEmail">Email address</label>
+                <input class="input" id="acEmail" type="email" autocomplete="email" maxlength="254" placeholder="you@example.com" aria-describedby="acEmail-err">
+                <div class="err" id="acEmail-err">Enter a valid email address.</div>
+              </div>
+              <div class="field" id="f-acPhone">
+                <label for="acPhone">Mobile number</label>
+                <input class="input" id="acPhone" type="tel" inputmode="tel" autocomplete="tel" maxlength="16" placeholder="98200 12345" aria-describedby="acPhone-hint acPhone-err">
+                <div class="hint" id="acPhone-hint">10-digit Indian mobile number. Private — never shown to clients.</div>
+                <div class="err" id="acPhone-err">Enter a valid 10-digit Indian mobile number.</div>
+              </div>
+            </div>
+            <div class="grid-2" id="acPasswordRow">
+              <div class="field" id="f-acPassword">
+                <label for="acPassword">Password</label>
+                <div class="pw-wrap">
+                  <input class="input" id="acPassword" type="password" autocomplete="new-password" maxlength="128" aria-describedby="pwRules acPassword-err">
+                  <button type="button" class="pw-toggle" data-toggle="acPassword" aria-label="Show password"><svg viewBox="0 0 24 24" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7z"></path><circle cx="12" cy="12" r="3"></circle></svg></button>
+                </div>
+                <ul class="pw-rules" id="pwRules">
+                  <li data-rule="len">8+ characters</li><li data-rule="upper">Uppercase</li><li data-rule="lower">Lowercase</li><li data-rule="num">Number</li><li data-rule="sym">Symbol</li>
+                </ul>
+                <div class="err" id="acPassword-err">Use a password that meets every rule above.</div>
+              </div>
+              <div class="field" id="f-acConfirm">
+                <label for="acConfirm">Confirm password</label>
+                <div class="pw-wrap">
+                  <input class="input" id="acConfirm" type="password" autocomplete="new-password" maxlength="128" aria-describedby="acConfirm-err">
+                  <button type="button" class="pw-toggle" data-toggle="acConfirm" aria-label="Show password"><svg viewBox="0 0 24 24" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7z"></path><circle cx="12" cy="12" r="3"></circle></svg></button>
+                </div>
+                <div class="err" id="acConfirm-err">The passwords do not match.</div>
+              </div>
+            </div>
+            <label class="check" id="f-acTerms" data-new-only><input type="checkbox" id="acTerms"><span>I am an advocate enrolled with a State Bar Council. I agree to the CASEONE Terms of Service and Privacy Policy, and I understand my profile is listed as soon as I finish registering, marked as not yet reviewed, and that clients can send requests only after a CASEONE review.</span></label>
+          </div>
+          <div class="actions">
+            <button type="submit" class="btn" id="btnAccount"><span class="spinner"></span><span class="lbl">Create account and continue</span></button>
+          </div>
+        </form>
+      </section>
+
+      <!-- ============ STEP 2: PROFESSIONAL PROFILE ============ -->
+      <section class="reg-step" id="step-professional" hidden aria-labelledby="h-professional">
+        <div class="step-head">
+          <p class="step-count">Step 2 of 4</p>
+          <h2 id="h-professional">Professional profile</h2>
+          <p>These details build your public Lawyer Connect profile, which is listed as soon as you finish registering.</p>
+        </div>
+        <div class="reg-alert is-strong" id="updateNote" hidden></div>
+        <form id="formProfessional" novalidate>
+          <div class="panel">
+            <h3>Location and photograph</h3>
+            <p class="panel-sub">Clients search by city. Your photograph is shown on your public profile.</p>
+            <div class="grid-2">
+              <div class="field" id="f-pState">
+                <label for="pState">State</label>
+                <select class="select" id="pState" aria-describedby="pState-err"></select>
+                <div class="err" id="pState-err">Choose your state.</div>
+              </div>
+              <div class="field" id="f-pCity">
+                <label for="pCity">City</label>
+                <input class="input" id="pCity" autocomplete="address-level2" maxlength="120" placeholder="e.g. Pune" aria-describedby="pCity-err">
+                <div class="err" id="pCity-err">Enter your city.</div>
+              </div>
+            </div>
+            <div class="field" id="f-pPhoto" style="margin-bottom:0">
+              <span class="label">Professional photograph</span>
+              <div class="photo-row">
+                <div class="photo-frame" id="photoFrame">No photo</div>
+                <div>
+                  <div class="ds-actions">
+                    <span class="btn btn-outline btn-sm file-btn"><span id="photoBtnLabel">Upload photo</span><input type="file" id="photoInput" accept=".jpg,.jpeg,.png,image/jpeg,image/png" aria-label="Upload professional photograph"></span>
+                  </div>
+                  <p class="hint">A clear head-and-shoulders photo. JPG or PNG, up to 2 MB.</p>
+                  <div class="ds-progress" id="photoProgress" hidden><div class="ds-bar"><span></span></div><span class="ds-progress-text" aria-live="polite"></span></div>
+                  <p class="ds-error" id="photoError" role="alert" hidden></p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="panel">
+            <h3>Bar Council enrollment</h3>
+            <p class="panel-sub">Exactly as printed on your Sanad / enrollment certificate.</p>
+            <div class="grid-2">
+              <div class="field" id="f-prCouncil">
+                <label for="prCouncil">State Bar Council</label>
+                <select class="select" id="prCouncil" aria-describedby="prCouncil-err"></select>
+                <div class="err" id="prCouncil-err">Choose your State Bar Council.</div>
+              </div>
+              <div class="field" id="f-prEnroll">
+                <label for="prEnroll">Enrollment number</label>
+                <input class="input" id="prEnroll" maxlength="60" autocomplete="off" placeholder="e.g. MAH/1234/2015" aria-describedby="prEnroll-err">
+                <div class="err" id="prEnroll-err">Enter your enrollment number.</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="panel">
+            <h3>Practice and consultations</h3>
+            <p class="panel-sub">Choose what clients can find you for, and how you consult.</p>
+            <div class="field" id="f-prAreas">
+              <span class="label" id="prAreasLbl">Practice areas</span>
+              <div class="chips" id="prAreas" role="group" aria-labelledby="prAreasLbl"></div>
+              <div class="err">Choose at least one practice area.</div>
+            </div>
+            <div class="field" id="f-prService">
+              <span class="label" id="prServiceLbl">Consultations you offer</span>
+              <div class="choices" role="radiogroup" aria-labelledby="prServiceLbl">
+                <label class="choice"><input type="radio" name="prService" value="paid"><span><strong>Paid Lawyer</strong>Listed in Find a Paid Lawyer.</span></label>
+                <label class="choice"><input type="radio" name="prService" value="free"><span><strong>Free Lawyer</strong>Listed in the Free Legal Aid directory after the CASEONE review (₹0 consultations).</span></label>
+                <label class="choice"><input type="radio" name="prService" value="both"><span><strong>Both Paid &amp; Free</strong>Find a Paid Lawyer now; the Free Legal Aid directory after the CASEONE review.</span></label>
+              </div>
+              <div class="err">Choose Paid, Free or Both.</div>
+            </div>
+            <div class="field" id="f-prFee" hidden>
+              <label for="prFee">Paid consultation fee (₹) <span class="opt">optional now</span></label>
+              <input class="input" id="prFee" type="number" min="0" max="100000" step="50" inputmode="numeric" style="max-width:220px" aria-describedby="prFee-hint prFee-err">
+              <div class="hint" id="prFee-hint">Clients can send paid requests once a fee is set. You can add it later from your dashboard.</div>
+              <div class="err" id="prFee-err">Enter a whole amount between ₹1 and ₹1,00,000, or leave it empty.</div>
+            </div>
+          </div>
+
+          <div class="panel">
+            <details class="opt-details" id="optDetails">
+              <summary><h3>Optional details</h3><span class="panel-sub">Enrollment date, qualifications, languages, office address and biography. Add them now or later from your dashboard.</span></summary>
+              <div class="grid-2" style="margin-top:14px">
+                <div class="field" id="f-prDate">
+                  <label for="prDate">Enrollment date <span class="opt">optional</span></label>
+                  <input class="input" id="prDate" type="date" min="1950-01-01" aria-describedby="prDate-hint prDate-err">
+                  <div class="hint" id="prDate-hint">Your years of practice are calculated from this date.</div>
+                  <div class="err" id="prDate-err">The enrollment date cannot be in the future.</div>
+                </div>
+                <div class="field" id="f-prQual">
+                  <label for="prQual">Qualifications <span class="opt">optional</span></label>
+                  <input class="input" id="prQual" maxlength="300" placeholder="e.g. LL.B., University of Mumbai">
+                </div>
+              </div>
+              <div class="field" id="f-prLangs">
+                <span class="label" id="prLangsLbl">Languages spoken <span class="opt">optional</span></span>
+                <div class="chips" id="prLangs" role="group" aria-labelledby="prLangsLbl"></div>
+              </div>
+              <div class="field" id="f-prOffice">
+                <label for="prOffice">Office address <span class="opt">optional, private</span></label>
+                <textarea class="textarea" id="prOffice" maxlength="300" style="min-height:80px" placeholder="Chamber / office address" aria-describedby="prOffice-hint"></textarea>
+                <div class="hint" id="prOffice-hint">Private. Clients see your city and state, not this address.</div>
+              </div>
+              <div class="field" id="f-prBio" style="margin-bottom:0">
+                <label for="prBio">Professional biography <span class="opt">optional</span></label>
+                <textarea class="textarea" id="prBio" maxlength="2000" placeholder="Your practice, the courts you appear before and how you work with clients." aria-describedby="prBio-hint prBio-err"></textarea>
+                <div class="counter" id="prBioCount">0 / 2000</div>
+                <div class="hint" id="prBio-hint">Keep it factual. Bar Council of India rules do not allow advertising claims such as rankings or success rates.</div>
+                <div class="err" id="prBio-err">Please shorten the biography (2000 characters at most).</div>
+              </div>
+            </details>
+          </div>
+          <div class="actions">
+            <button type="button" class="btn btn-outline" data-goto="account">Back</button>
+            <button type="submit" class="btn" id="btnProfessional"><span class="spinner"></span><span class="lbl">Save and continue</span></button>
+          </div>
+        </form>
+      </section>
+
+      <!-- ============ STEP 3: DOCUMENTS ============ -->
+      <section class="reg-step" id="step-documents" hidden aria-labelledby="h-documents">
+        <div class="step-head">
+          <p class="step-count">Step 3 of 4</p>
+          <h2 id="h-documents">Upload your documents</h2>
+          <p>All four are required. Files are stored privately, are never shown on your public profile, and are seen only by you and authorised CASEONE reviewers. Uploading a document does not mean it has been verified, and your profile is not marked as reviewed until CASEONE checks it.</p>
+        </div>
+        <div class="doc-slots" id="docSlots"></div>
+        <form id="formComplete" novalidate>
+          <div class="panel" style="margin-top:22px">
+            <h3>Declaration</h3>
+            <label class="check" id="f-svConsent"><input type="checkbox" id="svConsent"><span>I confirm that these details and documents are genuine and belong to me. I understand my profile will be listed publicly straight away, marked as not yet reviewed. I consent to CASEONE storing my documents privately and reviewing them. I can ask for them to be deleted.</span></label>
+          </div>
+          <div class="reg-alert" id="completeMissing" hidden></div>
+          <div class="reg-alert" id="submitError" role="alert" hidden></div>
+          <div class="actions">
+            <button type="button" class="btn btn-outline" data-goto="professional">Back</button>
+            <button type="submit" class="btn" id="btnComplete"><span class="spinner"></span><span class="lbl">Complete registration</span></button>
+          </div>
+        </form>
+      </section>
+
+      <!-- ============ STEP 4: REGISTRATION COMPLETE ============ -->
+      <section class="reg-step" id="step-complete" hidden aria-labelledby="cpTitle">
+        <div class="status-hero" role="status" aria-live="polite">
+          <div class="status-mark" id="cpMark" data-code="complete"><svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg></div>
+          <div>
+            <p class="step-count">Step 4 of 4</p>
+            <h2 id="cpTitle">Registration complete</h2>
+            <p id="cpMsg">Your dashboard is ready.</p>
+          </div>
+        </div>
+        <div class="panel">
+          <h3>What happens next</h3>
+          <ul class="next-list">
+            <li><strong>Your dashboard is open now.</strong> Add your availability, fee and other details at any time.</li>
+            <li><strong>Your profile is listed now</strong>, marked “Not yet reviewed by CASEONE”. Clients can see it straight away.</li>
+            <li><strong>Requests after review.</strong> Clients can send you requests after a basic CASEONE review of your profile.</li>
+            <li id="cpListing"><strong>Where you appear.</strong> <span id="cpListingText"></span></li>
+            <li><strong>Your documents.</strong> Stored privately and kept for the review. They are not marked as verified.</li>
+          </ul>
+        </div>
+        <div class="actions">
+          <button type="button" class="btn" id="btnDashboard">Open dashboard now</button>
+        </div>
+        <p class="status-meta" id="cpMeta" aria-live="polite"></p>
+      </section>
+    </div>
+  </main>
+</div>
+
+<script src="config.js"></script>
+<script src="auth.js"></script>
+<script src="lawyer-data.js"></script>
+<script src="lawyer-system.js"></script>
+<script src="lawyer-register.js"></script>
+</body>
+</html>

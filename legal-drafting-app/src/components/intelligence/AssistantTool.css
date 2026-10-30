@@ -114,3 +114,17 @@
   display: flex;
   gap: var(--space-2);
 }
+
+/* Phase 2: AI instructions and full-draft preview */
+.assistant__instructions textarea {
+  min-height: 56px;
+  resize: vertical;
+  font-size: var(--text-sm);
+}
+.assistant__draft-preview {
+  max-height: 360px;
+  overflow-y: auto;
+  padding: var(--space-2);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+}

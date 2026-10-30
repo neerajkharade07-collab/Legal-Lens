@@ -1,0 +1,31 @@
+.save-conflict__body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding: var(--space-6);
+}
+.save-conflict__body h2 {
+  font-size: var(--text-lg);
+}
+.save-conflict__body p {
+  font-size: var(--text-sm);
+  line-height: 1.55;
+}
+.save-conflict__note {
+  color: var(--color-text-secondary);
+}
+.save-conflict__error {
+  color: var(--color-danger);
+}
+.save-conflict__actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: var(--space-2);
+  margin-top: var(--space-2);
+}
+@media (max-width: 520px) {
+  .save-conflict__actions .btn {
+    flex: 1 1 100%;
+  }
+}

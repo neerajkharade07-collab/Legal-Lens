@@ -3,7 +3,7 @@ import { Modal, ModalCloseButton } from '../common/Modal';
 import { Button } from '../common/Button';
 import { documentStorageService } from '../../services';
 import './Documents.css';
-import { SAVE_LOCATION } from '../../services/config';
+import { saveLocation } from '../../services/config';
 
 /**
  * Rename dialog shared by My Documents and the Draft Workspace.
@@ -71,7 +71,7 @@ function RenameForm({ doc, onRename, onClose }) {
             </p>
           ) : (
             <p id="rename-hint" className="form-hint">
-              Up to {documentStorageService.TITLE_MAX} characters. Saved {SAVE_LOCATION}.
+              Up to {documentStorageService.TITLE_MAX} characters. Saved {saveLocation()}.
             </p>
           )}
         </div>

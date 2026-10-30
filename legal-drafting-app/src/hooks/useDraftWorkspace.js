@@ -3,6 +3,7 @@ import { useDocuments } from './useDocuments';
 import { useToast } from './useToast';
 import { getDocumentSchema, getFieldMap } from '../data/documentSchemas';
 import { documentsService, versionService } from '../services';
+import { canonicalKey } from '../utils/contentCanonical';
 import {
   WORKSPACE_VERSION,
   buildWorkspaceContent,
@@ -12,6 +13,13 @@ import {
 } from '../utils/workspaceModel';
 
 const AUTOSAVE_DELAY_MS = 1500;
+// Phase 6: while someone types continuously, autosave at most every 8 s (the API allows 300
+// requests per 15 minutes per IP address for the whole site). Leaving the page still saves.
+const AUTOSAVE_MIN_INTERVAL_MS = 8000;
+// Phase 6: a failed save (network, server busy, too many requests) is retried automatically.
+const RETRY_FIRST_MS = 15000;
+const RETRY_MAX_MS = 120000;
+const RETRYABLE = (err) => !err?.status || err.status === 429 || err.status >= 500;
 
 /** Backend version reasons for the UI's event names. */
 const REASON_TO_API = {
@@ -28,7 +36,9 @@ const fingerprint = (content, fields) => JSON.stringify([content, fields]);
  * State + persistence for one document in the Draft Workspace.
  * Saves go to the Legal Lens backend (PATCH /api/documents/:id), in order.
  * Versions are recorded by the backend only at meaningful events.
- * saveStatus: 'saved' | 'unsaved' | 'saving'
+ * saveStatus: 'saved' | 'unsaved' | 'saving' | 'failed' (the last save did not reach storage)
+ *           | 'conflict' (Phase 6: the document was saved elsewhere since this page loaded it;
+ *             nothing is saved until the user chooses how to resolve it)
  */
 export function useDraftWorkspace(document) {
   const { updateDocument, addDocument } = useDocuments();
@@ -38,6 +48,8 @@ export function useDraftWorkspace(document) {
 
   // Computed once per opened document.
   const [initial] = useState(() => createInitialWorkspace(document));
+  const openedRef = useRef(document);
+  openedRef.current = document;
   const [fields, setFields] = useState(initial.fields);
   const [formatting, setFormatting] = useState(initial.formatting);
   const [saveStatus, setSaveStatus] = useState(initial.isNew ? 'unsaved' : 'saved');
@@ -54,6 +66,14 @@ export function useDraftWorkspace(document) {
     content: initial.content,
   });
   const errorShownRef = useRef(false);
+  // Phase 6: revision of the saved text this page is based on (account documents).
+  const revisionRef = useRef(document.revision ?? null);
+  const [conflict, setConflict] = useState(null); // { document } — the newer saved document
+  const retryRef = useRef({ delay: RETRY_FIRST_MS, timer: null });
+  const lastErrorRef = useRef(null);
+  const lastSaveStartRef = useRef(0);
+  // Phase 6: what is known to be saved, ignoring meaningless differences (see contentCanonical).
+  const savedKeyRef = useRef(initial.isNew ? null : canonicalKey(initial.content, initial.fields, initial.formatting));
   const latest = useRef({ fields, formatting, saveStatus });
   useLayoutEffect(() => {
     latest.current = { fields, formatting, saveStatus };
@@ -79,7 +99,8 @@ export function useDraftWorkspace(document) {
 
   const markDirty = useCallback(() => {
     editsRef.current += 1;
-    setSaveStatus('unsaved');
+    // While a save conflict is open, edits stay on this page until the user resolves it.
+    setSaveStatus((s) => (s === 'conflict' ? s : 'unsaved'));
     setChangeCount((n) => n + 1);
   }, []);
 
@@ -116,6 +137,14 @@ export function useDraftWorkspace(document) {
     return content;
   }, []);
 
+  /** Phase 6: true when the page holds nothing that is not already saved. */
+  const nothingNew = useCallback(
+    () =>
+      savedKeyRef.current !== null &&
+      canonicalKey(currentContent(), latest.current.fields, latest.current.formatting) === savedKeyRef.current,
+    [currentContent],
+  );
+
   /**
    * Saves the current state. options.versionReason also records a version.
    * override: { fields, formatting } — for callers that set state in the same tick.
@@ -127,6 +156,7 @@ export function useDraftWorkspace(document) {
       const fmt = override?.formatting ?? latest.current.formatting;
       const content = currentContent();
       const editsAtStart = editsRef.current;
+      lastSaveStartRef.current = Date.now();
       setSaveStatus('saving');
 
       return updateDocument(
@@ -142,10 +172,22 @@ export function useDraftWorkspace(document) {
             savedAt: new Date().toISOString(),
           },
         },
-        options,
+        // `current`: the opened document, used if the list was reset (e.g. the session
+        // ended and the user signed in again) so the page keeps working and saving.
+        { ...options, current: openedRef.current, baseRevision: () => revisionRef.current },
       ).then(
         (result) => {
           errorShownRef.current = false;
+          retryRef.current.delay = RETRY_FIRST_MS;
+          if (result.document?.revision) revisionRef.current = result.document.revision;
+          savedKeyRef.current = canonicalKey(content, f, fmt);
+          if (result.versionError && !options.keepalive) {
+            toast({
+              title: 'Saved — version not recorded',
+              description: 'Your text is saved, but the version could not be added to the history. Press Save again to record it.',
+              variant: 'default',
+            });
+          }
           setLastSavedAt(result.document.updatedAt);
           setSaveStatus(editsRef.current === editsAtStart ? 'saved' : 'unsaved');
           if (result.version) {
@@ -155,7 +197,15 @@ export function useDraftWorkspace(document) {
           return result;
         },
         (err) => {
-          setSaveStatus('unsaved');
+          if (documentsService.isConflictError(err)) {
+            // Newer text was saved elsewhere. Nothing was written; the user decides (no toast spam).
+            setSaveStatus('conflict');
+            setConflict({ document: documentsService.conflictDocument(err) });
+            throw err;
+          }
+          // Honest state: nothing was saved; the changes are only on this page.
+          setSaveStatus('failed');
+          lastErrorRef.current = err;
           if (!errorShownRef.current && !options.keepalive) {
             errorShownRef.current = true;
             toast({
@@ -183,7 +233,7 @@ export function useDraftWorkspace(document) {
       const versionReason =
         force || !unchanged ? (REASON_TO_API[reason] ?? 'manual_save') : undefined;
       return save(undefined, { versionReason, detail: detail || undefined }).then(
-        (result) => ({ ok: true, version: result.version }),
+        (result) => ({ ok: true, version: result.version, versionError: result.versionError === true }),
         (err) => ({ ok: false, error: err }),
       );
     },
@@ -204,6 +254,8 @@ export function useDraftWorkspace(document) {
         versionId,
       );
       const ws = restored.workspace;
+      if (restored.revision) revisionRef.current = restored.revision;
+      savedKeyRef.current = canonicalKey(ws.content, ws.fields, latest.current.formatting);
       setFields(ws.fields);
       editorRef.current?.commands.setContent(ws.content);
       contentRef.current = ws.content;
@@ -225,25 +277,95 @@ export function useDraftWorkspace(document) {
   useEffect(() => {
     if (changeCount === 0) return undefined;
     const timer = setTimeout(() => {
-      if (latest.current.saveStatus !== 'unsaved') return;
+      if (latest.current.saveStatus !== 'unsaved' && latest.current.saveStatus !== 'failed') return;
+      if (nothingNew()) {
+        setSaveStatus('saved');
+        return;
+      }
       const major = versionService.isMajorChange(lastVersionRef.current.content, currentContent());
       save(undefined, major ? { versionReason: 'major_edit' } : {}).catch(() => {});
-    }, AUTOSAVE_DELAY_MS);
+    }, Math.max(AUTOSAVE_DELAY_MS, AUTOSAVE_MIN_INTERVAL_MS - (Date.now() - lastSaveStartRef.current)));
     return () => clearTimeout(timer);
-  }, [changeCount, save, currentContent]);
+  }, [changeCount, save, currentContent, nothingNew]);
 
   // Flush pending changes when leaving the page or the workspace.
   useEffect(() => {
+    const pending = () => ['unsaved', 'failed'].includes(latest.current.saveStatus) && !nothingNew();
     const flushOnUnload = () => {
-      if (latest.current.saveStatus === 'unsaved')
-        save(undefined, { keepalive: true }).catch(() => {});
+      if (pending()) save(undefined, { keepalive: true }).catch(() => {});
+    };
+    // Phase 6: the browser asks before closing the tab while something is not saved
+    // (a save on close is best effort — browsers may cancel it).
+    const warnBeforeUnload = (event) => {
+      const s = latest.current.saveStatus;
+      if (s === 'saving' || s === 'conflict' || ((s === 'unsaved' || s === 'failed') && !nothingNew())) {
+        event.preventDefault();
+        event.returnValue = '';
+      }
     };
     window.addEventListener('pagehide', flushOnUnload);
+    window.addEventListener('beforeunload', warnBeforeUnload);
     return () => {
       window.removeEventListener('pagehide', flushOnUnload);
-      if (latest.current.saveStatus === 'unsaved') save().catch(() => {});
+      window.removeEventListener('beforeunload', warnBeforeUnload);
+      if (pending()) save().catch(() => {});
     };
-  }, [save]);
+  }, [save, nothingNew]);
+
+  // Phase 6: retry a failed save after a pause (15 s, doubling to 2 min) while it stays failed.
+  useEffect(() => {
+    const r = retryRef.current;
+    clearTimeout(r.timer);
+    if (saveStatus !== 'failed' || !RETRYABLE(lastErrorRef.current)) return undefined;
+    r.timer = setTimeout(() => {
+      if (latest.current.saveStatus !== 'failed') return;
+      r.delay = Math.min(r.delay * 2, RETRY_MAX_MS);
+      save().catch(() => {});
+    }, r.delay);
+    return () => clearTimeout(r.timer);
+  }, [saveStatus, save]);
+
+  /**
+   * Phase 6: resolve a save conflict. Both choices first record the side that is about to be
+   * replaced as a version, so nothing is lost (it can be restored from Version history).
+   *  'latest' — load the text saved elsewhere into this page (this page's text goes to history);
+   *  'mine'   — keep this page's text and save it over the newer one (the newer one goes to history).
+   */
+  const resolveConflict = useCallback(
+    async (choice) => {
+      const server = conflict?.document;
+      if (!server?.workspace) throw new Error('The newer version could not be loaded. Reload the page.');
+      const opened = openedRef.current;
+      if (choice === 'latest') {
+        await documentsService.snapshotVersion(opened, {
+          content: currentContent(),
+          fields: latest.current.fields,
+          detail: 'Unsaved text from another tab (save conflict)',
+        });
+        const ws = server.workspace;
+        revisionRef.current = server.revision ?? null;
+        savedKeyRef.current = canonicalKey(ws.content, ws.fields, latest.current.formatting);
+        editorRef.current?.commands.setContent(ws.content);
+        contentRef.current = ws.content;
+        setFields(ws.fields);
+        lastVersionRef.current = { fingerprint: fingerprint(ws.content, ws.fields), content: ws.content };
+        addDocument(server);
+        setLastSavedAt(server.updatedAt);
+        editsRef.current += 1;
+        setConflict(null);
+        setSaveStatus('saved');
+        loadVersions();
+        return { ok: true };
+      }
+      await documentsService.snapshotVersion(opened, { detail: 'Text saved elsewhere, replaced after a save conflict' });
+      revisionRef.current = server.revision ?? null;
+      setConflict(null);
+      const result = await save(undefined, { versionReason: 'manual_save', detail: 'Kept this tab’s text after a save conflict' });
+      loadVersions();
+      return { ok: true, result };
+    },
+    [conflict, currentContent, addDocument, save, loadVersions],
+  );
 
   /** Rebuild the draft from the template (no AI). Field values are kept. */
   const rebuildFromTemplate = useCallback(() => {
@@ -252,6 +374,16 @@ export function useDraftWorkspace(document) {
     contentRef.current = content;
     return recordVersion('regenerated', null, { force: true });
   }, [document, fieldMap, recordVersion]);
+
+  /** Replace the whole text with an AI draft the user accepted; recorded as a new version. */
+  const applyGeneratedContent = useCallback(
+    (content) => {
+      editorRef.current?.commands.setContent(content);
+      contentRef.current = content;
+      return recordVersion('regenerated', 'AI draft', { force: true });
+    },
+    [recordVersion],
+  );
 
   const registerEditor = useCallback((editor) => {
     editorRef.current = editor;
@@ -277,11 +409,14 @@ export function useDraftWorkspace(document) {
     saveStatus,
     lastSavedAt,
     rebuildFromTemplate,
+    applyGeneratedContent,
     versions,
     versionsStatus,
     reloadVersions: loadVersions,
     recordVersion,
     loadVersion,
     restoreVersion,
+    conflict,
+    resolveConflict,
   };
 }

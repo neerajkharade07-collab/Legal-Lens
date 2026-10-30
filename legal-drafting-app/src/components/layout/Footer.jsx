@@ -1,10 +1,12 @@
 import { Link } from 'react-router-dom';
 import { Info } from 'lucide-react';
 import { PRIMARY_NAV } from '../../data/navigation';
-import { SAVE_LOCATION } from '../../services/config';
+import { saveLocation } from '../../services/config';
+import { useAuth } from '../../hooks/useAuth';
 import './Footer.css';
 
 export function Footer() {
+  useAuth(); // re-render when the session changes (where documents are saved)
   return (
     <footer className="footer">
       <div className="container footer__inner">
@@ -18,7 +20,7 @@ export function Footer() {
         </p>
         <div className="footer__row">
           <p className="footer__meta">
-            © {new Date().getFullYear()} Legal Lens · Documents are saved {SAVE_LOCATION}.
+            © {new Date().getFullYear()} Legal Lens · Documents are saved {saveLocation()}.
           </p>
           <nav aria-label="Footer">
             <ul className="footer__links">

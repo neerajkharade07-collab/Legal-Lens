@@ -2,7 +2,8 @@ import { DRAFT_LANGUAGES } from '../../data/draftLanguages';
 import { cn } from '../../utils/cn';
 import './LanguagePicker.css';
 
-export function LanguagePicker({ value, onChange }) {
+/** aiDrafting: the AI will write this draft (signed in, AI ticked) — it writes in the chosen language. */
+export function LanguagePicker({ value, onChange, aiDrafting = false }) {
   return (
     <fieldset className="lang-picker">
       <legend className="setup-label">Draft language</legend>
@@ -32,7 +33,9 @@ export function LanguagePicker({ value, onChange }) {
       <p className="setup-help">
         {value === 'en'
           ? 'Your language choice is saved with the draft.'
-          : 'Devanagari drafting is planned. Demo drafts are prepared in English for now; your choice is saved with the draft.'}
+          : aiDrafting
+            ? 'The AI writes the draft in this language. Check the wording carefully; your choice is saved with the draft.'
+            : 'Devanagari drafting is planned. Template drafts are prepared in English for now; your choice is saved with the draft.'}
       </p>
     </fieldset>
   );

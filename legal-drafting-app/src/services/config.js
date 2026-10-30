@@ -38,18 +38,41 @@ export function notConnected(name) {
 }
 
 /**
- * SIH demo: the Legal Drafting Assistant runs in Guest / Demo Mode — no sign-in
- * gate, documents are kept only in this browser (localStorage). No account,
- * token or session is created or faked. Build with
- * VITE_DRAFTING_REQUIRE_AUTH=true to restore the signed-in, backend-saved flow
- * (AuthGate / SignInPanel are kept in the source for that).
+ * Where documents live is decided at RUN TIME by the session (Phase 1):
+ *  - 'account'  — signed in as a CASEONE customer or lawyer: every document,
+ *                 autosave, version and AI draft goes to the backend (MongoDB);
+ *  - 'guest'    — signed out: a clearly labelled Demo Mode, documents only in
+ *                 this browser (localStorage), no AI;
+ *  - 'checking' — the session is still being restored (nothing is saved yet).
+ * AuthProvider sets the mode; nothing else changes it. There is no silent
+ * fallback: a document is always saved where it came from, and a failed account
+ * save is reported as failed — never "saved in this browser" instead.
  */
-export const DRAFTING_GUEST_MODE = import.meta.env?.VITE_DRAFTING_REQUIRE_AUTH !== 'true';
+let storageMode = 'checking';
+
+export function setStorageMode(mode) {
+  storageMode = mode === 'account' || mode === 'guest' ? mode : 'checking';
+}
+
+export function getStorageMode() {
+  return storageMode;
+}
+
+export function isGuestMode() {
+  return storageMode === 'guest';
+}
+
+/** Ids of drafts kept only in this browser (Demo Mode) — see guestDocumentStore. */
+export function isGuestId(id) {
+  return /^local-/.test(String(id ?? ''));
+}
 
 /** Where documents are saved, for user-facing messages ("Saved …"). */
-export const SAVE_LOCATION = DRAFTING_GUEST_MODE
-  ? 'in this browser (Demo Mode)'
-  : 'to your account';
+export function saveLocation() {
+  if (storageMode === 'account') return 'to your account';
+  if (storageMode === 'guest') return 'in this browser (Demo Mode)';
+  return 'once your session is ready';
+}
 
 export const AI_DRAFT_UNAVAILABLE_MESSAGE =
-  'AI drafting is not connected in Demo Mode. Untick “Write the full draft with AI” to create the structured template draft.';
+  'AI drafting needs a signed-in CASEONE customer or lawyer account. Sign in, or untick “Write the full draft with AI” to create the structured template draft.';

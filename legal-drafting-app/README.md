@@ -47,7 +47,16 @@ prefilled with the email the main site last used.
 | Save / clause / AI edit / large edit / regenerate → version | `PATCH /api/documents/:id` with `versionReason` |
 | Version history, preview, restore | `GET /api/documents/:id/versions[/:versionId]`, `POST …/restore` |
 | Delete | `DELETE /api/documents/:id` |
-| "Write the full draft with AI" | `POST /api/drafting/generate` (OpenAI on the server) |
+| "Write the full draft with AI" | `POST /api/drafting/generate` (Google Gemini on the server; signed-in customers/lawyers only) |
+| Copy Demo Mode drafts to the account | `POST /api/documents/import` (asks first; each browser draft is imported at most once) |
+| AI editing in the workspace (Rewrite, Simplify, Expand, Improve language, Insert clause) | `POST /api/drafting/assist` (proposal only — the user accepts or rejects; signed-in customers/lawyers) |
+| Generate a complete draft in the workspace | `POST /api/drafting/preview` (nothing saved; accepting saves a "regenerated" version) |
+
+Phase 1 (Oct 2026): where documents are saved is decided at run time by the
+session — signed-in customers and lawyers use the backend (MongoDB) for every
+document, autosave, version and AI draft; signed-out visitors get a clearly
+labelled Demo Mode (browser only, no AI). A failed save is shown as "Not saved",
+never as saved. Unit tests: `npm run test:phase1`.
 
 The access token lives in memory only; the refresh token is the backend's
 httpOnly cookie. Drafts saved in this browser by earlier versions can be
@@ -105,6 +114,16 @@ generation: { source: 'demo', verificationStatus: 'unverified', status: 'prelimi
 
 The description-detail indicator (`utils/descriptionAnalysis.js`) only detects which
 kinds of detail are mentioned (people, dates, amounts…). It makes no legal assessment.
+
+## AI drafting assistant (Phase 2)
+
+Signed in, the assistant panel and the selection bar use REAL AI through the
+backend (Google Gemini on the server): Rewrite, Simplify, Expand, Improve
+language, Insert clause and Generate draft. Every result is a preview; the
+document changes only on Accept (undoable, saved as an "AI edit accepted" or
+"regenerated" version). Signed out, the panel keeps the labelled rule-based demo
+described below. The other panel tools (health, clauses, compliance, citations,
+research) are still demos.
 
 ## Legal assistant panel (Step 5)
 

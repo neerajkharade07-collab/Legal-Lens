@@ -1,0 +1,670 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Legal Notice Assistant — Legal Lens</title>
+<meta name="description" content="Structure your problem step by step and prepare an AI-assisted legal notice draft you can review, edit and print." />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<!-- Shared Legal Lens styles (navbar + footer). Not modified. -->
+<link rel="stylesheet" href="style.css">
+<!-- Legal Notice Assistant styles (all classes are prefixed "lna-") -->
+<link rel="stylesheet" href="legal-notice-assistant.css">
+</head>
+<body class="lna-page">
+
+<!-- navbar starts here (same markup as the Home page) -->
+<nav class="navbar" aria-label="Primary">
+  <div class="navbar-inner">
+
+    <a href="index.html" class="brand" aria-label="Legal Lens home">
+      <span class="brand-mark">
+        <img src="data:image/png;base64,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" alt="Legal Lens logo" />
+      </span>
+      <span class="brand-name">Legal Lens</span>
+    </a>
+
+    <div class="nav-desktop">
+      <ul class="nav-links">
+        <li><a href="index.html" class="nav-link" data-i18n="home">Home</a></li>
+        <li class="lang" id="langWrap">
+          <button class="lang-trigger" id="langTrigger" aria-haspopup="listbox" aria-expanded="false" aria-label="Language, currently English">
+            <span id="langCurrent" data-i18n="language">Language</span>
+            <svg class="lang-caret" viewBox="0 0 10 6" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M1 1L5 5L9 1" stroke="#D4D4D4" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
+          <ul class="lang-menu" id="langMenu" role="listbox" aria-label="Language options">
+            <li role="option" aria-checked="true"><button class="lang-option" data-lang="en">English <svg class="lang-check" viewBox="0 0 12 12" fill="none"><path d="M2 6L5 9L10 3" stroke="#FFFFFF" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button></li>
+            <li role="option" aria-checked="false"><button class="lang-option" data-lang="hi">हिंदी <svg class="lang-check" viewBox="0 0 12 12" fill="none"><path d="M2 6L5 9L10 3" stroke="#FFFFFF" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button></li>
+            <li role="option" aria-checked="false"><button class="lang-option" data-lang="mr">मराठी <svg class="lang-check" viewBox="0 0 12 12" fill="none"><path d="M2 6L5 9L10 3" stroke="#FFFFFF" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button></li>
+            <li role="option" aria-checked="false"><button class="lang-option" data-lang="ta">தமிழ் <svg class="lang-check" viewBox="0 0 12 12" fill="none"><path d="M2 6L5 9L10 3" stroke="#FFFFFF" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button></li>
+          </ul>
+        </li>
+        <li><a href="about.html" class="nav-link" data-i18n="about">About Us</a></li>
+        <li><a href="contact.html" class="nav-link" data-i18n="contact">Contact Us</a></li>
+      </ul>
+      <div class="nav-actions"></div>
+    </div>
+
+    <button class="hamburger" id="hamburgerBtn" aria-label="Open menu" aria-expanded="false" aria-controls="mobileMenu">
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
+  </div>
+
+  <div class="mobile-menu" id="mobileMenu">
+    <div class="mobile-menu-inner">
+      <a href="index.html" class="mobile-link" data-i18n="home">Home</a>
+      <div class="mobile-lang-block">
+        <div class="mobile-lang-label" data-i18n="language">Language</div>
+        <div class="mobile-lang-options" role="listbox" aria-label="Language options">
+          <button class="mobile-lang-option" data-lang="en" aria-checked="true">English</button>
+          <button class="mobile-lang-option" data-lang="hi" aria-checked="false">हिंदी</button>
+          <button class="mobile-lang-option" data-lang="mr" aria-checked="false">मराठी</button>
+          <button class="mobile-lang-option" data-lang="ta" aria-checked="false">தமிழ்</button>
+        </div>
+      </div>
+      <a href="about.html" class="mobile-link" data-i18n="about">About Us</a>
+      <a href="contact.html" class="mobile-link" style="border-bottom:1px solid var(--border);" data-i18n="contact">Contact Us</a>
+      <div class="mobile-actions"></div>
+    </div>
+  </div>
+</nav>
+<!-- navbar ends here -->
+
+<main id="lnaMain">
+
+  <!-- ===== Compact page header ===== -->
+  <header class="lna-header">
+    <div class="lna-container lna-header-inner">
+      <div class="lna-header-text">
+        <nav class="lna-breadcrumb" aria-label="Breadcrumb">
+          <a href="index.html">Home</a><span aria-hidden="true">/</span>
+          <a href="index.html#features">Features</a><span aria-hidden="true">/</span>
+          <span aria-current="page" data-i18n="lnaCrumb">Legal Notice Assistant</span>
+        </nav>
+        <h1 class="lna-title" data-i18n="lnaTitle">Legal Notice Assistant</h1>
+        <p class="lna-subtitle" data-i18n="lnaSubtitle">Explain your problem, organise the facts, and prepare an AI-assisted legal notice draft you can review, edit and print.</p>
+      </div>
+    </div>
+  </header>
+
+  <section class="lna-app" id="lnaApp">
+    <div class="lna-container">
+
+      <div class="lna-demo lna-demo-warn" id="lnaStorageWarning" role="alert" hidden>
+        <span><strong>Browser storage is unavailable.</strong> Your progress will be lost if you close or refresh this page.</span>
+      </div>
+
+      <!-- Account / connection state (filled by legal-notice-assistant.js) -->
+      <div class="lna-account" id="lnaAccount" role="status" hidden></div>
+
+      <!-- A draft left in this browser by the earlier version of this page -->
+      <div class="lna-legacy" id="lnaLegacy" role="region" aria-label="Old draft stored in this browser" hidden></div>
+
+      <div class="lna-layout">
+
+        <!-- ===== Step progress ===== -->
+        <aside class="lna-steps-wrap" aria-label="Progress">
+          <div class="lna-progress-compact" aria-hidden="true">
+            <div class="lna-progress-text"><span id="lnaProgressCount">Step 1 of 7</span><span id="lnaProgressName">Explain Your Problem</span></div>
+            <div class="lna-progress-bar"><span id="lnaProgressFill"></span></div>
+          </div>
+          <ol class="lna-steps" id="lnaSteps">
+            <li><button type="button" class="lna-step" data-step="1"><span class="lna-step-num">1</span><span class="lna-step-text"><span class="lna-step-name" data-i18n="lnaStep1">Explain Your Problem</span><span class="lna-step-hint">In your own words</span></span></button></li>
+            <li><button type="button" class="lna-step" data-step="2"><span class="lna-step-num">2</span><span class="lna-step-text"><span class="lna-step-name" data-i18n="lnaStep2">Notice Details</span><span class="lna-step-hint">Sender, recipient, matter</span></span></button></li>
+            <li><button type="button" class="lna-step" data-step="3"><span class="lna-step-num">3</span><span class="lna-step-text"><span class="lna-step-name" data-i18n="lnaStep3">Supporting Information</span><span class="lna-step-hint">Documents &amp; evidence</span></span></button></li>
+            <li><button type="button" class="lna-step" data-step="4"><span class="lna-step-num">4</span><span class="lna-step-text"><span class="lna-step-name" data-i18n="lnaStep4">Review Facts</span><span class="lna-step-hint">Check &amp; confirm</span></span></button></li>
+            <li><button type="button" class="lna-step" data-step="5"><span class="lna-step-num">5</span><span class="lna-step-text"><span class="lna-step-name" data-i18n="lnaStep5">Generate Notice</span><span class="lna-step-hint">Draft from your facts</span></span></button></li>
+            <li><button type="button" class="lna-step" data-step="6"><span class="lna-step-num">6</span><span class="lna-step-text"><span class="lna-step-name" data-i18n="lnaStep6">Review &amp; Edit</span><span class="lna-step-hint">Make it yours</span></span></button></li>
+            <li><button type="button" class="lna-step" data-step="7"><span class="lna-step-num">7</span><span class="lna-step-text"><span class="lna-step-name" data-i18n="lnaStep7">Final Notice</span><span class="lna-step-hint">Print or save as PDF</span></span></button></li>
+          </ol>
+          <button type="button" class="lna-link-btn lna-startover" id="lnaStartOverSide">Start a new notice</button>
+          <div class="lna-save-box" id="lnaSaveBox">
+            <p class="lna-save-status" id="lnaSaveStatus" aria-live="polite"></p>
+            <button type="button" class="lna-btn lna-btn-outline lna-btn-sm lna-btn-block" id="lnaSaveDraft">Save draft</button>
+            <button type="button" class="lna-btn lna-btn-ghost lna-btn-sm lna-btn-block" id="lnaOpenSaved">My saved notices</button>
+          </div>
+        </aside>
+
+        <!-- ===== Step panels ===== -->
+        <div class="lna-main">
+          <p class="lna-sr" id="lnaLive" aria-live="polite"></p>
+
+          <div class="lna-error-summary" id="lnaErrorSummary" role="alert" tabindex="-1" hidden>
+            <p class="lna-error-summary-title">Please fix the following before continuing:</p>
+            <ul id="lnaErrorList"></ul>
+          </div>
+
+          <!-- STEP 1 -->
+          <!-- SAVED NOTICES -->
+          <section class="lna-panel" id="lnaSavedPanel" aria-labelledby="lnaHSaved" hidden>
+            <div class="lna-panel-head">
+              <p class="lna-eyebrow">Your account</p>
+              <h2 class="lna-panel-title" id="lnaHSaved" tabindex="-1">My saved notices</h2>
+              <p class="lna-panel-sub">Notices saved to your Legal Lens account. Open one to continue editing, or delete notices you no longer need.</p>
+            </div>
+            <div class="lna-saved-state" id="lnaSavedState" role="status"></div>
+            <ul class="lna-saved-list" id="lnaSavedList"></ul>
+            <div class="lna-actions">
+              <button type="button" class="lna-btn lna-btn-ghost" id="lnaSavedBack"><span aria-hidden="true">←</span> Back to current notice</button>
+              <button type="button" class="lna-btn lna-btn-dark" id="lnaSavedNew">Start a new notice</button>
+            </div>
+          </section>
+
+          <section class="lna-panel" data-panel="1" aria-labelledby="lnaH1">
+            <div class="lna-panel-head">
+              <p class="lna-eyebrow">Step 1 of 7</p>
+              <h2 class="lna-panel-title" id="lnaH1" tabindex="-1" data-i18n="lnaH1">Explain your problem</h2>
+              <p class="lna-panel-sub" data-i18n="lnaH1Sub">Describe what happened in your own words — who is involved, what went wrong, and what you have already tried. You will organise the details in the next step.</p>
+            </div>
+
+            <div class="lna-field">
+              <div class="lna-label-row">
+                <label for="lnaProblem">What happened? <span class="lna-req" aria-hidden="true">*</span></label>
+                <span class="lna-count" id="lnaProblemCount" aria-live="off">0 / 5000</span>
+              </div>
+              <textarea class="lna-textarea lna-textarea-xl" id="lnaProblem" data-field="problem" maxlength="5000" rows="9" aria-describedby="lnaProblemHint lnaProblemErr" placeholder="Example: I worked at ABC Pvt Ltd from January to June 2026. My salary for May and June has not been paid even after several emails to HR…"></textarea>
+              <p class="lna-hint" id="lnaProblemHint">At least 20 characters. Write plainly — no legal language is needed.</p>
+              <p class="lna-error" id="lnaProblemErr" hidden></p>
+            </div>
+
+            <div class="lna-field">
+              <p class="lna-label" id="lnaTopicLabel">What is it mostly about? <span class="lna-optional">Optional</span></p>
+              <div class="lna-chips" role="group" aria-labelledby="lnaTopicLabel" id="lnaTopicChips"></div>
+              <p class="lna-hint">Not listed? Choose “Other civil / legal dispute” — the assistant is not limited to these examples.</p>
+            </div>
+
+            <div class="lna-actions">
+              <span></span>
+              <button type="button" class="lna-btn lna-btn-dark lna-btn-lg" data-nav="next">Continue <span aria-hidden="true">→</span></button>
+            </div>
+          </section>
+
+          <!-- STEP 2 -->
+          <section class="lna-panel" data-panel="2" aria-labelledby="lnaH2" hidden>
+            <div class="lna-panel-head">
+              <p class="lna-eyebrow">Step 2 of 7</p>
+              <h2 class="lna-panel-title" id="lnaH2" tabindex="-1" data-i18n="lnaH2">Notice details</h2>
+              <p class="lna-panel-sub">These details appear in the notice exactly as you enter them. Fields marked <span class="lna-req">*</span> are required.</p>
+            </div>
+
+            <fieldset class="lna-fieldset">
+              <legend class="lna-legend"><span class="lna-legend-num">A</span>Sender — you</legend>
+              <div class="lna-grid">
+                <div class="lna-field">
+                  <label for="lnaSenderName">Full name <span class="lna-req" aria-hidden="true">*</span></label>
+                  <input class="lna-input" id="lnaSenderName" data-field="sender.name" maxlength="100" autocomplete="name" aria-describedby="lnaSenderNameErr">
+                  <p class="lna-error" id="lnaSenderNameErr" hidden></p>
+                </div>
+                <div class="lna-field">
+                  <label for="lnaSenderEmail">Email <span class="lna-req" aria-hidden="true">*</span></label>
+                  <input class="lna-input" id="lnaSenderEmail" type="email" data-field="sender.email" maxlength="254" autocomplete="email" aria-describedby="lnaSenderEmailErr">
+                  <p class="lna-error" id="lnaSenderEmailErr" hidden></p>
+                </div>
+                <div class="lna-field lna-field-full">
+                  <label for="lnaSenderAddress">Address <span class="lna-req" aria-hidden="true">*</span></label>
+                  <textarea class="lna-textarea" id="lnaSenderAddress" data-field="sender.address" rows="2" maxlength="300" autocomplete="street-address" aria-describedby="lnaSenderAddressErr"></textarea>
+                  <p class="lna-error" id="lnaSenderAddressErr" hidden></p>
+                </div>
+                <div class="lna-field">
+                  <label for="lnaSenderPhone">Phone <span class="lna-optional">Optional</span></label>
+                  <input class="lna-input" id="lnaSenderPhone" type="tel" data-field="sender.phone" maxlength="20" autocomplete="tel" aria-describedby="lnaSenderPhoneErr">
+                  <p class="lna-error" id="lnaSenderPhoneErr" hidden></p>
+                </div>
+              </div>
+            </fieldset>
+
+            <fieldset class="lna-fieldset">
+              <legend class="lna-legend"><span class="lna-legend-num">B</span>Recipient — who the notice is addressed to</legend>
+              <div class="lna-grid">
+                <div class="lna-field">
+                  <label for="lnaRecipientName">Person / company name <span class="lna-req" aria-hidden="true">*</span></label>
+                  <input class="lna-input" id="lnaRecipientName" data-field="recipient.name" maxlength="150" aria-describedby="lnaRecipientNameErr">
+                  <p class="lna-error" id="lnaRecipientNameErr" hidden></p>
+                </div>
+                <div class="lna-field">
+                  <label for="lnaRecipientEmail">Email <span class="lna-optional">Optional</span></label>
+                  <input class="lna-input" id="lnaRecipientEmail" type="email" data-field="recipient.email" maxlength="254" aria-describedby="lnaRecipientEmailErr">
+                  <p class="lna-error" id="lnaRecipientEmailErr" hidden></p>
+                </div>
+                <div class="lna-field lna-field-full">
+                  <label for="lnaRecipientAddress">Address <span class="lna-req" aria-hidden="true">*</span></label>
+                  <textarea class="lna-textarea" id="lnaRecipientAddress" data-field="recipient.address" rows="2" maxlength="300" aria-describedby="lnaRecipientAddressErr"></textarea>
+                  <p class="lna-error" id="lnaRecipientAddressErr" hidden></p>
+                </div>
+              </div>
+            </fieldset>
+
+            <fieldset class="lna-fieldset">
+              <legend class="lna-legend"><span class="lna-legend-num">C</span>The matter</legend>
+              <div class="lna-grid">
+                <div class="lna-field">
+                  <label for="lnaCategory">Type of dispute <span class="lna-req" aria-hidden="true">*</span></label>
+                  <select class="lna-select" id="lnaCategory" data-field="matter.category" aria-describedby="lnaCategoryErr"></select>
+                  <p class="lna-error" id="lnaCategoryErr" hidden></p>
+                </div>
+                <div class="lna-field" id="lnaCategoryOtherWrap" hidden>
+                  <label for="lnaCategoryOther">Describe the type <span class="lna-req" aria-hidden="true">*</span></label>
+                  <input class="lna-input" id="lnaCategoryOther" data-field="matter.categoryOther" maxlength="80" placeholder="e.g. Security deposit not returned" aria-describedby="lnaCategoryOtherErr">
+                  <p class="lna-error" id="lnaCategoryOtherErr" hidden></p>
+                </div>
+                <div class="lna-field">
+                  <label for="lnaAmount">Amount involved (₹) <span class="lna-optional">Optional</span></label>
+                  <div class="lna-input-prefix"><span aria-hidden="true">₹</span>
+                    <input class="lna-input" id="lnaAmount" data-field="matter.amount" inputmode="decimal" maxlength="16" placeholder="e.g. 45000" aria-describedby="lnaAmountHint lnaAmountErr">
+                  </div>
+                  <p class="lna-hint" id="lnaAmountHint">Leave blank if no money is involved.</p>
+                  <p class="lna-error" id="lnaAmountErr" hidden></p>
+                </div>
+
+                <div class="lna-field lna-field-full">
+                  <p class="lna-label" id="lnaDatesLabel">Important dates <span class="lna-optional">Optional</span></p>
+                  <div class="lna-dates" id="lnaDates" role="group" aria-labelledby="lnaDatesLabel"></div>
+                  <button type="button" class="lna-btn lna-btn-outline lna-btn-sm" id="lnaAddDate"><span aria-hidden="true">+</span> Add a date</button>
+                  <p class="lna-error" id="lnaDatesErr" hidden></p>
+                </div>
+
+                <div class="lna-field lna-field-full">
+                  <div class="lna-label-row">
+                    <label for="lnaFacts">What happened — key facts in order <span class="lna-req" aria-hidden="true">*</span></label>
+                    <button type="button" class="lna-link-btn" id="lnaCopyProblem">Copy from Step 1</button>
+                  </div>
+                  <textarea class="lna-textarea lna-textarea-lg" id="lnaFacts" data-field="matter.facts" rows="6" maxlength="5000" aria-describedby="lnaFactsHint lnaFactsErr"></textarea>
+                  <p class="lna-hint" id="lnaFactsHint">Who did what, and when. Stick to facts you can support. This becomes the “Background and facts” section.</p>
+                  <p class="lna-error" id="lnaFactsErr" hidden></p>
+                </div>
+
+                <div class="lna-field lna-field-full">
+                  <label for="lnaRemedy">What do you want the recipient to do? <span class="lna-req" aria-hidden="true">*</span></label>
+                  <textarea class="lna-textarea" id="lnaRemedy" data-field="matter.remedy" rows="3" maxlength="1000" placeholder="e.g. Pay my pending salary of ₹90,000 for May and June 2026." aria-describedby="lnaRemedyErr"></textarea>
+                  <p class="lna-error" id="lnaRemedyErr" hidden></p>
+                </div>
+
+                <div class="lna-field">
+                  <label for="lnaPeriod">Response / payment period <span class="lna-optional">Optional</span></label>
+                  <select class="lna-select" id="lnaPeriod" data-field="matter.period" aria-describedby="lnaPeriodErr">
+                    <option value="">No specific period</option>
+                    <option value="7">7 days</option>
+                    <option value="15">15 days</option>
+                    <option value="30">30 days</option>
+                    <option value="custom">Custom number of days</option>
+                  </select>
+                  <p class="lna-error" id="lnaPeriodErr" hidden></p>
+                </div>
+                <div class="lna-field" id="lnaPeriodCustomWrap" hidden>
+                  <label for="lnaPeriodCustom">Number of days <span class="lna-req" aria-hidden="true">*</span></label>
+                  <input class="lna-input" id="lnaPeriodCustom" data-field="matter.periodCustom" inputmode="numeric" maxlength="3" aria-describedby="lnaPeriodCustomErr">
+                  <p class="lna-error" id="lnaPeriodCustomErr" hidden></p>
+                </div>
+
+                <div class="lna-field lna-field-full">
+                  <label for="lnaAdditional">Additional important information <span class="lna-optional">Optional</span></label>
+                  <textarea class="lna-textarea" id="lnaAdditional" data-field="matter.additional" rows="3" maxlength="2000" aria-describedby="lnaAdditionalErr"></textarea>
+                  <p class="lna-error" id="lnaAdditionalErr" hidden></p>
+                </div>
+              </div>
+            </fieldset>
+
+            <div class="lna-actions">
+              <button type="button" class="lna-btn lna-btn-ghost" data-nav="back"><span aria-hidden="true">←</span> Back</button>
+              <button type="button" class="lna-btn lna-btn-dark lna-btn-lg" data-nav="next">Continue <span aria-hidden="true">→</span></button>
+            </div>
+          </section>
+
+          <!-- STEP 3 -->
+          <section class="lna-panel" data-panel="3" aria-labelledby="lnaH3" hidden>
+            <div class="lna-panel-head">
+              <p class="lna-eyebrow">Step 3 of 7</p>
+              <h2 class="lna-panel-title" id="lnaH3" tabindex="-1" data-i18n="lnaH3">Supporting information</h2>
+              <p class="lna-panel-sub" data-i18n="lnaH3Sub">Tell us which documents support your case. This step is optional, but listing them helps you stay organised and can be added to the notice as enclosures.</p>
+            </div>
+
+            <div class="lna-field">
+              <p class="lna-label" id="lnaDocTypesLabel">Which documents do you have?</p>
+              <div class="lna-checks" role="group" aria-labelledby="lnaDocTypesLabel" id="lnaDocTypes"></div>
+            </div>
+
+            <div class="lna-field">
+              <p class="lna-label">Select files <span class="lna-optional">Optional · stays on your device</span></p>
+              <div class="lna-drop" id="lnaDrop">
+                <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 16V4M7 9l5-5 5 5"/><path d="M4 16v3a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-3"/></svg>
+                <p class="lna-drop-title">Choose files or drag them here</p>
+                <p class="lna-drop-sub">PDF, images, Word or text · up to 10 files</p>
+                <label class="lna-btn lna-btn-outline lna-btn-sm lna-file-btn" for="lnaFiles">Browse files</label>
+                <input type="file" id="lnaFiles" class="lna-file-input" multiple accept=".pdf,.png,.jpg,.jpeg,.webp,.doc,.docx,.txt,.rtf,.odt">
+              </div>
+              <p class="lna-file-note">
+                <strong>Your files stay on your device and are not analysed.</strong> Legal Lens does not upload, open or read them, and the AI never sees them. Only each file’s name, type and size are listed (and saved with your notice) so the documents can be named as enclosures. Check yourself that the notice matches what your documents say, and keep the originals safe.
+              </p>
+              <p class="lna-error" id="lnaFilesErr" role="alert" hidden></p>
+            </div>
+
+            <div class="lna-files" id="lnaFileList" aria-live="polite"></div>
+
+            <label class="lna-check lna-check-block">
+              <input type="checkbox" id="lnaListInNotice" data-field="evidence.listInNotice">
+              <span class="lna-check-box" aria-hidden="true"></span>
+              <span>List the selected documents as <strong>enclosures</strong> at the end of the notice</span>
+            </label>
+
+            <div class="lna-actions">
+              <button type="button" class="lna-btn lna-btn-ghost" data-nav="back"><span aria-hidden="true">←</span> Back</button>
+              <button type="button" class="lna-btn lna-btn-dark lna-btn-lg" data-nav="next">Review facts <span aria-hidden="true">→</span></button>
+            </div>
+          </section>
+
+          <!-- STEP 4 -->
+          <section class="lna-panel" data-panel="4" aria-labelledby="lnaH4" hidden>
+            <div class="lna-panel-head">
+              <p class="lna-eyebrow">Step 4 of 7</p>
+              <h2 class="lna-panel-title" id="lnaH4" tabindex="-1" data-i18n="lnaH4">Review your facts</h2>
+              <p class="lna-panel-sub" data-i18n="lnaH4Sub">The notice will use only what is shown here. Nothing is added or assumed — anything marked “Not provided” will be left out.</p>
+            </div>
+
+            <div class="lna-review" id="lnaReview"></div>
+
+            <label class="lna-check lna-check-block lna-confirm" id="lnaConfirmWrap">
+              <input type="checkbox" id="lnaConfirm" aria-describedby="lnaConfirmErr">
+              <span class="lna-check-box" aria-hidden="true"></span>
+              <span>I confirm that the information above is correct to the best of my knowledge.</span>
+            </label>
+            <p class="lna-error" id="lnaConfirmErr" hidden></p>
+
+            <div class="lna-actions">
+              <button type="button" class="lna-btn lna-btn-ghost" data-nav="back"><span aria-hidden="true">←</span> Back</button>
+              <button type="button" class="lna-btn lna-btn-dark lna-btn-lg" data-nav="next">Confirm &amp; continue <span aria-hidden="true">→</span></button>
+            </div>
+          </section>
+
+          <!-- STEP 5 -->
+          <section class="lna-panel" data-panel="5" aria-labelledby="lnaH5" hidden>
+            <div class="lna-panel-head">
+              <p class="lna-eyebrow">Step 5 of 7</p>
+              <h2 class="lna-panel-title" id="lnaH5" tabindex="-1" data-i18n="lnaH5">Generate your notice</h2>
+              <p class="lna-panel-sub" data-i18n="lnaH5Sub">The draft is built only from the facts you confirmed. It does not add laws, sections, case references or advocate details.</p>
+            </div>
+
+            <div class="lna-banner" id="lnaStaleBanner5" role="status" hidden>
+              <strong>Your facts changed after this draft was created.</strong>
+              <span>Regenerate to include the latest facts, or keep the current draft.</span>
+            </div>
+
+            <div class="lna-gen-empty" id="lnaGenEmpty">
+              <div class="lna-gen-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" focusable="false"><path d="M14 3H6a1 1 0 0 0-1 1v16a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V8z"/><path d="M14 3v5h5M8.5 13h7M8.5 16.5h5"/></svg>
+              </div>
+              <h3 class="lna-gen-title">Ready to create your draft</h3>
+              <p class="lna-gen-text">The AI writes the subject and body only from the facts you typed and confirmed. Your name, addresses, contact details and enclosures are added exactly as you entered them. The AI does not read your documents — it is only told which kinds of documents you have. You can review and edit every part in the next step.</p>
+              <div class="lna-field lna-lang-field">
+                <label for="lnaLanguage">Notice language</label>
+                <select class="lna-select" id="lnaLanguage" data-lang-select>
+                  <option value="en">English</option>
+                  <option value="hi">हिंदी (Hindi)</option>
+                  <option value="mr">मराठी (Marathi)</option>
+                </select>
+              </div>
+              <button type="button" class="lna-btn lna-btn-dark lna-btn-lg" id="lnaGenerate">Generate notice draft</button>
+            </div>
+
+            <div class="lna-gen-result" id="lnaGenResult" hidden>
+              <div class="lna-result-bar">
+                <span class="lna-tag lna-tag-dark">AI-Assisted Legal Notice</span>
+                <span class="lna-tag">Based only on your confirmed facts</span>
+                <span class="lna-result-time" id="lnaGenTime"></span>
+              </div>
+              <div class="lna-paper lna-paper-preview" id="lnaPreview5"></div>
+              <div class="lna-ai-check" id="lnaAiCheck5" hidden></div>
+              <div class="lna-confirm-inline" id="lnaRegenConfirm5" role="alertdialog" aria-labelledby="lnaRegenQ5" hidden>
+                <p id="lnaRegenQ5"><strong>Replace your edited draft?</strong> Regenerating rebuilds the notice from your facts and discards the edits you made in Step 6.</p>
+                <div class="lna-confirm-actions">
+                  <button type="button" class="lna-btn lna-btn-outline lna-btn-sm" data-regen="cancel">Keep my edits</button>
+                  <button type="button" class="lna-btn lna-btn-dark lna-btn-sm" data-regen="confirm">Replace &amp; regenerate</button>
+                </div>
+              </div>
+            </div>
+
+            <p class="lna-error lna-ai-error" id="lnaGenError" role="alert" hidden></p>
+
+            <div class="lna-actions">
+              <button type="button" class="lna-btn lna-btn-ghost" data-nav="back"><span aria-hidden="true">←</span> Back</button>
+              <div class="lna-actions-right">
+                <select class="lna-select lna-select-sm lna-lang-inline" id="lnaLanguage5" data-lang-select aria-label="Notice language for regenerating" hidden>
+                  <option value="en">English</option>
+                  <option value="hi">हिंदी (Hindi)</option>
+                  <option value="mr">मराठी (Marathi)</option>
+                </select>
+                <button type="button" class="lna-btn lna-btn-outline" id="lnaRegenerate5" hidden>Regenerate</button>
+                <button type="button" class="lna-btn lna-btn-dark lna-btn-lg" data-nav="next" id="lnaNext5" hidden>Review &amp; edit <span aria-hidden="true">→</span></button>
+              </div>
+            </div>
+          </section>
+
+          <!-- STEP 6 -->
+          <section class="lna-panel lna-panel-wide" data-panel="6" aria-labelledby="lnaH6" hidden>
+            <div class="lna-panel-head">
+              <p class="lna-eyebrow">Step 6 of 7</p>
+              <h2 class="lna-panel-title" id="lnaH6" tabindex="-1" data-i18n="lnaH6">Review &amp; edit</h2>
+              <p class="lna-panel-sub" data-i18n="lnaH6Sub">Edit any part of the draft. Changes save automatically and stay when you move between steps.</p>
+            </div>
+
+            <div class="lna-banner" id="lnaStaleBanner6" role="status" hidden>
+              <strong>Your facts changed after this draft was created.</strong>
+              <span>Your edited draft is kept. Use “Regenerate from facts” if you want to rebuild it (this replaces your edits).</span>
+            </div>
+
+            <div class="lna-banner lna-banner-info" id="lnaFinalBanner6" role="status" hidden>
+              <strong>This notice is marked as final.</strong>
+              <span>You can still edit it — any change returns it to a working draft.</span>
+            </div>
+
+            <div class="lna-edit-tabs" role="tablist" aria-label="Editor view">
+              <button type="button" role="tab" class="lna-edit-tab is-active" id="lnaTabEdit" aria-selected="true" aria-controls="lnaEditor">Edit</button>
+              <button type="button" role="tab" class="lna-edit-tab" id="lnaTabPreview" aria-selected="false" aria-controls="lnaPreview6Wrap">Preview</button>
+            </div>
+
+            <div class="lna-editor-layout" id="lnaEditorLayout">
+              <div class="lna-editor" id="lnaEditor" role="tabpanel" aria-labelledby="lnaTabEdit">
+                <div class="lna-field">
+                  <label for="lnaNDate">Date</label>
+                  <input class="lna-input" id="lnaNDate" data-notice="date" maxlength="60">
+                </div>
+                <div class="lna-grid">
+                  <div class="lna-field">
+                    <label for="lnaNFrom">From</label>
+                    <textarea class="lna-textarea" id="lnaNFrom" data-notice="from" rows="5" maxlength="800"></textarea>
+                  </div>
+                  <div class="lna-field">
+                    <label for="lnaNTo">To</label>
+                    <textarea class="lna-textarea" id="lnaNTo" data-notice="to" rows="5" maxlength="800"></textarea>
+                  </div>
+                </div>
+                <div class="lna-field">
+                  <label for="lnaNSubject">Subject</label>
+                  <input class="lna-input" id="lnaNSubject" data-notice="subject" maxlength="250">
+                </div>
+                <div class="lna-field">
+                  <label for="lnaNBody">Body</label>
+                  <textarea class="lna-textarea lna-textarea-body" id="lnaNBody" data-notice="body" rows="18" maxlength="20000"></textarea>
+                  <p class="lna-hint">Lines starting with a number and a full stop (e.g. “1. Background and facts”) are shown as section headings.</p>
+                </div>
+                <div class="lna-grid">
+                  <div class="lna-field">
+                    <label for="lnaNSignature">Closing &amp; sender details</label>
+                    <textarea class="lna-textarea" id="lnaNSignature" data-notice="signature" rows="5" maxlength="800"></textarea>
+                  </div>
+                  <div class="lna-field">
+                    <label for="lnaNEnclosures">Enclosures <span class="lna-optional">Optional</span></label>
+                    <textarea class="lna-textarea" id="lnaNEnclosures" data-notice="enclosures" rows="5" maxlength="1500"></textarea>
+                  </div>
+                </div>
+                <p class="lna-saved" id="lnaSaved" aria-live="polite"></p>
+              </div>
+              <div class="lna-preview-col" id="lnaPreview6Wrap" role="tabpanel" aria-labelledby="lnaTabPreview">
+                <p class="lna-preview-label">Live preview</p>
+                <div class="lna-paper lna-paper-preview" id="lnaPreview6"></div>
+              </div>
+            </div>
+
+            <div class="lna-ai-tools">
+              <div class="lna-refine" id="lnaRefineBox">
+                <label for="lnaRefineText">Ask the AI to improve this draft <span class="lna-optional">Optional</span></label>
+                <textarea class="lna-textarea" id="lnaRefineText" rows="2" maxlength="1000" placeholder="e.g. Make the tone more formal, or shorten the background section"></textarea>
+                <p class="lna-hint">The AI changes only the subject and body wording and keeps your other edits. It will not add facts, laws or case references you have not provided. Your current text is kept under “Earlier versions”.</p>
+                <div class="lna-refine-actions">
+                  <button type="button" class="lna-btn lna-btn-dark lna-btn-sm" id="lnaRefineBtn">Refine with AI</button>
+                </div>
+                <p class="lna-error lna-ai-error" id="lnaRefineErr" role="alert" hidden></p>
+              </div>
+              <div class="lna-versions" id="lnaVersionsBox" hidden>
+                <label for="lnaVersionSelect">Earlier versions</label>
+                <div class="lna-versions-row">
+                  <select class="lna-select lna-select-sm" id="lnaVersionSelect"></select>
+                  <button type="button" class="lna-btn lna-btn-outline lna-btn-sm" id="lnaRestoreBtn">Restore</button>
+                </div>
+                <p class="lna-hint">Restoring keeps your current text as an earlier version, so nothing is lost.</p>
+                <p class="lna-error" id="lnaVersionErr" role="alert" hidden></p>
+              </div>
+            </div>
+            <div class="lna-ai-check" id="lnaAiCheck6" hidden></div>
+            <p class="lna-error lna-ai-error" id="lnaGenError6" role="alert" hidden></p>
+
+            <div class="lna-confirm-inline" id="lnaRegenConfirm6" role="alertdialog" aria-labelledby="lnaRegenQ6" hidden>
+              <p id="lnaRegenQ6"><strong>Discard your edits?</strong> This rebuilds the notice from your confirmed facts. Your current edits will be lost.</p>
+              <div class="lna-confirm-actions">
+                <button type="button" class="lna-btn lna-btn-outline lna-btn-sm" data-regen="cancel">Keep my edits</button>
+                <button type="button" class="lna-btn lna-btn-dark lna-btn-sm" data-regen="confirm">Discard &amp; rebuild</button>
+              </div>
+            </div>
+
+            <div class="lna-actions">
+              <div class="lna-actions-left">
+                <button type="button" class="lna-btn lna-btn-ghost" data-nav="back"><span aria-hidden="true">←</span> Back</button>
+                <button type="button" class="lna-btn lna-btn-ghost" data-goto="4">Edit facts</button>
+              </div>
+              <div class="lna-actions-right">
+                <button type="button" class="lna-btn lna-btn-outline" id="lnaRegenerate6">Regenerate from facts</button>
+                <button type="button" class="lna-btn lna-btn-dark lna-btn-lg" data-nav="next">Preview final notice <span aria-hidden="true">→</span></button>
+              </div>
+            </div>
+          </section>
+
+          <!-- STEP 7 -->
+          <section class="lna-panel lna-panel-wide" data-panel="7" aria-labelledby="lnaH7" hidden>
+            <div class="lna-panel-head lna-panel-head-row">
+              <div>
+                <p class="lna-eyebrow">Step 7 of 7</p>
+                <h2 class="lna-panel-title" id="lnaH7" tabindex="-1" data-i18n="lnaH7">Your final notice</h2>
+                <p class="lna-panel-sub" data-i18n="lnaH7Sub">Read it carefully before sending. Use your browser’s print dialog to print it or save it as a PDF.</p>
+              </div>
+              <button type="button" class="lna-btn lna-btn-dark lna-btn-lg" id="lnaPrint">
+                <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M7 9V3h10v6M7 17H5a1 1 0 0 1-1-1v-5a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v5a1 1 0 0 1-1 1h-2"/><path d="M7 14h10v7H7z"/></svg>
+                Print / Save as PDF
+              </button>
+            </div>
+
+            <div class="lna-final-layout">
+              <div class="lna-print-area" id="lnaPrintArea">
+                <div class="lna-paper lna-paper-final" id="lnaFinal"></div>
+              </div>
+
+              <aside class="lna-final-side">
+                <div class="lna-side-card">
+                  <p class="lna-side-title">Status</p>
+                  <p class="lna-status-line"><span class="lna-tag" id="lnaStatusTag">Draft</span><span class="lna-status-note" id="lnaStatusNote"></span></p>
+                  <button type="button" class="lna-btn lna-btn-outline lna-btn-block" id="lnaFinalize">Mark as final</button>
+                </div>
+                <div class="lna-side-card">
+                  <p class="lna-side-title">Download</p>
+                  <button type="button" class="lna-btn lna-btn-outline lna-btn-block" id="lnaDownloadDocx">Download Word (.docx)</button>
+                  <p class="lna-hint">For a PDF, use “Print / Save as PDF” and choose “Save as PDF”.</p>
+                  <p class="lna-error" id="lnaFinalErr" role="alert" hidden></p>
+                </div>
+                <div class="lna-side-card">
+                  <p class="lna-side-title">Next steps</p>
+                  <button type="button" class="lna-btn lna-btn-outline lna-btn-block" data-goto="6">Edit notice</button>
+                  <button type="button" class="lna-btn lna-btn-ghost lna-btn-block" id="lnaStartOver">Start new notice</button>
+                </div>
+                <div class="lna-side-card">
+                  <p class="lna-side-title">Coming later</p>
+                  <ul class="lna-later">
+                    <li><span>Send by email</span><span class="lna-soon">Not available yet</span></li>
+                    <li><span>Send via WhatsApp</span><span class="lna-soon">Not available yet</span></li>
+                    <li><span>Professional lawyer review</span><span class="lna-soon">Not available yet</span></li>
+                  </ul>
+                </div>
+                <div class="lna-side-card lna-side-note">
+                  <p><strong>AI-assisted, not legal advice.</strong> This notice is an informational draft based only on what you entered. It has not been reviewed by a lawyer. Consider professional legal review before sending, especially for large amounts, property, employment or time-sensitive matters.</p>
+                </div>
+              </aside>
+            </div>
+
+            <div class="lna-confirm-inline" id="lnaResetConfirm" role="alertdialog" aria-labelledby="lnaResetQ" hidden>
+              <p id="lnaResetQ"><strong>Start a new notice?</strong> <span id="lnaResetText">This clears your current answers and draft from this browser. Print or save the notice first if you need it.</span></p>
+              <div class="lna-confirm-actions">
+                <button type="button" class="lna-btn lna-btn-outline lna-btn-sm" data-reset="cancel">Cancel</button>
+                <button type="button" class="lna-btn lna-btn-dark lna-btn-sm" data-reset="confirm">Clear &amp; start new</button>
+              </div>
+            </div>
+
+            <div class="lna-actions">
+              <button type="button" class="lna-btn lna-btn-ghost" data-nav="back"><span aria-hidden="true">←</span> Back to editing</button>
+              <span></span>
+            </div>
+          </section>
+
+          <p class="lna-disclaimer" role="note">
+            <strong>Disclaimer:</strong> Legal Notice Assistant produces an <strong>AI-assisted legal notice</strong> draft for informational purposes only. It is not legal advice, is not reviewed or approved by a lawyer, court or government body, and does not guarantee any outcome. Laws and procedures may differ by situation — consider consulting a qualified legal professional before sending a notice.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="ll-footer">
+  <div class="ll-footer-container">
+    <div class="ll-footer-col">
+      <h3 class="ll-footer-title">LEGAL LENS</h3>
+      <p class="ll-footer-desc" data-i18n="footerTagline">AI-powered legal document analysis, made simple.</p>
+    </div>
+    <div class="ll-footer-col">
+      <h4 class="ll-footer-heading" data-i18n="footerProduct">PRODUCT</h4>
+      <ul class="ll-footer-links">
+        <li><a href="index.html#features" data-i18n="footerFeaturesLink">Features</a></li>
+        <li><a href="index.html#how-it-works" data-i18n="footerHowItWorksLink">How It Works</a></li>
+      </ul>
+    </div>
+    <div class="ll-footer-col">
+      <h4 class="ll-footer-heading" data-i18n="footerResources">RESOURCES</h4>
+      <ul class="ll-footer-links">
+        <li><a href="Blog.html" data-i18n="footerBlogLink">Blog</a></li>
+        <li><a href="FAQs.html" data-i18n="footerFaqsLink">FAQs</a></li>
+        <li><a href="Support.html" data-i18n="footerSupportLink">Support</a></li>
+      </ul>
+    </div>
+    <div class="ll-footer-col">
+      <h4 class="ll-footer-heading" data-i18n="footerCompany">COMPANY</h4>
+      <ul class="ll-footer-links">
+        <li><a href="about.html" data-i18n="about">About Us</a></li>
+        <li><a href="contact.html" data-i18n="contact">Contact</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="ll-footer-bottom">
+    <p data-i18n="footerCopyright">&copy; 2026 Legal Lens. All rights reserved.</p>
+  </div>
+</footer>
+<!-- footer ends here -->
+
+<script src="translations.js"></script>
+<script src="language.js"></script>
+<script src="config.js"></script>
+<script src="auth.js"></script>
+<script src="legal-notice-assistant.js"></script>
+</body>
+</html>

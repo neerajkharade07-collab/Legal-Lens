@@ -1,0 +1,655 @@
+/* Forgot / reset password pages: the SAME styles as login.html (copied verbatim, so these pages look identical).
+   Small additions for these pages are at the end. */
+:root {
+  --black: #0a0a0a;
+  --white: #ffffff;
+  --off-white: #fafafa;
+  --gray-100: #f5f5f5;
+  --gray-200: #e6e6e6;
+  --gray-300: #d4d4d4;
+  --gray-500: #8f8f8f;
+  --gray-600: #6b6b6b;
+  --gray-800: #2b2b2b;
+  --radius-sm: 11px;
+  --radius-md: 14px;
+  --ease: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  font-family: 'Poppins', sans-serif;
+  background: var(--white);
+  color: var(--black);
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+
+.login-shell {
+  min-height: 100vh;
+  display: grid;
+  grid-template-columns: 45% 55%;
+}
+
+/* ---------- LEFT BRANDING PANEL ---------- */
+.brand-panel {
+  position: relative;
+  background: var(--black);
+  color: var(--white);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 64px;
+  opacity: 0;
+  animation: panelFadeIn 0.9s var(--ease) forwards;
+}
+
+@keyframes panelFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.brand-bg-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0.55;
+}
+
+.brand-content {
+  position: relative;
+  z-index: 2;
+  max-width: 420px;
+}
+
+.brand-mark {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 64px;
+  opacity: 0;
+  transform: translateY(10px);
+  animation: fadeSlideUp 0.7s var(--ease) forwards;
+  animation-delay: 0.3s;
+}
+
+.brand-mark svg {
+  width: 26px;
+  height: 26px;
+  stroke: var(--white);
+  fill: none;
+  flex-shrink: 0;
+}
+
+.brand-mark span {
+  font-size: 17px;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+}
+
+.brand-headline {
+  font-size: 34px;
+  font-weight: 700;
+  line-height: 1.28;
+  margin: 0 0 22px;
+  opacity: 0;
+  transform: translateY(14px);
+  animation: fadeSlideUp 0.8s var(--ease) forwards;
+  animation-delay: 0.45s;
+}
+
+.brand-desc {
+  font-size: 14.5px;
+  line-height: 1.7;
+  color: rgba(255,255,255,0.62);
+  font-weight: 400;
+  margin: 0 0 56px;
+  opacity: 0;
+  transform: translateY(14px);
+  animation: fadeSlideUp 0.8s var(--ease) forwards;
+  animation-delay: 0.6s;
+}
+
+.brand-icons-row {
+  display: flex;
+  gap: 28px;
+  opacity: 0;
+  transform: translateY(14px);
+  animation: fadeSlideUp 0.8s var(--ease) forwards;
+  animation-delay: 0.75s;
+}
+
+.brand-icon-item {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.brand-icon-item .icon-box {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 1px solid rgba(255,255,255,0.28);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.brand-icon-item svg {
+  width: 17px;
+  height: 17px;
+  stroke: rgba(255,255,255,0.85);
+  fill: none;
+}
+
+.brand-icon-item .icon-label {
+  font-size: 11.5px;
+  color: rgba(255,255,255,0.5);
+  font-weight: 500;
+}
+
+@keyframes fadeSlideUp {
+  from { opacity: 0; transform: translateY(14px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ---------- RIGHT LOGIN PANEL ---------- */
+.form-panel {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 24px;
+  background: var(--off-white);
+}
+
+.login-card {
+  width: 100%;
+  max-width: 400px;
+  opacity: 0;
+  transform: translateY(18px);
+  animation: fadeSlideUp 0.7s var(--ease) forwards;
+  animation-delay: 0.2s;
+}
+
+.login-card h1 {
+  font-size: 28px;
+  font-weight: 700;
+  margin: 0 0 8px;
+  letter-spacing: -0.01em;
+}
+
+.login-card .subtitle {
+  font-size: 14px;
+  color: var(--gray-600);
+  font-weight: 400;
+  margin: 0 0 36px;
+}
+
+.field-group {
+  margin-bottom: 20px;
+  opacity: 0;
+  transform: translateY(10px);
+  animation: fadeSlideUp 0.6s var(--ease) forwards;
+}
+
+.field-group:nth-of-type(1) { animation-delay: 0.35s; }
+.field-group:nth-of-type(2) { animation-delay: 0.45s; }
+
+.field-group label {
+  display: block;
+  font-size: 13px;
+  font-weight: 500;
+  margin-bottom: 8px;
+}
+
+.input-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.input-wrap svg.field-icon {
+  position: absolute;
+  left: 16px;
+  width: 17px;
+  height: 17px;
+  stroke: var(--gray-500);
+  fill: none;
+  pointer-events: none;
+  transition: stroke 0.2s var(--ease);
+}
+
+.input-wrap input {
+  width: 100%;
+  font-family: 'Poppins', sans-serif;
+  font-size: 14px;
+  font-weight: 400;
+  padding: 14px 16px 14px 46px;
+  border: 1px solid var(--gray-300);
+  border-radius: var(--radius-sm);
+  color: var(--black);
+  background: var(--white);
+  outline: none;
+  transition: border-color 0.2s var(--ease), box-shadow 0.2s var(--ease);
+}
+
+.input-wrap input::placeholder { color: var(--gray-500); }
+
+.input-wrap input:focus {
+  border-color: var(--black);
+  box-shadow: 0 0 0 3px rgba(0,0,0,0.06);
+}
+
+.input-wrap input:focus ~ svg.field-icon,
+.input-wrap:focus-within svg.field-icon {
+  stroke: var(--black);
+}
+
+.field-group.has-error input {
+  border-color: var(--black);
+}
+
+.password-toggle {
+  position: absolute;
+  right: 14px;
+  background: none;
+  border: none;
+  padding: 4px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+}
+
+.password-toggle svg {
+  width: 18px;
+  height: 18px;
+  stroke: var(--gray-500);
+  fill: none;
+  transition: stroke 0.2s var(--ease);
+}
+
+.password-toggle:hover svg { stroke: var(--black); }
+
+.field-error {
+  max-height: 0;
+  opacity: 0;
+  overflow: hidden;
+  transition: max-height 0.25s var(--ease), opacity 0.25s var(--ease);
+  font-size: 12px;
+  color: var(--gray-800);
+}
+
+.field-group.has-error .field-error {
+  max-height: 40px;
+  opacity: 1;
+  margin-top: 7px;
+}
+
+.form-row-between {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 28px;
+  opacity: 0;
+  transform: translateY(10px);
+  animation: fadeSlideUp 0.6s var(--ease) forwards;
+  animation-delay: 0.55s;
+}
+
+.remember-me {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  cursor: pointer;
+  user-select: none;
+}
+
+.remember-me input[type="checkbox"] {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 17px;
+  height: 17px;
+  border: 1.5px solid var(--gray-300);
+  border-radius: 4px;
+  cursor: pointer;
+  position: relative;
+  transition: border-color 0.2s var(--ease), background 0.2s var(--ease);
+  flex-shrink: 0;
+}
+
+.remember-me input[type="checkbox"]:checked {
+  background: var(--black);
+  border-color: var(--black);
+}
+
+.remember-me input[type="checkbox"]:checked::after {
+  content: '';
+  position: absolute;
+  left: 5px;
+  top: 1px;
+  width: 4px;
+  height: 8px;
+  border: solid var(--white);
+  border-width: 0 1.6px 1.6px 0;
+  transform: rotate(45deg);
+}
+
+.remember-me span {
+  font-size: 13px;
+  color: var(--gray-800);
+  font-weight: 400;
+}
+
+.forgot-link {
+  background: none;
+  border: none;
+  padding: 0;
+  font-family: 'Poppins', sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--black);
+  cursor: pointer;
+  position: relative;
+}
+
+.forgot-link::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: -2px;
+  width: 100%;
+  height: 1px;
+  background: var(--black);
+  transform: scaleX(0);
+  transform-origin: right;
+  transition: transform 0.25s var(--ease);
+}
+
+.forgot-link:hover::after { transform: scaleX(1); transform-origin: left; }
+
+.signin-btn {
+  width: 100%;
+  font-family: 'Poppins', sans-serif;
+  font-size: 15px;
+  font-weight: 600;
+  padding: 15px;
+  border: 1.5px solid var(--black);
+  border-radius: var(--radius-sm);
+  background: var(--black);
+  color: var(--white);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  transition: transform 0.15s var(--ease), box-shadow 0.15s var(--ease), background 0.2s var(--ease);
+  opacity: 0;
+  transform: translateY(10px);
+  animation: fadeSlideUp 0.6s var(--ease) forwards;
+  animation-delay: 0.65s;
+}
+
+.signin-btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 24px rgba(0,0,0,0.18);
+}
+
+.signin-btn:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.signin-btn:disabled {
+  cursor: default;
+  opacity: 0.85;
+}
+
+.signin-btn.success {
+  background: var(--white);
+  color: var(--black);
+}
+
+.btn-spinner {
+  width: 15px;
+  height: 15px;
+  border: 2px solid rgba(255,255,255,0.35);
+  border-top-color: var(--white);
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+  display: none;
+}
+
+.signin-btn.loading .btn-spinner { display: inline-block; }
+
+.btn-check {
+  display: none;
+  width: 16px;
+  height: 16px;
+  stroke: var(--black);
+  fill: none;
+}
+
+.signin-btn.success .btn-check { display: inline-block; }
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.divider {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin: 28px 0;
+  opacity: 0;
+  transform: translateY(10px);
+  animation: fadeSlideUp 0.6s var(--ease) forwards;
+  animation-delay: 0.75s;
+}
+
+.divider::before,
+.divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--gray-200);
+}
+
+.divider span {
+  font-size: 11.5px;
+  letter-spacing: 0.08em;
+  color: var(--gray-500);
+  font-weight: 500;
+}
+
+.google-btn {
+  width: 100%;
+  font-family: 'Poppins', sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  padding: 14px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--gray-300);
+  background: var(--white);
+  color: var(--black);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  transition: background 0.2s var(--ease), color 0.2s var(--ease), border-color 0.2s var(--ease);
+  opacity: 0;
+  transform: translateY(10px);
+  animation: fadeSlideUp 0.6s var(--ease) forwards;
+  animation-delay: 0.85s;
+}
+
+.google-btn svg { width: 17px; height: 17px; }
+
+.google-btn:hover {
+  background: var(--black);
+  color: var(--white);
+  border-color: var(--black);
+}
+
+.google-btn:hover svg { stroke: var(--white); }
+.google-btn:hover svg path { fill: var(--white); }
+
+.signup-row {
+  text-align: center;
+  margin-top: 26px;
+  font-size: 13.5px;
+  color: var(--gray-600);
+  opacity: 0;
+  transform: translateY(10px);
+  animation: fadeSlideUp 0.6s var(--ease) forwards;
+  animation-delay: 0.95s;
+}
+
+.signup-row button {
+  background: none;
+  border: none;
+  padding: 0;
+  font-family: 'Poppins', sans-serif;
+  font-size: 13.5px;
+  font-weight: 500;
+  color: var(--black);
+  cursor: pointer;
+  position: relative;
+  margin-left: 4px;
+}
+
+.signup-row button::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: -2px;
+  width: 100%;
+  height: 1px;
+  background: var(--black);
+  transform: scaleX(0);
+  transform-origin: right;
+  transition: transform 0.25s var(--ease);
+}
+
+.signup-row button:hover::after { transform: scaleX(1); transform-origin: left; }
+
+.security-note {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 32px;
+  font-size: 12px;
+  color: var(--gray-500);
+  opacity: 0;
+  animation: fadeIn 0.6s var(--ease) forwards;
+  animation-delay: 1.05s;
+}
+
+.security-note svg {
+  width: 13px;
+  height: 13px;
+  stroke: var(--gray-500);
+  fill: none;
+  flex-shrink: 0;
+}
+
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+.legal-disclaimer {
+  text-align: center;
+  margin-top: 16px;
+  font-size: 11.5px;
+  color: var(--gray-500);
+  line-height: 1.6;
+  opacity: 0;
+  animation: fadeIn 0.6s var(--ease) forwards;
+  animation-delay: 1.1s;
+}
+
+.legal-disclaimer button {
+  background: none;
+  border: none;
+  padding: 0;
+  font-family: 'Poppins', sans-serif;
+  font-size: 11.5px;
+  color: var(--gray-600);
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+/* ---------- RESPONSIVE ---------- */
+@media (max-width: 1000px) {
+  .login-shell { grid-template-columns: 40% 60%; }
+  .brand-panel { padding: 48px; }
+  .brand-headline { font-size: 28px; }
+}
+
+@media (max-width: 760px) {
+  .login-shell {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto 1fr;
+  }
+  .brand-panel {
+    padding: 40px 28px;
+    min-height: 220px;
+    justify-content: flex-start;
+  }
+  .brand-desc { margin-bottom: 0; }
+  .brand-icons-row { display: none; }
+  .brand-headline { font-size: 22px; margin-bottom: 12px; }
+  .form-panel { padding: 40px 20px 56px; }
+}
+
+@media (max-width: 420px) {
+  .login-card h1 { font-size: 24px; }
+  .brand-headline { font-size: 20px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * { animation: none !important; transition: none !important; }
+  .login-card, .field-group, .form-row-between, .signin-btn, .divider, .google-btn, .signup-row, .security-note, .legal-disclaimer, .brand-panel, .brand-mark, .brand-headline, .brand-desc, .brand-icons-row {
+    opacity: 1 !important; transform: none !important;
+  }
+}
+
+input:focus-visible,
+button:focus-visible {
+  outline: 2px solid var(--black);
+  outline-offset: 2px;
+}
+
+/* ---------- additions for forgot-password.html / reset-password.html ---------- */
+.status-box {
+  display: none;
+  margin: 0 0 20px;
+  padding: 14px 16px;
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-sm);
+  background: var(--gray-100);
+  color: var(--gray-800);
+  font-size: 13.5px;
+  line-height: 1.55;
+}
+.status-box.show { display: block; }
+.status-box.is-error { border-color: var(--black); background: var(--white); }
+.status-box strong { display: block; margin-bottom: 4px; color: var(--black); }
+.password-rules {
+  margin: 6px 0 0;
+  padding: 0;
+  list-style: none;
+  font-size: 12px;
+  color: var(--gray-600);
+  line-height: 1.6;
+}
+.password-rules li::before { content: "– "; }
+.back-row { margin-top: 22px; text-align: center; font-size: 13.5px; color: var(--gray-600); }
+.back-row a { color: var(--black); font-weight: 600; text-decoration: none; border-bottom: 1px solid currentColor; }
+.is-hidden { display: none !important; }

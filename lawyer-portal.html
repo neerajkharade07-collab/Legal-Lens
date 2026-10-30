@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lawyer Portal — CASEONE</title>
+<meta name="description" content="For advocates: register in four steps; your dashboard opens and your profile is listed in Lawyer Connect straight away.">
+<link rel="icon" href="favicon.ico">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="lawyer-system.css">
+</head>
+<body class="ls-body">
+
+<header class="ls-header">
+  <div class="ls-header-inner">
+    <a href="index.html" class="ls-brand"><svg viewBox="0 0 24 24" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 4 6v6c0 5 3.4 9.2 8 10 4.6-.8 8-5 8-10V6z"/></svg>CASEONE <span style="font-weight:500;color:#5f5f5f">· for Lawyers</span></a>
+    <button class="ls-menu-btn" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="lsNav"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
+    <nav class="ls-nav" id="lsNav" aria-label="Lawyer Portal navigation">
+      <a href="index.html">CASEONE home</a>
+      <a href="#how">How it works</a>
+      <a href="#need">What you need</a>
+      <a href="lawyer-login.html" id="navSignIn">Sign in</a>
+      <a href="lawyer-register.html" class="ls-nav-pill" id="navRegister">Register</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <div class="ls-wrap">
+    <section class="ls-hero">
+      <p class="ls-eyebrow">Lawyer Portal</p>
+      <h1>Offer your services to people who need a lawyer.</h1>
+      <p>One account for paid consultations, free volunteer assistance, or both. Register in four steps: your dashboard opens and your public profile is listed in Lawyer Connect straight away, marked “Not yet reviewed”. Clients can send requests after a basic CASEONE review.</p>
+      <div class="ls-actions" id="heroActions">
+        <a class="ls-btn" href="lawyer-register.html">Register as an advocate</a>
+        <a class="ls-btn ls-btn-outline" href="lawyer-login.html">Sign in</a>
+      </div>
+      <div class="ls-actions" id="heroSignedIn" hidden>
+        <a class="ls-btn" href="lawyer-dashboard.html">Go to your dashboard</a>
+        <span class="ls-hint" id="signedInAs"></span>
+      </div>
+    </section>
+
+    <section class="ls-section" id="how" aria-labelledby="howTitle">
+      <h2 class="ls-h2" id="howTitle">How it works</h2>
+      <p class="ls-sub">One connected registration that takes a few minutes. When you finish, your dashboard opens and clients can find you; requests open after a basic CASEONE review.</p>
+      <div class="ls-grid-3" style="grid-template-columns:repeat(auto-fit,minmax(190px,1fr))">
+        <div class="ls-card ls-step"><span class="ls-step-num">01</span><h3>Account</h3><p>Name, email, mobile number and password.</p></div>
+        <div class="ls-card ls-step"><span class="ls-step-num">02</span><h3>Professional profile</h3><p>City, state, photograph, State Bar Council, enrollment number, practice areas and consultation type: Paid Lawyer, Free Lawyer or Both.</p></div>
+        <div class="ls-card ls-step"><span class="ls-step-num">03</span><h3>Documents</h3><p>Masked Aadhaar, PAN card, Sanad / enrollment certificate and law degree, stored privately.</p></div>
+        <div class="ls-card ls-step"><span class="ls-step-num">04</span><h3>Dashboard and listing</h3><p>Your dashboard opens and your profile is listed in the paid directory. Requests — and the Free Legal Aid directory — open after a basic CASEONE review.</p></div>
+        <div class="ls-card ls-step"><span class="ls-step-num">05</span><h3>Manage requests</h3><p>Accept or decline consultation requests. Paid and free requests are kept separate.</p></div>
+      </div>
+    </section>
+
+    <section class="ls-section" id="need" aria-labelledby="needTitle" style="padding-top:0">
+      <div class="ls-grid-2">
+        <div class="ls-card">
+          <h2 class="ls-h2" id="needTitle">What you need</h2>
+          <ul class="ls-list" style="margin-top:14px">
+            <li>Your State Bar Council, enrollment number and enrollment date</li>
+            <li>Masked Aadhaar (downloaded from UIDAI, only the last 4 digits visible)</li>
+            <li>PAN card</li>
+            <li>Advocate Sanad / Bar Council enrollment certificate</li>
+            <li>Law degree (LL.B.) certificate — each file PDF, JPG or PNG, max 5 MB</li>
+            <li>A professional photograph</li>
+          </ul>
+        </div>
+        <div class="ls-card">
+          <h2 class="ls-h2">How your documents are handled</h2>
+          <ul class="ls-list" style="margin-top:14px">
+            <li>Stored privately — never on your public profile and never in a public folder</li>
+            <li>Opened only by authorised CASEONE reviewers; every view is logged</li>
+            <li>Aadhaar must be masked; a file showing the full number is refused. For Aadhaar and PAN we keep only the last 4 characters</li>
+            <li>Uploading a document does not mark it as verified, and reading a document is never treated as proof that it is genuine. No facial recognition is used</li>
+            <li>You can replace documents while registering, and ask us to delete them afterwards</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="ls-section" style="padding-top:0" aria-labelledby="servicesTitle">
+      <div class="ls-card ls-card-dark">
+        <h2 class="ls-h2" id="servicesTitle">Paid, Free or Both — one account</h2>
+        <p>Set your paid consultation fee, volunteer for free consultations (always ₹0, only for applicants approved by CASEONE), or offer both. Your profile shows factual information only: no ratings, rankings or promotional claims, in keeping with the Bar Council of India rules on advocates' conduct.</p>
+        <div class="ls-actions">
+          <a class="ls-btn" href="lawyer-register.html">Register as an advocate</a>
+          <a class="ls-btn ls-btn-outline" href="lawyer-login.html">I already have an account</a>
+        </div>
+      </div>
+    </section>
+  </div>
+</main>
+
+<footer class="ls-footer">
+  <div class="ls-wrap ls-footer-inner">
+    <div><a href="index.html">CASEONE</a><a href="contact.html">Contact</a><a href="lawyer-connect.html">Lawyer Connect (clients)</a></div>
+    <div>© 2026 CASEONE</div>
+  </div>
+</footer>
+
+<script src="config.js"></script>
+<script src="auth.js"></script>
+<script src="lawyer-system.js"></script>
+<script>
+  // Signed-in lawyers go straight to their dashboard from here.
+  restoreSession().then(function (ok) {
+    var u = ok ? getCurrentUser() : null;
+    if (u && u.role === 'lawyer') {
+      document.getElementById('heroActions').hidden = true;
+      document.getElementById('heroSignedIn').hidden = false;
+      document.getElementById('signedInAs').textContent = 'Signed in as ' + (u.name || u.email);
+      document.getElementById('navSignIn').textContent = 'Dashboard';
+      document.getElementById('navSignIn').href = 'lawyer-dashboard.html';
+      document.getElementById('navRegister').hidden = true;
+    }
+  });
+</script>
+</body>
+</html>

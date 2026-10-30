@@ -19,6 +19,7 @@ export function downloadAsWordHtml({ title, html, lineHeight = 1.5 }) {
   h1 { font-size: 15pt; text-transform: uppercase; letter-spacing: 0.08em; }
   h2 { font-size: 12.5pt; }
   [data-empty="true"] { color: #777; }
+  [data-page-break-before] { page-break-before: always; }
 </style></head><body>${html}</body></html>`;
   const blob = new Blob(['﻿', documentHtml], { type: 'application/msword' });
   const url = URL.createObjectURL(blob);

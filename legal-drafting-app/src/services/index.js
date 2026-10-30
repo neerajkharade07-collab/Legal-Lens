@@ -15,6 +15,7 @@ export * as complianceService from './complianceService';
 export * as citationService from './citationService';
 export * as researchService from './researchService';
 export * as assistantService from './assistantService';
+export * as reviewService from './reviewService';
 export * as ocrService from './ocrService';
 export * as documentReviewService from './documentReviewService';
 export * as comparisonService from './comparisonService';

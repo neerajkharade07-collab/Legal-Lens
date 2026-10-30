@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>My Requests — CASEONE</title>
+<meta name="description" content="Track your consultation requests and their real status on CASEONE.">
+<link rel="icon" href="favicon.ico">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="lawyer-system.css">
+</head>
+<body class="ls-body">
+
+<header class="ls-header">
+  <div class="ls-header-inner">
+    <a href="index.html" class="ls-brand"><svg viewBox="0 0 24 24" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 4 6v6c0 5 3.4 9.2 8 10 4.6-.8 8-5 8-10V6z"/></svg>CASEONE</a>
+    <button class="ls-menu-btn" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="lsNav"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
+    <nav class="ls-nav" id="lsNav" aria-label="Main navigation">
+      <a href="index.html">Home</a>
+      <a href="lawyer-connect.html">Lawyer Connect</a>
+      <a href="my-requests.html" aria-current="page">My Requests</a>
+      <a href="lawyer-portal.html" class="ls-nav-pill">For Lawyers</a>
+    </nav>
+  </div>
+</header>
+
+<main class="ls-wrap">
+  <section class="ls-hero">
+    <div class="ls-breadcrumb"><a href="lawyer-connect.html">Lawyer Connect</a> / My Requests</div>
+    <h1>My Requests</h1>
+    <p>Every consultation request you have sent, with its real status. A consultation is confirmed only when it shows <strong>Accepted</strong>.</p>
+  </section>
+
+  <section class="ls-section">
+    <div class="ls-tabs" role="tablist" aria-label="Filter requests" id="reqTabs" hidden>
+      <button class="ls-tab" role="tab" aria-selected="true" data-filter="all">All<span class="ls-count" id="cAll">0</span></button>
+      <button class="ls-tab" role="tab" aria-selected="false" data-filter="open">Open<span class="ls-count" id="cOpen">0</span></button>
+      <button class="ls-tab" role="tab" aria-selected="false" data-filter="paid">Paid<span class="ls-count" id="cPaid">0</span></button>
+      <button class="ls-tab" role="tab" aria-selected="false" data-filter="free">Free<span class="ls-count" id="cFree">0</span></button>
+    </div>
+    <div id="reqList" aria-live="polite">
+      <div class="ls-skeleton"></div><div class="ls-skeleton"></div>
+    </div>
+  </section>
+</main>
+
+<footer class="ls-footer">
+  <div class="ls-wrap ls-footer-inner">
+    <div><a href="find-a-lawyer.html">Find a Paid Lawyer</a><a href="free-legal-assistance.html">Free Legal Assistance</a></div>
+    <div>© 2026 CASEONE</div>
+  </div>
+</footer>
+
+<script src="config.js"></script>
+<script src="auth.js"></script>
+<script src="lawyer-data.js"></script>
+<script src="lawyer-system.js"></script>
+<script>
+(function () {
+  const { esc, fmtDate, inr, toast, requestBadge } = window.LS;
+  const D = window.LegalLensLawyerData;
+  const list = document.getElementById('reqList');
+  const tabs = document.getElementById('reqTabs');
+  let all = [];
+  let filter = 'all';
+
+  function card(r) {
+    const free = r.serviceType === 'free';
+    const fee = free ? '₹0 (free)' : (r.feeAtRequest ? inr(r.feeAtRequest) : 'Fee not listed');
+    const when = [r.date, r.time].filter(Boolean).join(' · ');
+    const canCancel = r.status === 'pending' || r.status === 'accepted';
+    return `<article class="ls-request">
+      <div>
+        <h3>${esc(r.lawyerName || 'Lawyer')}</h3>
+        <div class="ls-meta">${esc(r.issue)} · ${esc(r.type)} · ${free ? 'Free consultation' : 'Paid consultation'} · ${esc(fee)}</div>
+        <div class="ls-meta">Sent ${esc(fmtDate(r.requestedAt, true))}${when ? ' · preferred ' + esc(when) : ''}${r.respondedAt ? ' · lawyer responded ' + esc(fmtDate(r.respondedAt, true)) : ''}</div>
+      </div>
+      <div>${requestBadge(r.status)}</div>
+      ${r.eligibility === 'unverified_emergency' ? '<div style="grid-column:1/-1"><span class="ls-urgent-tag">Urgent request · eligibility not verified yet</span></div>' : ''}
+      ${r.description ? `<div class="ls-request-msg">${esc(r.description)}</div>` : ''}
+      <div class="ls-request-actions">
+        <a class="ls-btn ls-btn-outline ls-btn-sm" href="lawyer-profile.html?id=${encodeURIComponent(r.lawyerId)}">Lawyer profile</a>
+        ${canCancel ? `<button class="ls-btn ls-btn-ghost ls-btn-sm" type="button" data-cancel="${esc(r.id)}">Cancel request</button>` : ''}
+      </div>
+    </article>`;
+  }
+
+  function render() {
+    const counts = {
+      all: all.length,
+      open: all.filter((r) => r.status === 'pending' || r.status === 'accepted').length,
+      paid: all.filter((r) => r.serviceType !== 'free').length,
+      free: all.filter((r) => r.serviceType === 'free').length
+    };
+    document.getElementById('cAll').textContent = counts.all;
+    document.getElementById('cOpen').textContent = counts.open;
+    document.getElementById('cPaid').textContent = counts.paid;
+    document.getElementById('cFree').textContent = counts.free;
+    const shown = all.filter((r) => filter === 'all'
+      || (filter === 'open' && (r.status === 'pending' || r.status === 'accepted'))
+      || (filter === 'paid' && r.serviceType !== 'free')
+      || (filter === 'free' && r.serviceType === 'free'));
+    if (!all.length) {
+      tabs.hidden = true;
+      list.innerHTML = `<div class="ls-state"><h3>No requests yet</h3><p>When you send a consultation request, it appears here with the lawyer's response.</p>
+        <div class="ls-actions" style="justify-content:center"><a class="ls-btn" href="find-a-lawyer.html">Find a Paid Lawyer</a><a class="ls-btn ls-btn-outline" href="free-legal-assistance.html">Free Legal Assistance</a></div></div>`;
+      return;
+    }
+    tabs.hidden = false;
+    list.innerHTML = shown.length ? `<div class="ls-requests">${shown.map(card).join('')}</div>` : '<div class="ls-state"><h3>Nothing here</h3><p>No requests match this filter.</p></div>';
+    list.querySelectorAll('[data-cancel]').forEach((b) => b.addEventListener('click', async () => {
+      if (!window.confirm('Cancel this request? The lawyer will see it as cancelled.')) return;
+      b.disabled = true;
+      try {
+        const updated = await D.cancelConsultation(b.dataset.cancel);
+        all = all.map((r) => (r.id === updated.id ? Object.assign({}, r, { status: updated.status }) : r));
+        toast('Request cancelled.');
+        render();
+      } catch (e) { b.disabled = false; toast(e.message); }
+    }));
+  }
+
+  tabs.addEventListener('click', (e) => {
+    const t = e.target.closest('[data-filter]');
+    if (!t) return;
+    filter = t.dataset.filter;
+    tabs.querySelectorAll('[data-filter]').forEach((x) => x.setAttribute('aria-selected', x === t ? 'true' : 'false'));
+    render();
+  });
+
+  async function init() {
+    const ok = await window.restoreSession();
+    const user = ok ? window.getCurrentUser() : null;
+    if (!user) { window.LS.goToLogin('my-requests.html'); return; }
+    if (user.role === 'lawyer') { window.location.href = 'lawyer-dashboard.html'; return; }
+    if (user.role !== 'customer') {
+      list.innerHTML = '<div class="ls-state"><h3>Client accounts only</h3><p>Sign in with a client account to see consultation requests.</p></div>';
+      return;
+    }
+    try {
+      all = await D.getMyConsultations();
+      render();
+    } catch (err) {
+      list.innerHTML = `<div class="ls-state" role="alert"><h3>Could not load your requests</h3><p>${esc(err.message)}</p><button class="ls-btn ls-btn-outline" type="button" onclick="location.reload()">Try again</button></div>`;
+    }
+  }
+  init();
+})();
+</script>
+</body>
+</html>

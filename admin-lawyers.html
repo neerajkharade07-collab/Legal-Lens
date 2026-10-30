@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<meta name="referrer" content="no-referrer">
+<title>CASEONE Admin — Lawyer verification</title>
+<!--
+  This page used to be a separate, older lawyer review screen (verify / reject /
+  publish with no documents, history or "request more information"). Lawyer
+  verification now lives in the Admin Console, which uses the full review
+  workflow, authenticated document viewing and the audit log. Old links,
+  bookmarks and auth.js redirects to admin-lawyers.html land here and are sent
+  straight to the console's Lawyer verification section. No token or other
+  data is put in the URL.
+-->
+<meta http-equiv="refresh" content="0; url=admin/index.html#/verifications">
+<style>
+  body { margin: 0; min-height: 100vh; display: grid; place-items: center; font-family: 'Poppins', system-ui, sans-serif; background: #fff; color: #0a0a0a; }
+  .box { text-align: center; padding: 24px; }
+  a { color: #0a0a0a; font-weight: 600; }
+</style>
+<script>location.replace('admin/index.html#/verifications');</script>
+</head>
+<body>
+  <div class="box">
+    <p>Lawyer verification has moved to the CASEONE Admin Console.</p>
+    <p><a href="admin/index.html#/verifications">Open Lawyer verification</a></p>
+  </div>
+</body>
+</html>

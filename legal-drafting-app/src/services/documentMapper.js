@@ -71,7 +71,7 @@ function originKind(doc) {
   return 'draft';
 }
 
-function structuredDataFrom(fields, description) {
+export function structuredDataFrom(fields, description) {
   const data = { ...(fields ?? {}) };
   if (description) data.matterDescription = description;
   return data;
@@ -168,6 +168,8 @@ export function fromApi(api) {
     createdAt: api.createdAt,
     updatedAt: api.updatedAt,
     currentVersion: api.currentVersion,
+    // Phase 6: revision of the saved text + case details, sent back as baseRevision on save.
+    revision: api.revision,
     language,
     origin: clean({
       kind: SOURCE_TO_ORIGIN[api.source] ?? 'draft',
@@ -214,6 +216,7 @@ const REASON_FROM_API = {
   major_edit: 'major-edit',
   regenerated: 'regenerated',
   restored_version: 'restored',
+  finalized: 'finalized',
 };
 
 const REASON_LABELS = {
@@ -224,11 +227,14 @@ const REASON_LABELS = {
   ai_edit_accepted: 'AI edit accepted',
   major_edit: 'Major edit',
   regenerated: 'Regenerated from template',
+  finalized: 'Finalized Draft',
 };
 
 export function versionFromApi(v) {
   const label =
-    v.reason === 'restored_version'
+    v.reason === 'finalized'
+      ? 'Finalized Draft'
+      : v.reason === 'restored_version'
       ? `Restored from ${v.detail || 'an earlier version'}`
       : v.detail
         ? `${REASON_LABELS[v.reason] ?? v.reason}: ${v.detail}`
@@ -240,6 +246,10 @@ export function versionFromApi(v) {
     label,
     createdAt: v.createdAt,
   };
+  if (v.reason === 'finalized') {
+    out.finalized = true;
+    out.finalizedAt = v.metadata?.finalizedAt ?? v.createdAt;
+  }
   if (v.content !== undefined) {
     const { matterDescription: _m, ...fields } = v.structuredData ?? {};
     out.content = v.content;

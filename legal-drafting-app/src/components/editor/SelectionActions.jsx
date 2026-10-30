@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { MessageSquareText } from 'lucide-react';
 import './SelectionActions.css';
 
+// Demo Mode default (signed out). Signed in, the workspace passes the AI actions.
 const SELECTION_ACTIONS = [
   { id: 'explain', label: 'Explain' },
   { id: 'rewrite', label: 'Rewrite' },
@@ -18,7 +19,7 @@ const MENU_HEIGHT = 36;
  * onMouseDown preventDefault so the editor keeps its selection and focus.
  * It never changes the document itself — it hands the selection to `onAction`.
  */
-export function SelectionActions({ editor, onAction }) {
+export function SelectionActions({ editor, onAction, actions = SELECTION_ACTIONS, disabled = false }) {
   const [position, setPosition] = useState(null);
   const menuRef = useRef(null);
 
@@ -85,14 +86,15 @@ export function SelectionActions({ editor, onAction }) {
       <span className="selection-actions__label" aria-hidden="true">
         <MessageSquareText size={14} strokeWidth={1.75} />
       </span>
-      {SELECTION_ACTIONS.map((action) => (
+      {actions.map((action) => (
         <button
           key={action.id}
           type="button"
           className="selection-actions__btn"
           onClick={() => onAction(action.id)}
+          disabled={disabled}
         >
-          {action.label}
+          {action.short ?? action.label}
         </button>
       ))}
     </div>

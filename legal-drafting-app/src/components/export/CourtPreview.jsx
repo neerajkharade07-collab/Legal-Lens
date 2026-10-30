@@ -7,6 +7,8 @@ import { useLockBodyScroll } from '../../hooks/useLockBodyScroll';
 import { Button } from '../common/Button';
 import { DemoBadge } from '../common/Badge';
 import { DocBlocks } from './DocRenderer';
+import { printDocument as printOnly } from '../../services/finalizeService';
+import { startsNewPage } from '../../utils/pageBreak';
 import './CourtPreview.css';
 
 const BODY_CLASS = 'has-court-preview';
@@ -36,11 +38,21 @@ function keepsWithNext(node) {
  * numbers and an optional footer. Print / “Save as PDF” use the browser's print
  * dialog; the print stylesheet hides every piece of application chrome.
  */
-export function CourtPreview({ title, content, onClose, onDownloadWord, autoPrint = false }) {
+export function CourtPreview({
+  title,
+  content,
+  onClose,
+  onDownloadWord,
+  onDownloadDocx,
+  docxNote,
+  autoPrint = false,
+  draftLabel = 'Preliminary demo draft — review before use',
+}) {
   const [options, setOptions] = useState(() => exportService.loadPrintOptions());
   const [pages, setPages] = useState(null);
   const [scale, setScale] = useState(1);
   const [notice, setNotice] = useState(null);
+  const [docxBusy, setDocxBusy] = useState(false);
   const measureRef = useRef(null);
   const scrollRef = useRef(null);
   const backRef = useRef(null);
@@ -75,8 +87,17 @@ export function CourtPreview({ title, content, onClose, onDownloadWord, autoPrin
     const heights = nodes.map((el, i) => ({
       height: el.getBoundingClientRect().height,
       keepWithNext: keepsWithNext(blocks[i]),
+      breakBefore: startsNewPage(blocks[i]),
     }));
-    setPages(paginateBlocks(heights, geometry.contentHeight - SAFETY_PX));
+    const capacity = geometry.contentHeight - SAFETY_PX;
+    // A page holding a block taller than A4 is drawn taller (never clipped); print and PDF
+    // continue that block on the next page.
+    setPages(
+      paginateBlocks(heights, capacity).map((indices) => {
+        const used = indices.reduce((sum, i) => sum + heights[i].height, 0);
+        return { indices, extra: used > capacity ? Math.ceil(used - capacity + SAFETY_PX) : 0 };
+      }),
+    );
   }, [blocks, geometry.contentHeight]);
 
   useLayoutEffect(() => {
@@ -116,10 +137,22 @@ export function CourtPreview({ title, content, onClose, onDownloadWord, autoPrin
           ? 'In the print dialog, choose “Save as PDF” as the destination. The app does not create the PDF itself.'
           : null,
       );
-      exportService.printDocument({ title, bodyClass: 'is-printing-document' });
+      // Prints the document alone (A4, the browser's own pagination — nothing is clipped).
+      printOnly(content, { title, options }).catch(() => {
+        setNotice('The print dialog could not be opened. Try again, or use your browser’s print command.');
+      });
     },
-    [title],
+    [title, content, options],
   );
+
+  const handleDocx = async () => {
+    setDocxBusy(true);
+    try {
+      await onDownloadDocx();
+    } finally {
+      setDocxBusy(false);
+    }
+  };
 
   // Header “Print…” opens the preview and prints once pages are laid out.
   useEffect(() => {
@@ -178,19 +211,29 @@ export function CourtPreview({ title, content, onClose, onDownloadWord, autoPrin
           <Button variant="secondary" size="sm" icon={FileDown} onClick={() => handlePrint('pdf')}>
             Export PDF
           </Button>
-          <Button
-            variant="secondary"
-            size="sm"
-            icon={FileText}
-            disabled
-            aria-describedby="cr-docx-note"
-            title={docx.reason}
-          >
-            Export DOCX
-          </Button>
-          <Button size="sm" icon={FileDown} onClick={onDownloadWord}>
-            Word (.doc)
-          </Button>
+          {onDownloadDocx ? (
+            <Button size="sm" icon={FileText} onClick={handleDocx} disabled={docxBusy}>
+              {docxBusy ? 'Preparing…' : 'Export Word (.docx)'}
+            </Button>
+          ) : (
+            <>
+              <Button
+                variant="secondary"
+                size="sm"
+                icon={FileText}
+                disabled
+                aria-describedby="cr-docx-note"
+                title={docxNote ?? docx.reason}
+              >
+                Export DOCX
+              </Button>
+              {onDownloadWord && (
+                <Button size="sm" icon={FileDown} onClick={onDownloadWord}>
+                  Word (.doc)
+                </Button>
+              )}
+            </>
+          )}
         </div>
       </header>
 
@@ -284,7 +327,14 @@ export function CourtPreview({ title, content, onClose, onDownloadWord, autoPrin
           <div className="court-preview__notes">
             <p id="cr-docx-note">
               <Info size={14} strokeWidth={1.75} aria-hidden="true" />
-              {docx.reason}
+              {onDownloadDocx
+                ? 'The Word file is created by CASEONE from the saved document, with these layout settings.'
+                : (docxNote ?? docx.reason)}
+            </p>
+            <p>
+              <Info size={14} strokeWidth={1.75} aria-hidden="true" />
+              Page breaks on screen are approximate. Print and PDF use your browser’s own A4 layout, so a
+              long paragraph continues on the next page instead of being cut.
             </p>
             <p>
               <Info size={14} strokeWidth={1.75} aria-hidden="true" />
@@ -295,7 +345,7 @@ export function CourtPreview({ title, content, onClose, onDownloadWord, autoPrin
               Layout preferences only. Check the formatting requirements of the court or authority
               where the document will be filed.
             </p>
-            <DemoBadge>Preliminary demo draft — review before use</DemoBadge>
+            <DemoBadge>{draftLabel}</DemoBadge>
           </div>
         </aside>
 
@@ -307,12 +357,17 @@ export function CourtPreview({ title, content, onClose, onDownloadWord, autoPrin
             </p>
           )}
           <div className="court-preview__pages">
-            {(pages ?? []).map((indices, pageIndex) => (
-              <div className="cr-page-frame" key={pageIndex}>
+            {(pages ?? []).map(({ indices, extra }, pageIndex) => (
+              <div
+                className="cr-page-frame"
+                key={pageIndex}
+                style={extra ? { '--cr-page-h': `${geometry.height + extra}px` } : undefined}
+              >
                 <article
                   className="cr-page"
                   aria-label={`Page ${pageIndex + 1} of ${total}`}
                   data-page={pageIndex + 1}
+                  data-tall={extra ? 'true' : undefined}
                 >
                   <div className="cr-page__content cr-doc">
                     <DocBlocks

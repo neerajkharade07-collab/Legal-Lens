@@ -4,7 +4,7 @@ import { comparisonService, documentReviewService } from '../services';
 import { buildReviewedDocumentPayload } from '../utils/reviewedDocument';
 import { useDocuments } from './useDocuments';
 import { useToast } from './useToast';
-import { SAVE_LOCATION } from '../services/config';
+import { saveLocation } from '../services/config';
 
 /**
  * Compare Documents: two files → (demo) comparison → redline workspace.
@@ -138,7 +138,7 @@ export function useComparison() {
       (doc) => {
         toast({
           title: 'Opened in the drafting editor',
-          description: `Saved ${SAVE_LOCATION}.`,
+          description: `Saved ${saveLocation()}.`,
           variant: 'success',
         });
         navigate(`/draft/${doc.id}`);

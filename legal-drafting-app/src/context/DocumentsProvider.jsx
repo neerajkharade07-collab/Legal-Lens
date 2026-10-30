@@ -3,14 +3,16 @@ import { DocumentsContext } from './contexts';
 import { documentsService, documentStorageService } from '../services';
 import { useAuth } from '../hooks/useAuth';
 import { useToast } from '../hooks/useToast';
-import { DRAFTING_GUEST_MODE } from '../services/config';
 
 /**
- * The signed-in user's documents, stored by the Legal Lens backend.
+ * The current user's documents: a signed-in customer's or lawyer's documents from
+ * the CASEONE backend, or — signed out — the Demo Mode drafts kept in this browser.
+ * The list is reloaded whenever the session changes, so documents from the two
+ * places are never mixed.
  *
  * The list holds summaries (no content). `loadDocument(id)` fetches a full
  * document (content + case details) for the workspace or a preview.
- * status: 'idle' (signed out) | 'loading' | 'ready' | 'error'
+ * status: 'idle' (session still loading) | 'loading' | 'ready' | 'error'
  */
 export function DocumentsProvider({ children }) {
   const { status: authStatus } = useAuth();
@@ -44,23 +46,31 @@ export function DocumentsProvider({ children }) {
     });
   }, []);
 
+  // Only the newest list request may fill the list (the session can change while one is in flight).
+  const loadSeq = useRef(0);
   const load = useCallback(async () => {
+    const seq = ++loadSeq.current;
     setStatus('loading');
     setError(null);
     try {
-      setDocuments(await documentsService.listDocuments());
+      const list = await documentsService.listDocuments();
+      if (seq !== loadSeq.current) return;
+      setDocuments(list);
       setStatus('ready');
     } catch (err) {
+      if (seq !== loadSeq.current) return;
       setError(err?.message || 'Could not load your documents.');
       setStatus('error');
     }
   }, []);
 
   useEffect(() => {
-    // Demo Mode: guests get the browser-local document store (no sign-in).
-    if (authStatus === 'authenticated' || (DRAFTING_GUEST_MODE && authStatus === 'anonymous')) {
+    // Signed in → account documents; signed out → Demo Mode (browser-only) drafts.
+    if (authStatus === 'authenticated' || authStatus === 'anonymous') {
+      setDocuments([]);
       load();
-    } else if (authStatus === 'anonymous') {
+    } else {
+      loadSeq.current += 1;
       setDocuments([]);
       setStatus('idle');
     }
@@ -97,8 +107,10 @@ export function DocumentsProvider({ children }) {
    * Resolves with { document, version } from the server.
    */
   const updateDocument = useCallback(
-    (id, changes, options = {}) => {
-      const current = docsRef.current.find((doc) => doc.id === id);
+    (id, changes, { current: opened, ...options } = {}) => {
+      // The workspace passes the document it opened, so a page whose list was reset
+      // (session ended → signed in again) can still save it — to where it lives.
+      const current = docsRef.current.find((doc) => doc.id === id) ?? (opened?.id === id ? opened : null);
       if (!current) return Promise.reject(new Error('Document not found.'));
       const optimistic = { ...current, ...changes, updatedAt: new Date().toISOString() };
       merge(id, optimistic);
@@ -112,6 +124,8 @@ export function DocumentsProvider({ children }) {
           currentVersion: result.document.currentVersion,
           name: result.document.name,
           status: result.document.status,
+          // Phase 6: the saved revision, so reopening this document in this tab saves against it.
+          ...(result.document.revision ? { revision: result.document.revision } : {}),
         });
         return result;
       });

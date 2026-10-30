@@ -1,302 +1,405 @@
 /**
  * lawyer-data.js
  *
- * Single source of truth for Legal Lens demo lawyer data.
- * Shared by find-a-lawyer.html, lawyer-profile.html, lawyer-login.html,
- * lawyer-signup.html and lawyer-dashboard.html so the same lawyers,
- * IDs, and fields are used everywhere.
+ * Lawyer Connect data layer, shared by lawyer-connect.html, find-a-lawyer.html,
+ * lawyer-profile.html, free-legal-assistance.html, my-requests.html,
+ * lawyer-login.html, lawyer-register.html and lawyer-dashboard.html.
+ * Function names and object shapes used by the older pages are unchanged.
  *
- * BACKEND-READY:
- * Every function here returns a Promise so each one can be
- * swapped for a real API call later without touching any UI code:
+ * Backed by the real CASEONE API (MongoDB):
  *
- *   getLawyers()          -> fetch('/api/lawyers')
- *   getLawyerById(id)     -> fetch(`/api/lawyers/${id}`)
- *   getSimilarLawyers(l)  -> fetch(`/api/lawyers/${l.id}/similar`)
- *   registerLawyer(data)  -> fetch('/api/lawyers', { method: 'POST', ... })
- *   updateLawyerProfile() -> fetch(`/api/lawyers/${id}`, { method: 'PATCH', ... })
+ *   getLawyers()              GET  /api/lawyers               listed lawyers offering PAID consultations (listed
+ *                                                             automatically after registration; `reviewed` tells
+ *                                                             whether CASEONE has reviewed the profile)
+ *   getLawyerById(id)         GET  /api/lawyers/:id           public profile, or null if missing / not listed / hidden
+ *   reportLawyer(id, report)  POST /api/lawyers/:id/report    "Report this profile" (anyone)
+ *   getSimilarLawyers(l, n)   GET  /api/lawyers/:id/similar
+ *   getFreeLawyers(q)         GET  /api/free-aid/lawyers      free / both lawyers (approved free-assistance applicants only)
+ *   getLawyerProfile()        GET  /api/lawyer/profile        the logged-in lawyer's own profile (any state)
+ *   updateLawyerProfile(_, u) PUT  /api/lawyers/me  (+ PUT /api/lawyer/availability)
  *
- * NEW IN THIS VERSION (Lawyer Connect two-sided platform):
- * Registered ("Lawyer" role) accounts are layered on top of the
- * original seed lawyers, without altering the seed array. This keeps
- * every existing customer-side page (find-a-lawyer.html, lawyer
- * profile cards, similar lawyers) working exactly as before, while
- * letting new lawyers created through lawyer-signup.html show up
- * in the same directory automatically.
+ * Consultation requests are REAL (no browser demo data any more):
+ *   requestConsultation(d)    POST  /api/consultations                     (customer)
+ *   getMyConsultations()      GET   /api/consultations/my                  (customer)
+ *   cancelConsultation(id)    PATCH /api/consultations/:id/cancel          (customer)
+ *   getConsultRequestsForLawyer()   GET /api/lawyer/consultations          (lawyer)
+ *   updateConsultRequestStatus(id, s) PATCH /api/consultations/:id/accept|reject|complete
+ *   getClientsForLawyer()     GET   /api/lawyer/clients                    (lawyer)
  *
- * PRIVACY NOTE: this is a prototype with no real backend. Passwords
- * collected on the lawyer/customer auth forms are intentionally never
- * written to localStorage -- only non-sensitive profile fields are
- * persisted (name, email, professional details). Swap in real
- * authentication (hashed passwords, server sessions, etc.) before
- * this becomes anything other than a demo.
+ * Private uploads (credentials, eligibility documents, photo) are sent as a
+ * raw body with the in-memory access token; files are never public.
+ *
+ * Requires config.js (API_BASE_URL). Signed-in functions also need auth.js.
  */
 (function (global) {
 
-  const lawyers = [
-    { id: 'lawyer001', name: 'Adv. Aarav Mehta', verified: true, practiceAreas: ['Criminal Law', 'Civil Law'], experience: 8, location: 'Pune', languages: ['English', 'Hindi', 'Marathi'], consultationFee: 1500, rating: 4.8, consultations: 127, description: 'Focused on criminal defense and civil litigation with a client-first approach, helping individuals navigate complex proceedings with clarity.' },
-    { id: 'lawyer002', name: 'Adv. Priya Deshmukh', verified: true, practiceAreas: ['Family Law', 'Property Law'], experience: 12, location: 'Mumbai', languages: ['English', 'Hindi', 'Marathi'], consultationFee: 2500, rating: 4.9, consultations: 203, description: 'Experienced family and property law practitioner known for practical, empathetic guidance through sensitive matters.' },
-    { id: 'lawyer003', name: 'Adv. Rohan Kulkarni', verified: false, practiceAreas: ['Cyber Law', 'Consumer Law'], experience: 4, location: 'Pune', languages: ['English', 'Hindi'], consultationFee: 1200, rating: 4.5, consultations: 41, description: 'Emerging cyber law specialist assisting clients with online fraud, data privacy, and consumer disputes.' },
-    { id: 'lawyer004', name: 'Adv. Kavya Reddy', verified: true, practiceAreas: ['Employment Law', 'Business / Corporate Law'], experience: 9, location: 'Hyderabad', languages: ['English', 'Telugu', 'Hindi'], consultationFee: 3000, rating: 4.7, consultations: 158, description: 'Corporate and employment law advisor working with startups and individual employees on contracts and workplace disputes.' },
-    { id: 'lawyer005', name: 'Adv. Vikram Singh', verified: true, practiceAreas: ['Banking / Finance', 'Civil Law'], experience: 16, location: 'Delhi', languages: ['English', 'Hindi'], consultationFee: 4000, rating: 4.9, consultations: 312, description: 'Senior banking and finance litigator with extensive experience handling recovery matters and financial disputes.' },
-    { id: 'lawyer006', name: 'Adv. Sneha Iyer', verified: true, practiceAreas: ['Tenant / Rental Disputes', 'Property Law'], experience: 6, location: 'Bengaluru', languages: ['English', 'Tamil', 'Kannada'], consultationFee: 1800, rating: 4.6, consultations: 89, description: 'Dedicated to helping tenants and landlords resolve rental disputes fairly and efficiently.' },
-    { id: 'lawyer007', name: 'Adv. Arjun Nair', verified: false, practiceAreas: ['Criminal Law', 'Cyber Law'], experience: 2, location: 'Nagpur', languages: ['English', 'Hindi', 'Marathi'], consultationFee: 900, rating: 4.3, consultations: 18, description: 'Early-career advocate building a practice in criminal defense and digital crime cases.' },
-    { id: 'lawyer008', name: 'Adv. Meera Joshi', verified: true, practiceAreas: ['Family Law', 'Consumer Law'], experience: 11, location: 'Nashik', languages: ['English', 'Hindi', 'Marathi'], consultationFee: 2000, rating: 4.8, consultations: 176, description: 'Compassionate family law counsel with a strong track record in mediation and consumer protection matters.' },
-    { id: 'lawyer009', name: 'Adv. Karthik Rajan', verified: true, practiceAreas: ['Business / Corporate Law', 'Banking / Finance'], experience: 14, location: 'Bengaluru', languages: ['English', 'Tamil', 'Kannada'], consultationFee: 5000, rating: 4.9, consultations: 264, description: 'Corporate counsel advising growing businesses on structuring, compliance, and financial agreements.' },
-    { id: 'lawyer010', name: 'Adv. Ananya Kapoor', verified: false, practiceAreas: ['Property Law', 'Tenant / Rental Disputes'], experience: 3, location: 'Delhi', languages: ['English', 'Hindi'], consultationFee: 1100, rating: 4.4, consultations: 27, description: 'Property and tenancy specialist assisting clients with documentation review and dispute resolution.' },
-    { id: 'lawyer011', name: 'Adv. Rahul Bhatt', verified: true, practiceAreas: ['Civil Law', 'Employment Law'], experience: 7, location: 'Mumbai', languages: ['English', 'Hindi', 'Marathi'], consultationFee: 2200, rating: 4.6, consultations: 112, description: 'Civil litigation and employment law practitioner focused on practical, timely resolutions for individuals.' },
-    { id: 'lawyer012', name: 'Adv. Divya Menon', verified: true, practiceAreas: ['Cyber Law', 'Business / Corporate Law'], experience: 10, location: 'Hyderabad', languages: ['English', 'Telugu', 'Hindi'], consultationFee: 3500, rating: 4.8, consultations: 191, description: 'Technology-focused counsel advising companies and individuals on cyber law, data protection, and digital contracts.' }
-  ];
-
-  const ACCOUNTS_KEY = 'legalLensLawyerAccounts';   // [{ id, name, email, barNumber, createdAt }]  -- no passwords, ever
-  const PROFILES_KEY = 'legalLensLawyerProfiles';    // [ lawyer profile objects, same shape as seed `lawyers` + email/availability ]
-  const REQUESTS_KEY = 'legalLensConsultRequests';   // shared with find-a-lawyer.html / lawyer-profile.js
+  function apiBase() {
+    // eslint-disable-next-line no-undef
+    return (typeof API_BASE_URL !== 'undefined' ? API_BASE_URL : '/api').replace(/\/+$/, '');
+  }
 
   /* =========================================================
-     LOW-LEVEL STORAGE HELPERS
+     SAFE DISPLAY HELPERS (lawyer-entered text is never trusted as HTML)
      ========================================================= */
-  function readJSON(key, fallback) {
+  function escapeHtml(value) {
+    return String(value === null || value === undefined ? '' : value)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;');
+  }
+
+  /** "4.8" — or "New" when the lawyer has no rating (CASEONE has no review system yet). */
+  function formatRating(l) {
+    const r = Number(l && l.rating);
+    return r > 0 ? r.toFixed(1) : 'New';
+  }
+
+  /** "₹1,500" — or "Fee not listed" when the lawyer has not set a fee. Free-only lawyers: "₹0 (free)". */
+  function formatFee(l) {
+    if (l && l.serviceType === 'free') return '₹0 (free)';
+    const f = Number(l && (l.paidConsultationFee != null ? l.paidConsultationFee : l.consultationFee));
+    return f > 0 ? '₹' + f.toLocaleString('en-IN') : 'Fee not listed';
+  }
+
+  /** Absolute URL of a lawyer's public photo, or '' (show initials instead). */
+  function photoSrc(l) {
+    return l && l.photoUrl ? apiBase() + l.photoUrl : '';
+  }
+
+  /** Has CASEONE reviewed this listed profile? Only reviewed lawyers accept requests. */
+  function isReviewed(l) {
+    return !!(l && l.reviewed === true);
+  }
+
+  /**
+   * Public badge text: official-source verification vs a manual CASEONE review
+   * (never presented as official) vs a profile listed automatically that nobody
+   * has reviewed yet (self-reported details).
+   */
+  function verificationLabel(l) {
+    if (!isReviewed(l)) return 'Not yet reviewed by CASEONE';
+    return l.verificationMethod === 'official_sources' ? 'Verified Lawyer' : 'Credentials reviewed by CASEONE';
+  }
+
+  /** Disclosure shown wherever lawyer profiles are listed. */
+  const LISTING_DISCLOSURE = 'Advocates list themselves on CASEONE. Profile details, including Bar Council enrollment, are provided by the advocate and have not been independently checked unless the profile is marked "Credentials reviewed by CASEONE". You can send requests only to reviewed advocates. See something wrong? Use "Report this profile".';
+
+  // Letters and digits only: the result is also used inside inline onerror="…" fallbacks,
+  // so quotes or other punctuation from a name must never reach it.
+  function initials(name) {
+    return String(name || '?').replace(/^Adv\.?\s+/i, '').split(/\s+/).map((w) => w.replace(/[^\p{L}\p{N}]/gu, '')).filter(Boolean).map((w) => w.charAt(0)).slice(0, 2).join('').toUpperCase() || '?';
+  }
+
+  /** Fills in missing fields so older UI code never crashes on a sparse profile. */
+  function normalize(l) {
+    if (!l || typeof l !== 'object') return null;
+    return {
+      id: String(l.id || ''),
+      name: String(l.name || 'Lawyer'),
+      email: l.email || '',
+      verified: l.verified === true,
+      verificationStatus: l.verificationStatus || (l.verified ? 'verified' : 'pending'),
+      practiceAreas: Array.isArray(l.practiceAreas) ? l.practiceAreas : [],
+      experience: Number(l.experience) || 0,
+      location: String(l.location || ''),
+      languages: Array.isArray(l.languages) ? l.languages : [],
+      consultationFee: Number(l.consultationFee) || 0,
+      rating: Number(l.rating) || 0,
+      consultations: Number(l.consultations) || 0,
+      description: String(l.description || ''),
+      barNumber: String(l.barNumber || ''),
+      availability: l.availability || { days: [], slots: [] },
+      reverificationRequired: l.reverificationRequired === true,
+      // Lawyer Portal fields (older records: paid, no photo)
+      serviceType: ['paid', 'free', 'both'].includes(l.serviceType) ? l.serviceType : 'paid',
+      offersPaid: l.offersPaid !== undefined ? l.offersPaid === true : l.serviceType !== 'free',
+      offersFree: l.offersFree === true,
+      paidConsultationFee: l.paidConsultationFee != null ? Number(l.paidConsultationFee) || 0 : null,
+      freeConsultationFee: 0,
+      freeServiceNote: String(l.freeServiceNote || ''),
+      stateBarCouncil: String(l.stateBarCouncil || ''),
+      qualifications: String(l.qualifications || ''),
+      photoUrl: String(l.photoUrl || ''),
+      hasPhoto: l.hasPhoto === true || !!l.photoUrl,
+      phone: String(l.phone || ''),
+      verificationState: l.verificationState || '',
+      decisionReason: String(l.decisionReason || ''),
+      isPublished: l.isPublished !== false,
+      acceptsEmergencyRequests: l.acceptsEmergencyRequests === true,
+      automatedVerification: l.automatedVerification || null,
+      // Lawyer registration: state is public; officeAddress / enrollmentDate only on the lawyer's own profile
+      state: String(l.state || ''),
+      enrolledSince: l.enrolledSince ? Number(l.enrolledSince) : null,
+      enrollmentDate: l.enrollmentDate || null,
+      officeAddress: String(l.officeAddress || ''),
+      experienceFromEnrollment: l.experienceFromEnrollment === true,
+      // 'official_sources' → "Verified Lawyer"; 'manual_review' → "Credentials reviewed by CASEONE";
+      // null on a listed profile → "Not yet reviewed by CASEONE"
+      verificationMethod: l.verificationMethod || null,
+      // Older API responses (reviewed-only directories) have no `reviewed` field: those were all reviewed.
+      reviewed: l.reviewed !== undefined ? l.reviewed === true : l.verified === true,
+      requestsOpen: l.requestsOpen !== undefined ? l.requestsOpen === true : l.verified === true
+    };
+  }
+
+  /* =========================================================
+     HTTP
+     ========================================================= */
+  async function getJSON(path) {
+    const res = await fetch(apiBase() + path, { headers: { Accept: 'application/json' } });
+    let payload = null;
+    try { payload = await res.json(); } catch (e) { /* empty */ }
+    if (res.status === 404) return null;
+    if (!res.ok || !payload || !payload.success) {
+      const err = new Error((payload && payload.message) || 'Could not load lawyer data.');
+      err.statusCode = res.status;
+      throw err;
+    }
+    return payload.data;
+  }
+
+  /** Authenticated call for the logged-in lawyer (auth.js), renewing the session once on 401. */
+  async function lawyerRequest(path, options) {
+    if (typeof global.apiRequest !== 'function') throw new Error('auth.js is required.');
     try {
-      const val = JSON.parse(localStorage.getItem(key));
-      return val === null || val === undefined ? fallback : val;
-    } catch (e) {
-      return fallback;
+      return await global.apiRequest(path, Object.assign({ useAuth: true }, options || {}));
+    } catch (err) {
+      if (err && err.statusCode === 401 && typeof global.refreshSession === 'function' && await global.refreshSession()) {
+        return global.apiRequest(path, Object.assign({ useAuth: true }, options || {}));
+      }
+      throw err;
     }
   }
 
-  function writeJSON(key, value) {
-    localStorage.setItem(key, JSON.stringify(value));
-  }
-
-  function getAccounts() { return readJSON(ACCOUNTS_KEY, []); }
-  function saveAccounts(list) { writeJSON(ACCOUNTS_KEY, list); }
-
-  function getRegisteredProfiles() { return readJSON(PROFILES_KEY, []); }
-  function saveRegisteredProfiles(list) { writeJSON(PROFILES_KEY, list); }
-
-  function getAllLawyersSync() {
-    // Seed lawyers first, then registered lawyers -- never mutate the seed array.
-    return lawyers.slice().concat(getRegisteredProfiles());
-  }
-
-  function generateId(prefix) {
-    return prefix + '_' + Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
-  }
-
   /* =========================================================
-     EXISTING CUSTOMER-FACING API (unchanged signatures)
+     PUBLIC (customer-facing) API
      ========================================================= */
+  let directoryCache = null;
+
+  /** All verified, published lawyers (cached for the page's lifetime). */
   function getLawyers() {
-    // Swap this for: return fetch('/api/lawyers').then(r => r.json());
-    return Promise.resolve(getAllLawyersSync());
+    if (!directoryCache) {
+      directoryCache = getJSON('/lawyers')
+        .then((list) => (Array.isArray(list) ? list.map(normalize).filter(Boolean) : []))
+        .catch((err) => { directoryCache = null; throw err; });
+    }
+    return directoryCache;
   }
 
+  /** One public profile, or null when it does not exist or is not public (pending, rejected, hidden). */
   function getLawyerById(id) {
-    // Swap this for: return fetch(`/api/lawyers/${id}`).then(r => r.ok ? r.json() : null);
-    const found = getAllLawyersSync().find(l => l.id === id) || null;
-    return Promise.resolve(found);
+    if (!/^[a-f0-9]{24}$/i.test(String(id || ''))) return Promise.resolve(null);
+    return getJSON('/lawyers/' + encodeURIComponent(id)).then(normalize);
   }
 
   function getSimilarLawyers(lawyer, limit) {
-    limit = limit || 4;
-    // Swap this for: return fetch(`/api/lawyers/${lawyer.id}/similar?limit=${limit}`).then(r => r.json());
-    const all = getAllLawyersSync();
-    const scored = all
-      .filter(l => l.id !== lawyer.id)
-      .map(l => {
-        let score = 0;
-        if (l.location === lawyer.location) score += 2;
-        (l.practiceAreas || []).forEach(p => { if (lawyer.practiceAreas.includes(p)) score += 2; });
-        (l.languages || []).forEach(lang => { if (lawyer.languages.includes(lang)) score += 1; });
-        return { lawyer: l, score };
-      })
-      .sort((a, b) => b.score - a.score)
-      .slice(0, limit)
-      .map(x => x.lawyer);
-
-    return Promise.resolve(scored);
+    if (!lawyer || !lawyer.id) return Promise.resolve([]);
+    return getJSON('/lawyers/' + encodeURIComponent(lawyer.id) + '/similar?limit=' + (Number(limit) || 4))
+      .then((list) => (Array.isArray(list) ? list.map(normalize).filter(Boolean) : []))
+      .catch(() => []);
   }
 
   /* =========================================================
-     LAWYER ACCOUNTS (registration / login)
+     THE LOGGED-IN LAWYER'S OWN PROFILE (lawyer-dashboard.html)
      ========================================================= */
-
-  // Creates both an account record (auth-facing, no password stored)
-  // and a lawyer profile record (directory-facing). New lawyers start
-  // as Verification Pending -- never auto-verified.
-  function registerLawyer(details) {
-    const id = generateId('lawyer');
-    const now = new Date().toISOString();
-
-    const account = {
-      id: id,
-      name: details.name,
-      email: details.email,
-      barNumber: details.barNumber || '',
-      createdAt: now
-    };
-
-    const profile = {
-      id: id,
-      name: details.name,
-      email: details.email,
-      barNumber: details.barNumber || '',
-      verified: false,
-      practiceAreas: details.practiceAreas || [],
-      experience: details.experience || 0,
-      location: details.location || '',
-      languages: details.languages || [],
-      consultationFee: details.consultationFee || 0,
-      rating: 0,
-      consultations: 0,
-      description: details.description || '',
-      availability: { days: [], slots: [] },
-      createdAt: now
-    };
-
-    const accounts = getAccounts();
-    accounts.push(account);
-    saveAccounts(accounts);
-
-    const profiles = getRegisteredProfiles();
-    profiles.push(profile);
-    saveRegisteredProfiles(profiles);
-
-    // Swap this whole function for:
-    // return fetch('/api/lawyers/register', { method: 'POST', body: JSON.stringify(details) }).then(r => r.json());
-    return Promise.resolve(profile);
+  async function getLawyerProfile() {
+    const res = await lawyerRequest('/lawyer/profile');
+    return normalize(res.data);
   }
 
-  function findLawyerAccountByEmail(email) {
-    const normalized = (email || '').trim().toLowerCase();
-    const account = getAccounts().find(a => a.email.trim().toLowerCase() === normalized) || null;
-    // Swap this for: return fetch(`/api/lawyers/login`, { method: 'POST', body: JSON.stringify({ email }) }).then(...);
-    return Promise.resolve(account);
+  // Kept for compatibility with older dashboard code: with the real backend a
+  // lawyer profile always exists for a lawyer account, so this just loads it.
+  function ensureLawyerProfile() {
+    return getLawyerProfile();
   }
 
-  // SIH demo: lawyer LOGIN is real (backend /api/auth/lawyer/*), but the
-  // dashboard's profile details / requests are still browser-local demo data.
-  // After a backend login there may be no browser profile for the backend
-  // lawyerId yet, so create an empty one (name/email from the backend session,
-  // verified: false) instead of bouncing the lawyer back to the login page.
-  function ensureLawyerProfile(id, details) {
-    details = details || {};
-    const existing = getAllLawyersSync().find(l => l.id === id);
-    if (existing) return Promise.resolve(existing);
-    const now = new Date().toISOString();
-    const profile = {
-      id: id, name: details.name || 'Lawyer', email: details.email || '', barNumber: '',
-      verified: false, practiceAreas: [], experience: 0, location: '', languages: [],
-      consultationFee: 0, rating: 0, consultations: 0, description: '',
-      availability: { days: [], slots: [] }, createdAt: now
-    };
-    const profiles = getRegisteredProfiles();
-    profiles.push(profile);
-    saveRegisteredProfiles(profiles);
-    const accounts = getAccounts();
-    if (!accounts.some(a => a.id === id)) {
-      accounts.push({ id: id, name: profile.name, email: profile.email, barNumber: '', createdAt: now });
-      saveAccounts(accounts);
+  /**
+   * Saves the logged-in lawyer's profile. `updates` uses the dashboard's
+   * field names (description, barNumber, availability) and is mapped to the
+   * API's names. Verification status is never sent (only admins set it).
+   */
+  async function updateLawyerProfile(_id, updates) {
+    updates = updates || {};
+    let message = '';
+    if (updates.availability) {
+      await lawyerRequest('/lawyer/availability', {
+        method: 'PUT',
+        body: { days: updates.availability.days || [], slots: updates.availability.slots || [] }
+      });
     }
-    return Promise.resolve(profile);
-  }
-
-  function getLawyerProfile(id) {
-    return getLawyerById(id);
-  }
-
-  function updateLawyerProfile(id, updates) {
-    const profiles = getRegisteredProfiles();
-    const idx = profiles.findIndex(p => p.id === id);
-
-    if (idx === -1) {
-      // Seed lawyers are static demo data and are not user-editable in this prototype.
-      return Promise.resolve(null);
+    const body = {};
+    const map = { name: 'name', barNumber: 'barRegistrationNumber', location: 'location', experience: 'experience', consultationFee: 'consultationFee', description: 'bio', practiceAreas: 'practiceAreas', languages: 'languages', serviceType: 'serviceType', freeServiceNote: 'freeServiceNote', qualifications: 'qualifications', acceptsEmergencyRequests: 'acceptsEmergencyRequests', state: 'state', officeAddress: 'officeAddress' };
+    Object.keys(map).forEach((k) => {
+      if (Object.prototype.hasOwnProperty.call(updates, k)) body[map[k]] = updates[k];
+    });
+    if (Object.keys(body).length) {
+      const res = await lawyerRequest('/lawyers/me', { method: 'PUT', body });
+      message = res && res.message ? res.message : '';
     }
-
-    profiles[idx] = Object.assign({}, profiles[idx], updates);
-    saveRegisteredProfiles(profiles);
-
-    // Keep the matching account record's name/email in sync for nav display.
-    const accounts = getAccounts();
-    const accIdx = accounts.findIndex(a => a.id === id);
-    if (accIdx !== -1) {
-      if (updates.name) accounts[accIdx].name = updates.name;
-      if (updates.email) accounts[accIdx].email = updates.email;
-      saveAccounts(accounts);
-    }
-
-    // Swap this for: return fetch(`/api/lawyers/${id}`, { method: 'PATCH', body: JSON.stringify(updates) }).then(r => r.json());
-    return Promise.resolve(profiles[idx]);
+    const profile = await getLawyerProfile();
+    if (profile && /verified again/i.test(message)) profile.reverificationRequired = true;
+    return profile;
   }
 
   /* =========================================================
-     CONSULTATION REQUESTS (shared with customer-side pages)
+     CONSULTATION REQUESTS (real API)
      ========================================================= */
-  function getAllConsultRequests() {
-    return readJSON(REQUESTS_KEY, []);
+  /** "Report this profile". Sent signed-in when a session exists, otherwise anonymously. */
+  async function reportLawyer(id, report) {
+    const send = async (withAuth) => {
+      const headers = { 'Content-Type': 'application/json', Accept: 'application/json' };
+      const token = withAuth && typeof global.getAccessToken === 'function' ? global.getAccessToken() : '';
+      if (token) headers.Authorization = 'Bearer ' + token;
+      const res = await fetch(apiBase() + '/lawyers/' + encodeURIComponent(id) + '/report', { method: 'POST', headers, body: JSON.stringify(report || {}) });
+      let payload = null;
+      try { payload = await res.json(); } catch (e) { /* empty */ }
+      return { res, payload };
+    };
+    let { res, payload } = await send(true);
+    if (res.status === 401) ({ res, payload } = await send(false)); // expired session: report anonymously
+    if (!res.ok || !payload || !payload.success) {
+      const list = payload && payload.errors;
+      const err = new Error((list && list[0] && (list[0].message || list[0].msg)) || (payload && payload.message) || 'Could not send the report. Please try again.');
+      err.statusCode = res.status;
+      throw err;
+    }
+    return payload;
   }
 
-  function getConsultRequestsForLawyer(lawyerId) {
-    const requests = getAllConsultRequests().filter(r => r.lawyerId === lawyerId);
-    return Promise.resolve(requests);
+  async function requestConsultation(details) {
+    const res = await lawyerRequest('/consultations', { method: 'POST', body: details });
+    return res.data;
   }
 
-  function updateConsultRequestStatus(requestId, status) {
-    const requests = getAllConsultRequests();
-    const idx = requests.findIndex(r => r.id === requestId);
-    if (idx === -1) return Promise.resolve(null);
-
-    requests[idx].status = status;
-    requests[idx].respondedAt = new Date().toISOString();
-    writeJSON(REQUESTS_KEY, requests);
-    return Promise.resolve(requests[idx]);
+  async function getMyConsultations() {
+    const res = await lawyerRequest('/consultations/my');
+    return Array.isArray(res.data) ? res.data : [];
   }
 
-  // My Clients = customers whose consultation request(s) for this lawyer
-  // were accepted, de-duplicated, with their latest request summarized.
-  function getClientsForLawyer(lawyerId) {
-    const accepted = getAllConsultRequests().filter(r => r.lawyerId === lawyerId && r.status === 'accepted');
-    const byClient = {};
+  async function cancelConsultation(id) {
+    const res = await lawyerRequest('/consultations/' + encodeURIComponent(id) + '/cancel', { method: 'PATCH' });
+    return res.data;
+  }
 
-    accepted.forEach(r => {
-      const key = (r.customerEmail || r.customerName || 'guest').toLowerCase();
-      if (!byClient[key] || new Date(r.requestedAt) > new Date(byClient[key].requestedAt)) {
-        byClient[key] = r;
-      }
+  /** The signed-in lawyer's incoming requests (the argument is ignored; kept for old callers). */
+  async function getConsultRequestsForLawyer() {
+    const res = await lawyerRequest('/lawyer/consultations');
+    return Array.isArray(res.data) ? res.data : [];
+  }
+
+  /** status: 'accepted' | 'rejected' | 'completed' */
+  async function updateConsultRequestStatus(requestId, status) {
+    const action = { accepted: 'accept', rejected: 'reject', completed: 'complete' }[status];
+    if (!action) throw new Error('Unknown status.');
+    const res = await lawyerRequest('/consultations/' + encodeURIComponent(requestId) + '/' + action, { method: 'PATCH' });
+    return res.data;
+  }
+
+  async function getClientsForLawyer() {
+    const res = await lawyerRequest('/lawyer/clients');
+    return Array.isArray(res.data) ? res.data : [];
+  }
+
+  /** Free lawyers for an approved free-assistance applicant. */
+  async function getFreeLawyers(query) {
+    const q = new URLSearchParams();
+    Object.keys(query || {}).forEach((k) => { if (query[k]) q.set(k, query[k]); });
+    const res = await lawyerRequest('/free-aid/lawyers' + (q.toString() ? '?' + q.toString() : ''));
+    return Array.isArray(res.data) ? res.data.map(normalize).filter(Boolean) : [];
+  }
+
+  /* =========================================================
+     PRIVATE FILES (raw-body uploads + authenticated downloads)
+     ========================================================= */
+  async function rawFetch(path, init) {
+    const send = () => {
+      const headers = Object.assign({}, init.headers || {});
+      const token = typeof global.getAccessToken === 'function' ? global.getAccessToken() : null;
+      if (token) headers.Authorization = 'Bearer ' + token;
+      return fetch(apiBase() + path, Object.assign({}, init, { headers, credentials: 'include' }));
+    };
+    let res = await send();
+    if (res.status === 401 && typeof global.refreshSession === 'function' && await global.refreshSession()) res = await send();
+    return res;
+  }
+
+  /** Uploads one File. Resolves to the API payload; rejects with err.message from the API. */
+  async function uploadPrivateFile(path, file, method) {
+    const res = await rawFetch(path, {
+      method: method || 'POST',
+      headers: { 'Content-Type': file.type || 'application/octet-stream', 'X-File-Name': encodeURIComponent(file.name || 'document') },
+      body: file
     });
+    let payload = null;
+    try { payload = await res.json(); } catch (e) { /* none */ }
+    if (!res.ok) {
+      const err = new Error((payload && payload.message) || 'Upload failed (' + res.status + ').');
+      err.statusCode = res.status;
+      throw err;
+    }
+    return payload;
+  }
 
-    const clients = Object.keys(byClient).map(key => {
-      const r = byClient[key];
-      const count = accepted.filter(x => (x.customerEmail || x.customerName || 'guest').toLowerCase() === key).length;
-      return {
-        customerName: r.customerName || 'Guest Client',
-        customerEmail: r.customerEmail || '',
-        lastIssue: r.issue,
-        lastType: r.type,
-        lastRequestedAt: r.requestedAt,
-        consultationCount: count
-      };
-    });
+  /** Opens a private file (own document, or admin review) in a new tab via a temporary blob URL. */
+  async function openPrivateFile(path) {
+    const win = global.open('', '_blank');
+    try {
+      const res = await rawFetch(path, { method: 'GET' });
+      if (!res.ok) throw new Error(res.status === 404 ? 'File not found.' : 'Could not open the file.');
+      const url = URL.createObjectURL(await res.blob());
+      if (win) win.location.href = url; else global.location.href = url;
+      setTimeout(() => URL.revokeObjectURL(url), 60000);
+    } catch (err) {
+      if (win) win.close();
+      throw err;
+    }
+  }
 
-    return Promise.resolve(clients);
+  /** Object URL of a private image (e.g. the lawyer's own photo), or '' when there is none. */
+  async function privateImageUrl(path) {
+    try {
+      const res = await rawFetch(path, { method: 'GET' });
+      if (!res.ok) return '';
+      return URL.createObjectURL(await res.blob());
+    } catch (e) {
+      return '';
+    }
   }
 
   global.LegalLensLawyerData = {
-    // Existing customer-facing API
+    // Public (customer-facing)
     getLawyers,
     getLawyerById,
     getSimilarLawyers,
-    // Lawyer accounts / profiles
-    registerLawyer,
-    findLawyerAccountByEmail,
+    // The logged-in lawyer
     getLawyerProfile,
     ensureLawyerProfile,
     updateLawyerProfile,
-    // Consultation requests / clients
+    getFreeLawyers,
+    normalize,
+    verificationLabel,
+    isReviewed,
+    reportLawyer,
+    LISTING_DISCLOSURE,
+    // Consultation requests / clients (real API)
+    requestConsultation,
+    getMyConsultations,
+    cancelConsultation,
     getConsultRequestsForLawyer,
     updateConsultRequestStatus,
-    getClientsForLawyer
+    getClientsForLawyer,
+    // Private files
+    uploadPrivateFile,
+    openPrivateFile,
+    privateImageUrl,
+    photoSrc,
+    initials,
+    // Display helpers
+    escapeHtml,
+    formatRating,
+    formatFee
   };
 
 })(window);

@@ -4,9 +4,10 @@ import { DemoBadge, Badge } from '../common/Badge';
 import { Button } from '../common/Button';
 import { StatusMark, DemoNotice, ToolLoading, ToolError } from './IntelShared';
 import './OverviewTool.css';
+import { AiOverview } from './AiReview';
 
 /** Summary of the latest demo review, with shortcuts into each tool. */
-export function OverviewTool({ intel, onOpenTool, documentTypeName }) {
+function DemoOverviewTool({ intel, onOpenTool, documentTypeName }) {
   const { health, clauses, compliance } = intel.results;
   const { runOverview } = intel;
   const neverRun =
@@ -140,4 +141,12 @@ export function OverviewTool({ intel, onOpenTool, documentTypeName }) {
       </DemoNotice>
     </div>
   );
+}
+
+/**
+ * Signed-in account document: the real review (Phase 3, CASEONE server).
+ * Otherwise (Demo Mode, document review page): the existing demo tool, unchanged.
+ */
+export function OverviewTool(props) {
+  return props.intel?.aiReview ? <AiOverview {...props} /> : <DemoOverviewTool {...props} />;
 }

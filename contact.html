@@ -254,6 +254,37 @@
     display: flex;
   }
 
+  /* Sending state + delivery error (added for the real email backend) */
+  .contact-submit:disabled{
+    opacity: 0.7;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+  }
+
+  .contact-submit:disabled .contact-submit-arrow{
+    transform: none;
+  }
+
+  .contact-error{
+    display: none;
+    align-items: center;
+    gap: 10px;
+    margin-top: 20px;
+    padding: 14px 16px;
+    background: #FDF3F2;
+    border: 1px solid #F1C9C5;
+    border-radius: 8px;
+    font-family: 'Poppins', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    color: #B3261E;
+  }
+
+  .contact-error.is-visible{
+    display: flex;
+  }
+
   /* ===== Responsive ===== */
 
   @media (max-width: 900px){
@@ -301,8 +332,7 @@
 
       <div class="contact-email-block">
         <span class="contact-email-label" data-i18n="contactEmailLabel">Email</span><br />
-        <!-- Placeholder email — replace with your real support address -->
-        <a class="contact-email-value" href="mailto:support@legallens.example">support@legallens.example</a>
+        <a class="contact-email-value" href="mailto:support.legallens@gmail.com">support.legallens@gmail.com</a>
       </div>
     </div>
 
@@ -334,12 +364,16 @@
           <span class="contact-field-error" data-i18n="contactErrorMessage">Please enter a message.</span>
         </div>
 
-        <button type="submit" class="contact-submit">
-          <span data-i18n="contactSend">Send Message</span> <span class="contact-submit-arrow">→</span>
+        <button type="submit" class="contact-submit" id="contactSubmit">
+          <span id="contactSubmitLabel" data-i18n="contactSend">Send Message</span> <span class="contact-submit-arrow" aria-hidden="true">→</span>
         </button>
 
         <div class="contact-success" id="contactSuccess" role="status" aria-live="polite">
           <span data-i18n="contactSuccessMsg">Thank you! Your message has been received.</span>
+        </div>
+
+        <div class="contact-error" id="contactError" role="alert">
+          <span id="contactErrorText"></span>
         </div>
       </form>
     </div>
@@ -348,11 +382,30 @@
 </section>
 <!-- contact content ends here -->
 
+<!-- API location (API_BASE_URL): same config.js used by the rest of Legal Lens -->
+<script src="config.js"></script>
+
 <script>
-  // ===== Contact form: frontend-only validation + success message =====
+  // ===== Contact form: frontend validation + real send via POST /api/contact =====
   (function(){
     const form = document.getElementById('contactForm');
     const successBox = document.getElementById('contactSuccess');
+    const errorBox = document.getElementById('contactError');
+    const errorText = document.getElementById('contactErrorText');
+    const submitBtn = document.getElementById('contactSubmit');
+    const submitLabel = document.getElementById('contactSubmitLabel');
+
+    // Backend API base from config.js ("/api" in production, the local
+    // backend when opened with Live Server). Falls back to same-origin /api.
+    const API_BASE = (typeof API_BASE_URL !== 'undefined' && API_BASE_URL) ? API_BASE_URL : '/api';
+
+    // User-facing messages (kept here so they can be connected to translations later).
+    const MESSAGES = {
+      sending: 'Sending...',
+      failed: 'Unable to send your message right now. Please try again later.',
+      tooMany: 'You have sent several messages in a short time. Please try again later.',
+      invalid: 'Please check your details and try again.'
+    };
 
     const fields = [
       { wrapId: 'field-name', inputId: 'contact-name' },
@@ -393,19 +446,84 @@
       });
     });
 
-    form.addEventListener('submit', (e) => {
-      e.preventDefault(); // frontend-only: no request is sent anywhere
+    function showError(text){
+      errorText.textContent = text;
+      errorBox.classList.add('is-visible');
+    }
 
+    function hideMessages(){
       successBox.classList.remove('is-visible');
+      errorBox.classList.remove('is-visible');
+      errorText.textContent = '';
+    }
+
+    let sending = false;
+    let idleLabel = submitLabel.textContent;
+
+    function setSending(isSending){
+      sending = isSending;
+      submitBtn.disabled = isSending;
+      submitBtn.setAttribute('aria-busy', isSending ? 'true' : 'false');
+      if(isSending){
+        idleLabel = submitLabel.textContent; // keeps the translated label, if any
+        submitLabel.textContent = MESSAGES.sending;
+      } else {
+        submitLabel.textContent = idleLabel;
+      }
+    }
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      if(sending) return;
+
+      hideMessages();
 
       if(!validate()){
         return;
       }
 
-      // No external service is called here. This only confirms the
-      // fields passed validation and shows a local success message.
-      successBox.classList.add('is-visible');
-      form.reset();
+      const payload = {
+        name: document.getElementById('contact-name').value.trim(),
+        email: document.getElementById('contact-email').value.trim(),
+        subject: document.getElementById('contact-subject').value.trim(),
+        message: document.getElementById('contact-message').value.trim()
+      };
+
+      setSending(true);
+
+      // Don't leave the button stuck if the network hangs.
+      const controller = typeof AbortController !== 'undefined' ? new AbortController() : null;
+      const timer = controller ? setTimeout(() => controller.abort(), 30000) : null;
+
+      try {
+        const res = await fetch(API_BASE + '/contact', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+          body: JSON.stringify(payload),
+          signal: controller ? controller.signal : undefined
+        });
+
+        let data = null;
+        try { data = await res.json(); } catch (parseErr) { data = null; }
+
+        if(res.ok && data && data.success === true){
+          // Only a confirmed send counts as success.
+          successBox.classList.add('is-visible');
+          form.reset();
+        } else if(res.status === 429){
+          showError(MESSAGES.tooMany);
+        } else if(res.status === 400){
+          showError(MESSAGES.invalid);
+        } else {
+          showError(MESSAGES.failed);
+        }
+      } catch (err) {
+        // Network error, CORS block, timeout, backend offline.
+        showError(MESSAGES.failed);
+      } finally {
+        if(timer) clearTimeout(timer);
+        setSending(false);
+      }
     });
   })();
 </script>

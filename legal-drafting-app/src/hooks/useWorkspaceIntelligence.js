@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useMemo, useRef, useState } from 'react';
 import {
   healthService,
   clauseService,
@@ -6,11 +6,23 @@ import {
   citationService,
   researchService,
   assistantService,
+  reviewService,
 } from '../services';
 import { buildDocumentSnapshot } from '../utils/documentSnapshot';
 import { hydrateFieldTokens } from '../utils/fieldTokens';
 import { p, i } from '../data/draftTemplates/builders';
+import { getDocumentType } from '../data/documentTypes';
+import { docToText } from '../utils/textToDoc';
+import { buildWorkspaceContent } from '../utils/workspaceModel';
+import { clauseTextToBlocks, templateOutline, planAccept } from '../utils/aiText';
+import { planClauseAccept } from '../utils/reviewText';
 import { useToast } from './useToast';
+
+/** Non-empty text case details, as sent to the AI (never placeholders or objects). */
+const filledFields = (fields) =>
+  Object.fromEntries(
+    Object.entries(fields ?? {}).filter(([, v]) => typeof v === 'string' && v.trim() !== ''),
+  );
 
 const IDLE = { status: 'idle', data: null, error: null, revision: null };
 const ASSISTANT_IDLE = {
@@ -27,6 +39,19 @@ const RUNNERS = {
   compliance: (s) => complianceService.reviewCompliance(s),
   citations: (s) => citationService.listCitations(s),
 };
+
+/**
+ * Phase 3 — account documents: real review on the CASEONE server (read-only).
+ * Health, clauses and compliance use AI; citations are rule-based (no AI).
+ */
+const AI_RUNNERS = {
+  health: (input) => reviewService.runAiReview('health', input),
+  clauses: (input) => reviewService.runAiReview('clauses', input),
+  compliance: (input) => reviewService.runAiReview('compliance', input),
+  citations: (input) => reviewService.checkCitations(input),
+};
+
+const RESEARCH_IDLE = { status: 'idle', question: '', selection: '', result: null, error: null };
 
 /**
  * State and actions for the Legal Intelligence panel. All analysis comes from
@@ -51,6 +76,12 @@ export function useWorkspaceIntelligence({ document, workspace, bridge, onDocume
   const [research, setResearch] = useState({ status: 'idle', query: '', results: [], error: null });
   const [savedResearch, setSavedResearch] = useState(() => researchService.listSaved(document.id));
   const [assistant, setAssistant] = useState(ASSISTANT_IDLE);
+  // Phase 3: signed-in account document → real review; otherwise the labelled demo tools.
+  const aiReview = reviewService.canUseAiReview(document.id);
+  const runningTools = useRef(new Set()); // one request per tool at a time
+  const [clauseDecisions, setClauseDecisions] = useState({}); // clause id → 'applied' | 'rejected'
+  const [aiResearch, setAiResearch] = useState(RESEARCH_IDLE);
+  const researchInFlight = useRef(false);
 
   const getSnapshot = useCallback(
     () =>
@@ -72,27 +103,39 @@ export function useWorkspaceIntelligence({ document, workspace, bridge, onDocume
 
   const run = useCallback(
     async (toolId, { quiet = false } = {}) => {
-      const runner = RUNNERS[toolId];
+      const runner = aiReview ? AI_RUNNERS[toolId] : RUNNERS[toolId];
       if (!runner || !bridge?.isReady()) return null;
+      if (runningTools.current.has(toolId)) return null; // no duplicate requests
       const startedAt = revision;
       if (!quiet)
         setResults((r) => ({ ...r, [toolId]: { ...r[toolId], status: 'loading', error: null } }));
+      runningTools.current.add(toolId);
       try {
-        const data = await runner(getSnapshot());
+        const input = aiReview
+          ? {
+              documentId: document.id,
+              documentText: docToText(bridge.getJSON() ?? { type: 'doc', content: [] }),
+            }
+          : getSnapshot();
+        const data = await runner(input);
+        if (toolId === 'clauses') setClauseDecisions({});
         setResults((r) => ({
           ...r,
           [toolId]: { status: 'ready', data, error: null, revision: startedAt },
         }));
         return data;
       } catch (err) {
+        // Nothing is substituted for a failed review; the message says why it failed.
         setResults((r) => ({
           ...r,
           [toolId]: { ...r[toolId], status: 'error', error: err.message },
         }));
         return null;
+      } finally {
+        runningTools.current.delete(toolId);
       }
     },
-    [bridge, revision, getSnapshot],
+    [aiReview, bridge, revision, getSnapshot, document.id],
   );
 
   const runOverview = useCallback(
@@ -128,6 +171,66 @@ export function useWorkspaceIntelligence({ document, workspace, bridge, onDocume
     [bridge, hydrate, toast, onDocumentEvent],
   );
   const dismissClause = useCallback((id) => setDismissedClauses((s) => new Set(s).add(id)), []);
+
+  /**
+   * Phase 3 clause review: apply an AI-improved paragraph the user previewed and accepted.
+   * Only if the original paragraph text is still exactly in the document; undoable; recorded as
+   * an "AI edit accepted" version through the normal save flow. Never automatic.
+   */
+  const acceptClauseProposal = useCallback(
+    (clause) => {
+      const proposal = clause?.proposal;
+      if (!proposal || !bridge) return;
+      const plan = planClauseAccept(proposal, bridge.findTextRange(proposal.original));
+      if (plan.type === 'error') {
+        toast({ title: 'Not applied', description: plan.error, variant: 'error' });
+        return;
+      }
+      const outcome = bridge.replaceRange(plan.range, plan.expected, plan.replacement);
+      if (!outcome.ok) {
+        toast({ title: 'Not applied', description: `${outcome.reason} Your document was not changed.`, variant: 'error' });
+        return;
+      }
+      setClauseDecisions((d) => ({ ...d, [clause.id]: 'applied' }));
+      // Version detail is limited to 200 characters by the backend.
+      onDocumentEvent?.('ai-edit', `Clause review: ${clause.heading}`.slice(0, 190));
+      toast({
+        title: 'Improved clause applied',
+        description: 'AI suggestion — review the wording and fill any [DETAIL REQUIRED]. Undo is available.',
+        variant: 'success',
+      });
+    },
+    [bridge, toast, onDocumentEvent],
+  );
+  const rejectClauseProposal = useCallback(
+    (clause) => setClauseDecisions((d) => ({ ...d, [clause.id]: 'rejected' })),
+    [],
+  );
+
+  /** Phase 3 research: a question about this document, answered by AI (not sourced). */
+  const askAiResearch = useCallback(
+    async (question) => {
+      if (researchInFlight.current || !bridge?.isReady()) return;
+      const sel = bridge.getSelection();
+      const selection = sel && !sel.empty ? sel.text.slice(0, reviewService.MAX_SELECTION_LENGTH) : '';
+      setAiResearch({ status: 'loading', question, selection, result: null, error: null });
+      researchInFlight.current = true;
+      try {
+        const result = await reviewService.askResearch({
+          documentId: document.id,
+          question,
+          selection,
+          documentText: docToText(bridge.getJSON() ?? { type: 'doc', content: [] }),
+        });
+        setAiResearch({ status: 'ready', question, selection, result, error: null });
+      } catch (err) {
+        setAiResearch({ status: 'error', question, selection, result: null, error: err.message });
+      } finally {
+        researchInFlight.current = false;
+      }
+    },
+    [bridge, document.id],
+  );
 
   // ---------------- Citations ----------------
   const insertCitation = useCallback(
@@ -210,13 +313,68 @@ export function useWorkspaceIntelligence({ document, workspace, bridge, onDocume
   );
 
   // ---------------- Assistant ----------------
+  // Signed in: real AI (proposal → accept / reject). Signed out: the labelled demo.
+  const assistantActions = assistantService.getAssistantActions();
+  const inFlight = useRef(false); // one assistant request at a time (no accidental duplicates)
+
   const runAssistant = useCallback(
-    async (actionId) => {
-      const action = assistantService.ASSISTANT_ACTIONS.find((a) => a.id === actionId);
+    async (actionId, { instructions = '' } = {}) => {
+      if (inFlight.current) return;
+      const action = assistantService.getAssistantActions().find((a) => a.id === actionId);
       if (!action) return;
       const selection = bridge?.getSelection() ?? null;
       const fail = (error) =>
         setAssistant({ status: 'error', actionId, selection, result: null, error });
+      if (action.ai) {
+        if (!bridge?.isReady()) return fail('The editor is not ready yet.');
+        if (action.kind === 'replace') {
+          if (!selection || selection.empty || !selection.text.trim())
+            return fail('Select some text in the document first.');
+          if (!selection.singleBlock)
+            return fail('Select text within a single paragraph to use this action.');
+          if (selection.hasTokens) {
+            return fail(
+              'The selection includes linked case-detail fields. Select plain text only, so field links are not lost.',
+            );
+          }
+        }
+        const startedAt = revision;
+        setAssistant({ status: 'loading', actionId, selection, result: null, error: null, revision: startedAt });
+        inFlight.current = true;
+        try {
+          let result;
+          if (action.kind === 'document') {
+            const template = buildWorkspaceContent(document, fieldMap, fields);
+            result = await assistantService.generateDraftProposal({
+              typeId: document.typeId,
+              language: document.setup?.language ?? document.language,
+              description: document.setup?.description,
+              fields: filledFields(fields),
+              title: document.name,
+              template: {
+                name: document.origin?.templateName ?? getDocumentType(document.typeId)?.name ?? '',
+                outline: templateOutline(template),
+              },
+            });
+          } else {
+            result = await assistantService.runAiAssist({
+              documentId: document.id,
+              actionId,
+              selection: selection?.empty ? '' : (selection?.text ?? ''),
+              instructions: instructions.trim(),
+              documentText: docToText(bridge.getJSON() ?? { type: 'doc', content: [] }),
+            });
+            if (result.kind === 'insert') result.blocks = clauseTextToBlocks(result.proposed);
+          }
+          setAssistant({ status: 'ready', actionId, selection, result, error: null, revision: startedAt });
+        } catch (err) {
+          // Nothing in the document was changed; the message says why it failed.
+          fail(err?.message || 'The AI request failed. Your document was not changed.');
+        } finally {
+          inFlight.current = false;
+        }
+        return;
+      }
       if (action.kind !== 'insert') {
         if (!selection || selection.empty || !selection.text.trim())
           return fail('Select some text in the document first.');
@@ -229,6 +387,7 @@ export function useWorkspaceIntelligence({ document, workspace, bridge, onDocume
         }
       }
       setAssistant({ status: 'loading', actionId, selection, result: null, error: null });
+      inFlight.current = true;
       try {
         const result = await assistantService.runAssistant(actionId, {
           text: selection?.text ?? '',
@@ -237,44 +396,68 @@ export function useWorkspaceIntelligence({ document, workspace, bridge, onDocume
         setAssistant({ status: 'ready', actionId, selection, result, error: null });
       } catch (err) {
         fail(err.message);
+      } finally {
+        inFlight.current = false;
       }
     },
-    [bridge, getSnapshot],
+    [bridge, getSnapshot, revision, document, fieldMap, fields],
   );
 
+  /** Accept: apply the previewed proposal through the editor bridge (undoable), then save a version. */
   const acceptAssistant = useCallback(() => {
-    const { result, selection } = assistant;
-    if (!result || !bridge) return;
-    if (result.kind === 'replace' && result.changed) {
-      const outcome = bridge.replaceRange(selection, selection.text, result.proposed);
-      if (!outcome.ok) {
-        setAssistant((a) => ({
-          ...a,
-          status: 'error',
-          error: `Not applied: ${outcome.reason} Run the action again.`,
-        }));
-        return;
+    if (!bridge) return;
+    const plan = planAccept(assistant, revision);
+    const label =
+      assistantService.getAssistantActions().find((a) => a.id === assistant.result?.actionId)?.label ?? null;
+    const isAi = assistant.result?.meta?.source === 'ai';
+    const notApplied = (error) => setAssistant((a) => ({ ...a, status: 'error', error }));
+
+    if (plan.type === 'error') return notApplied(plan.error);
+    if (plan.type === 'none') return;
+
+    if (plan.type === 'document') {
+      workspace.applyGeneratedContent(plan.content).then((outcome) => {
+        if (outcome?.ok === false) return; // the save hook already reported the error
+        toast({
+          title: 'AI draft applied',
+          description:
+            'Saved as a new version — the previous text is in Version history. Review every detail and fill all [DETAIL REQUIRED] placeholders.',
+          variant: 'success',
+        });
+      });
+    } else if (plan.type === 'insert') {
+      if (!bridge.insertBlocksAtCursor(plan.blocks)) {
+        return notApplied('Not applied: the clause could not be inserted. Your document was not changed.');
       }
-      onDocumentEvent?.(
-        'ai-edit',
-        assistantService.ASSISTANT_ACTIONS.find((a) => a.id === result.actionId)?.label ?? null,
-      );
+      onDocumentEvent?.('ai-edit', label);
       toast({
-        title: 'Change applied',
-        description: 'Sample transformation — review the wording. Undo is available.',
+        title: 'AI clause inserted',
+        description:
+          'Inserted after the paragraph at your cursor. Review it and fill any [DETAIL REQUIRED]. Undo is available.',
         variant: 'success',
       });
-    } else if (result.kind === 'insert' && result.clause) {
-      if (!bridge.insertBlocksAtCursor(hydrate(result.clause.content))) return;
-      onDocumentEvent?.('clause-added', result.clause.name);
+    } else if (plan.type === 'replace') {
+      const outcome = bridge.replaceRange(plan.range, plan.expected, plan.replacement);
+      if (!outcome.ok) return notApplied(`Not applied: ${outcome.reason} Run the action again.`);
+      onDocumentEvent?.('ai-edit', label);
       toast({
-        title: `Inserted: ${result.clause.name}`,
+        title: 'Change applied',
+        description: isAi
+          ? 'AI suggestion applied — review the wording. Undo is available.'
+          : 'Sample transformation — review the wording. Undo is available.',
+        variant: 'success',
+      });
+    } else if (plan.type === 'demo-clause') {
+      if (!bridge.insertBlocksAtCursor(hydrate(plan.clause.content))) return;
+      onDocumentEvent?.('clause-added', plan.clause.name);
+      toast({
+        title: `Inserted: ${plan.clause.name}`,
         description: 'Demo suggestion — review before use.',
         variant: 'success',
       });
     }
     setAssistant(ASSISTANT_IDLE);
-  }, [assistant, bridge, hydrate, toast, onDocumentEvent]);
+  }, [assistant, bridge, hydrate, toast, onDocumentEvent, revision, workspace]);
 
   const rejectAssistant = useCallback(() => setAssistant(ASSISTANT_IDLE), []);
 
@@ -305,7 +488,14 @@ export function useWorkspaceIntelligence({ document, workspace, bridge, onDocume
       runAssistant,
       acceptAssistant,
       rejectAssistant,
-      assistantActions: assistantService.ASSISTANT_ACTIONS,
+      assistantActions,
+      selectionActions: assistantService.getSelectionActions(),
+      aiReview,
+      clauseDecisions,
+      acceptClauseProposal,
+      rejectClauseProposal,
+      aiResearch,
+      askAiResearch,
     }),
     [
       bridge,
@@ -333,6 +523,13 @@ export function useWorkspaceIntelligence({ document, workspace, bridge, onDocume
       runAssistant,
       acceptAssistant,
       rejectAssistant,
+      assistantActions,
+      aiReview,
+      clauseDecisions,
+      acceptClauseProposal,
+      rejectClauseProposal,
+      aiResearch,
+      askAiResearch,
     ],
   );
 }

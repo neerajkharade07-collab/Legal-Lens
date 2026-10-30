@@ -78,3 +78,13 @@
 .tb-select--spacing select {
   width: 118px;
 }
+
+/* Phase 4 — insert-section menu */
+.tb-select--insert select {
+  width: 104px;
+}
+/* Containing block for the visually-hidden labels, so labels of controls scrolled out of
+   view stay clipped by the toolbar instead of widening the page on phones. */
+.toolbar {
+  position: relative;
+}

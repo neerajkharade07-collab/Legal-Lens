@@ -165,3 +165,33 @@
     font-size: 11.5pt;
   }
 }
+
+/* Phase 4 — page break: this paragraph starts a new page in print, PDF and Word */
+.a4-page [data-page-break-before='true'] {
+  position: relative;
+  margin-top: 2.6em;
+}
+.a4-page [data-page-break-before='true']::before {
+  content: 'Page break';
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: -1.9em;
+  padding-top: 3px;
+  border-top: 1px dashed var(--color-border-strong, #9a9a9a);
+  color: var(--color-text-secondary, #666);
+  font: 500 11px/1.4 var(--font-sans, system-ui, sans-serif);
+  letter-spacing: 0.02em;
+  text-align: center;
+  pointer-events: none;
+}
+@media print {
+  .a4-page [data-page-break-before='true'] {
+    margin-top: 0;
+    break-before: page;
+    page-break-before: always;
+  }
+  .a4-page [data-page-break-before='true']::before {
+    content: none;
+  }
+}

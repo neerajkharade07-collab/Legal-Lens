@@ -7,6 +7,7 @@
  * - Headings (keepWithNext) are moved to the next page rather than left alone
  *   at the bottom of a page.
  * - A block taller than a page gets a page of its own (print lets it flow).
+ * - A block with `breakBefore` (a page break) starts a new page; `breakAfter` ends the page.
  */
 export function paginateBlocks(blocks, capacity) {
   const pages = [];
@@ -21,6 +22,7 @@ export function paginateBlocks(blocks, capacity) {
 
   blocks.forEach((block, index) => {
     const h = Math.max(0, block.height || 0);
+    if (block.breakBefore && current.length) newPage();
     if (used + h > capacity && current.length) {
       // Carry trailing keep-with-next blocks (headings) to the new page.
       const carry = [];
@@ -35,6 +37,7 @@ export function paginateBlocks(blocks, capacity) {
     }
     current.push(index);
     used += h;
+    if (block.breakAfter) newPage();
   });
   if (current.length || pages.length === 0) pages.push(current);
   return pages;

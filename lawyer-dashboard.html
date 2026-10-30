@@ -3,10 +3,11 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Legal Lens — Lawyer Dashboard</title>
+<title>CASEONE — Lawyer Dashboard</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="lawyer-system.css">
 <style>
   :root {
     --black: #0a0a0a;
@@ -127,6 +128,15 @@
   .welcome-status.verified { color: #ffffff; }
 
   .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 22px; }
+  .welcome-left { display: flex; align-items: center; gap: 18px; min-width: 0; }
+  .welcome-avatar { width: 58px; height: 58px; border-radius: 50%; border: 1.5px solid rgba(255,255,255,0.5); display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 18px; overflow: hidden; flex-shrink: 0; background: rgba(255,255,255,0.08); }
+  .welcome-avatar img { width: 100%; height: 100%; object-fit: cover; }
+  .activity-item { display: grid; grid-template-columns: 1fr auto; gap: 4px 12px; padding: 11px 0; border-top: 1px solid var(--gray-200, #eee); font-size: 13.5px; }
+  .activity-item:first-child { border-top: 0; }
+  .activity-item .when { font-size: 12px; color: var(--gray-600); }
+  .overview-split { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+  .overview-split .card { margin-bottom: 0; }
+  .dash-gate { display: flex; align-items: center; gap: 12px; font-size: 14px; color: var(--gray-600); padding: 60px 24px; justify-content: center; }
   .stat-card { background: var(--white); border: 1px solid var(--gray-200); border-radius: var(--radius-md); padding: 20px 22px; }
   .stat-card .stat-num { font-size: 26px; font-weight: 700; letter-spacing: -0.01em; }
   .stat-card .stat-lbl { font-size: 12px; color: var(--gray-600); margin-top: 4px; }
@@ -256,7 +266,8 @@
     }
     .sidebar.open { transform: translateX(0); box-shadow: 10px 0 30px rgba(0,0,0,0.12); }
     .main-content { padding: 24px 18px 70px; }
-    .stats-grid { grid-template-columns: 1fr; }
+    .stats-grid { grid-template-columns: 1fr 1fr; }
+    .overview-split { grid-template-columns: 1fr; }
     .kv-grid { grid-template-columns: 1fr; }
     .request-detail-grid { grid-template-columns: 1fr 1fr; }
     .topbar-user .who { display: none; }
@@ -265,11 +276,38 @@
   @media (max-width: 560px) {
     .request-detail-grid { grid-template-columns: 1fr; }
     .form-row-split { grid-template-columns: 1fr; }
+    /* Narrow screens: keep the top bar inside the viewport (the CASEONE logo still links home). */
+    .topbar { padding: 0 14px; }
+    .topbar-right { gap: 10px; }
+    .topbar-link, .topbar-brand .portal-tag { display: none; }
   }
 
   button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible {
     outline: 2px solid var(--black); outline-offset: 2px;
   }
+  /* Elements toggled with the hidden attribute must stay hidden even when a class sets display. */
+  #vUpdateBox[hidden], #verifyUpdateLink[hidden], #verifyCta[hidden] { display: none !important; }
+  /* ---------- Lawyer Portal v2 ---------- */
+  .verify-steps { display: grid; gap: 18px; }
+  .verify-step-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-bottom: 14px; flex-wrap: wrap; }
+  .verify-step-head h2 { margin: 0; }
+  .req-doc-row { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 12px 0; border-top: 1px solid var(--gray-200, #eee); flex-wrap: wrap; }
+  .req-doc-row:first-of-type { border-top: 0; }
+  .req-doc-row .t { font-size: 13.5px; font-weight: 600; }
+  .req-doc-row .m { font-size: 12px; color: var(--gray-600); }
+  .file-btn { position: relative; overflow: hidden; display: inline-flex; }
+  .file-btn input[type=file] { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
+  .file-btn:focus-within { outline: 2px solid #000; outline-offset: 2px; border-radius: 10px; }
+  .service-choice { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+  @media (max-width: 640px) { .service-choice { grid-template-columns: 1fr; } }
+  .photo-row { display: flex; align-items: center; gap: 18px; flex-wrap: wrap; }
+  .photo-preview { width: 84px; height: 84px; border-radius: 50%; background: var(--gray-100, #f4f4f4); border: 1px solid var(--gray-200, #e6e6e6); display: inline-flex; align-items: center; justify-content: center; font-weight: 600; font-size: 22px; overflow: hidden; }
+  .photo-preview img { width: 100%; height: 100%; object-fit: cover; }
+  .status-pill.free { background: #000; color: #fff; }
+  .request-tags { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 6px; }
+  .upcoming-item { display: flex; justify-content: space-between; gap: 12px; padding: 10px 0; border-top: 1px solid var(--gray-200, #eee); font-size: 13.5px; flex-wrap: wrap; }
+  .upcoming-item:first-child { border-top: 0; }
+  .inline-error { border: 1px solid #000; background: #f5f5f5; border-radius: 10px; padding: 10px 14px; font-size: 13px; margin: 0 0 14px; }
 </style>
 </head>
 <body>
@@ -282,22 +320,23 @@
     </button>
     <a href="index.html" class="topbar-brand">
       <svg viewBox="0 0 24 24" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 4 6v6c0 5 3.4 9.2 8 10 4.6-.8 8-5 8-10V6z"></path></svg>
-      Legal Lens
+      CASEONE
       <span class="portal-tag">LAWYER PORTAL</span>
     </a>
   </div>
 
   <div class="topbar-right">
-    <a href="lawyer-connect.html" class="topbar-link">Lawyer Connect</a>
+    <a href="lawyer-portal.html" class="topbar-link">Lawyer Portal</a>
     <div class="topbar-user">
       <span class="avatar" id="topbarAvatar">L</span>
-      <span class="who"><span class="n" id="topbarName">Lawyer</span><span class="s" id="topbarStatus">Verification Pending</span></span>
+      <span class="who"><span class="n" id="topbarName">Lawyer</span><span class="s" id="topbarStatus">Listed · not yet reviewed</span></span>
     </div>
-    <button class="btn-logout" id="logoutBtn">Exit Dashboard</button>
+    <button class="btn-logout" id="logoutBtn">Log out</button>
   </div>
 </header>
 
-<div class="dash-shell">
+<!-- Hidden until the server confirms this lawyer has completed registration (otherwise they are sent to lawyer-register.html). -->
+<div class="dash-shell" id="dashShell" style="visibility:hidden">
 
   <!-- ================= SIDEBAR ================= -->
   <nav class="sidebar" id="sidebar" aria-label="Dashboard navigation">
@@ -306,6 +345,11 @@
       <li><button data-view="overview" class="active">
         <svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9"></rect><rect x="14" y="3" width="7" height="5"></rect><rect x="14" y="12" width="7" height="9"></rect><rect x="3" y="16" width="7" height="5"></rect></svg>
         Overview
+      </button></li>
+      <li><button data-view="verification">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 3v6c0 4.5-3 7.8-7 9-4-1.2-7-4.5-7-9V6l7-3z"></path><path d="M9 12l2 2 4-4"></path></svg>
+        Listing status
+        <span class="nav-badge zero" id="verifyNavBadge">!</span>
       </button></li>
       <li><button data-view="profile">
         <svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"></circle><path d="M4 21c0-4.4 3.6-8 8-8s8 3.6 8 8"></path></svg>
@@ -347,26 +391,52 @@
 
   <!-- ================= MAIN CONTENT ================= -->
   <main class="main-content">
-    <p class="demo-data-note" role="note" style="margin:0 0 16px; padding:10px 14px; border:1px dashed #bdbdbd; border-radius:10px; background:#f7f7f7; color:#444; font-size:13px; line-height:1.5;"><strong>Demo data:</strong> no lawyer login is required. Profile details, availability and consultation requests on this dashboard are stored only in this browser.</p>
+    <div class="inline-error" id="globalError" role="alert" hidden></div>
 
     <!-- ============ OVERVIEW ============ -->
     <section class="view active" id="view-overview">
       <div class="welcome-banner">
-        <div>
-          <h1 id="welcomeHeading">Welcome back</h1>
-          <p id="welcomeSub">Here's what's happening with your Legal Lens profile.</p>
+        <div class="welcome-left">
+          <div class="welcome-avatar" id="welcomeAvatar" aria-hidden="true">--</div>
+          <div>
+            <h1 id="welcomeHeading">Welcome back</h1>
+            <p id="welcomeSub">Here's what's happening with your CASEONE profile.</p>
+          </div>
         </div>
         <span class="welcome-status" id="welcomeVerifyBadge"></span>
       </div>
 
-      <div class="stats-grid">
-        <div class="stat-card"><div class="stat-num" id="statPending">0</div><div class="stat-lbl">PENDING REQUESTS</div></div>
-        <div class="stat-card"><div class="stat-num" id="statClients">0</div><div class="stat-lbl">MY CLIENTS</div></div>
-        <div class="stat-card"><div class="stat-num" id="statCompletion">0%</div><div class="stat-lbl">PROFILE COMPLETE</div></div>
+      <div class="card" id="verifyCard">
+        <div class="verify-step-head"><h2>Lawyer Connect listing</h2><span id="verifyStateBadge" class="ls-badge ls-badge-dashed">Loading…</span></div>
+        <p style="font-size:13.5px; color:var(--gray-600); line-height:1.7; margin:0;" id="verifyExplainer">Loading your listing status…</p>
+        <div class="quick-links" id="verifyCta"><button class="quick-link-btn solid" data-goto="verification">View listing status</button><a class="quick-link-btn" id="verifyUpdateLink" href="lawyer-register.html?update=1" style="text-decoration:none" hidden>Update details or documents</a></div>
       </div>
 
-      <div class="card">
-        <h2>Profile Completion</h2>
+      <div class="stats-grid">
+        <div class="stat-card"><div class="stat-num" id="statTotal">0</div><div class="stat-lbl">Total requests</div></div>
+        <div class="stat-card"><div class="stat-num" id="statPending">0</div><div class="stat-lbl">New requests</div></div>
+        <div class="stat-card"><div class="stat-num" id="statClients">0</div><div class="stat-lbl">Upcoming consultations</div></div>
+      </div>
+
+      <div class="overview-split" style="margin-bottom:22px">
+        <div class="card">
+          <h2>Upcoming consultations</h2>
+          <div id="upcomingList"><p class="empty-note">Loading…</p></div>
+        </div>
+        <div class="card">
+          <h2>Recent client activity</h2>
+          <div id="activityList"><p class="empty-note">Loading…</p></div>
+        </div>
+      </div>
+
+      <div class="card" id="feeNotice" hidden>
+        <h2>Set your consultation fee</h2>
+        <p style="font-size:13.5px; color:var(--gray-600); line-height:1.7; margin:0;">You offer paid consultations but have not set a fee yet, so clients cannot send you paid requests. Free requests (if you offer them) are not affected.</p>
+        <div class="quick-links"><button class="quick-link-btn solid" data-goto="edit">Set fee</button></div>
+      </div>
+
+      <div class="card" id="completionCard">
+        <h2>Finish your public profile</h2>
         <div class="completion-row">
           <div class="completion-bar-track"><div class="completion-bar-fill" id="completionBarFill" style="width:0%"></div></div>
           <div class="completion-pct" id="completionPctText">0%</div>
@@ -378,11 +448,37 @@
         </div>
       </div>
 
+    </section>
+
+    <!-- ============ LISTING STATUS (read-only; registration happens in lawyer-register.html) ============ -->
+    <section class="view" id="view-verification">
+      <div class="view-header">
+        <h1>Listing status</h1>
+        <p>Your profile is listed in Lawyer Connect as soon as your registration is complete, marked “Not yet reviewed by CASEONE” until our team does a basic review. Clients can send you requests after that review. Uploaded documents are kept privately and are not marked as verified.</p>
+      </div>
+
+      <div class="card" id="vStatusCard">
+        <div class="verify-step-head"><h2 id="vStateTitle">Status</h2><span id="vStateBadge" class="ls-badge">—</span></div>
+        <p id="vStateText" style="font-size:13.5px; color:var(--gray-600); line-height:1.7; margin:0;"></p>
+        <div class="ls-alert ls-alert-strong" id="vReason" style="margin-top:14px" hidden></div>
+        <div class="quick-links" id="vUpdateBox" hidden><a class="quick-link-btn solid" href="lawyer-register.html?update=1" style="text-decoration:none">Update details or documents</a></div>
+      </div>
+
       <div class="card">
-        <h2>Verification Status</h2>
-        <p style="font-size:13.5px; color:var(--gray-600); line-height:1.7; margin:0;" id="verifyExplainer">
-          Your profile is currently pending verification. Verified lawyers are clearly marked across Legal Lens so clients know who they're connecting with.
-        </p>
+        <h2>Where you will appear</h2>
+        <p id="vWhere" style="font-size:13.5px; color:var(--gray-600); line-height:1.7; margin:0;"></p>
+        <div class="quick-links"><button class="quick-link-btn" data-goto="edit">Change consultation type</button></div>
+      </div>
+
+      <div class="card" id="vDocsCard">
+        <div class="verify-step-head"><h2>Your documents</h2><span class="ls-badge ls-badge-muted" id="vDocsBadge">Private</span></div>
+        <p style="font-size:13px; color:var(--gray-600); line-height:1.6; margin:0 0 10px;">Stored privately. Only you and authorised CASEONE reviewers can open them; they never appear on your public profile. Uploading a document does not mean it has been verified.</p>
+        <div id="vRequiredDocs"></div>
+      </div>
+
+      <div class="card">
+        <h2>History</h2>
+        <ol class="ls-timeline" id="vHistory"></ol>
       </div>
     </section>
 
@@ -390,7 +486,7 @@
     <section class="view" id="view-profile">
       <div class="view-header">
         <h1>My Profile</h1>
-        <p>This is how your profile appears to customers browsing Find a Lawyer.</p>
+        <p>What clients see on your public profile. Private details (phone, email, documents) are never shown.</p>
       </div>
 
       <div class="card">
@@ -405,8 +501,10 @@
         <div class="kv-grid" style="margin-bottom:22px;">
           <div class="kv-item"><div class="k">Location</div><div class="v" id="profLocation">—</div></div>
           <div class="kv-item"><div class="k">Experience</div><div class="v" id="profExperience">—</div></div>
-          <div class="kv-item"><div class="k">Consultation Fee</div><div class="v" id="profFee">—</div></div>
+          <div class="kv-item"><div class="k">Services</div><div class="v" id="profFee">—</div></div>
           <div class="kv-item"><div class="k">Bar / Enrollment No.</div><div class="v" id="profBar">—</div></div>
+          <div class="kv-item"><div class="k">Enrolled since</div><div class="v" id="profEnrolled">—</div></div>
+          <div class="kv-item"><div class="k">Office location (private)</div><div class="v" id="profOffice">—</div></div>
         </div>
 
         <h3>Practice Areas</h3>
@@ -431,7 +529,42 @@
         <p>Keep your professional details up to date so the right clients can find you.</p>
       </div>
 
+      <div class="card" id="photoCard">
+        <h2>Professional photo</h2>
+        <div class="photo-row">
+          <div class="photo-preview" id="photoPreview">--</div>
+          <div>
+            <span class="file-btn ls-btn ls-btn-sm">Upload photo<input type="file" id="photoFile" accept=".jpg,.jpeg,.png,image/jpeg,image/png" aria-label="Upload professional photo"></span>
+            <button type="button" class="ls-btn ls-btn-outline ls-btn-sm" id="photoRemove" hidden>Remove</button>
+            <p style="font-size:12px; color:var(--gray-600); margin:8px 0 0;">A clear, professional head-and-shoulders photo. JPG or PNG, up to 2 MB. Shown on your public profile.</p>
+          </div>
+        </div>
+      </div>
+
       <form class="card" id="editProfileForm">
+        <div class="form-row">
+          <label>Services you offer</label>
+          <div class="service-choice" role="radiogroup" aria-label="Services you offer">
+            <label class="ls-choice"><input type="radio" name="serviceType" value="paid"><span><strong>Paid</strong><br><span class="hint" style="margin:0">Clients pay your fee directly.</span></span></label>
+            <label class="ls-choice"><input type="radio" name="serviceType" value="free"><span><strong>Free</strong><br><span class="hint" style="margin:0">Volunteer, ₹0 consultations.</span></span></label>
+            <label class="ls-choice"><input type="radio" name="serviceType" value="both"><span><strong>Both</strong><br><span class="hint" style="margin:0">Paid, plus free help for approved applicants.</span></span></label>
+          </div>
+        </div>
+        <div class="form-row-split">
+          <div class="form-row" id="feeRow">
+            <label for="editFee">Paid consultation fee (₹)</label>
+            <input type="number" id="editFee" min="0" step="50">
+          </div>
+          <div class="form-row" id="freeNoteRow">
+            <label for="editFreeNote">Free service note <span class="hint">optional, shown with ₹0</span></label>
+            <input type="text" id="editFreeNote" maxlength="300" placeholder="e.g. First consultation by phone">
+          </div>
+        </div>
+        <p style="font-size:12px; color:var(--gray-600); margin:-6px 0 18px;">Free consultations are always ₹0 and only available to clients approved through CASEONE Free Legal Assistance. CASEONE does not process payments.</p>
+        <div class="form-row" id="emergencyRow">
+          <label class="ls-check"><input type="checkbox" id="editEmergency"><span><strong>Accept urgent free requests before eligibility is verified.</strong> In emergencies (for example an arrest or domestic violence) applicants who are still being reviewed can send you an urgent request. It is clearly marked “eligibility not verified”, and you decide whether to help.</span></label>
+        </div>
+
         <div class="form-row">
           <label for="editName">Full Name</label>
           <input type="text" id="editName" required>
@@ -443,19 +576,31 @@
             <input type="text" id="editBar" placeholder="e.g. MH/1234/2016">
           </div>
           <div class="form-row">
-            <label for="editLocation">Location</label>
+            <label for="editLocation">City</label>
             <input type="text" id="editLocation" placeholder="e.g. Pune">
           </div>
         </div>
 
         <div class="form-row-split">
           <div class="form-row">
-            <label for="editExperience">Years of Experience</label>
-            <input type="number" id="editExperience" min="0" max="60">
+            <label for="editState">State</label>
+            <input type="text" id="editState" maxlength="60" placeholder="e.g. Maharashtra">
           </div>
           <div class="form-row">
-            <label for="editFee">Consultation Fee (₹)</label>
-            <input type="number" id="editFee" min="0" step="50">
+            <label for="editOffice">Office location <span class="hint">private</span></label>
+            <input type="text" id="editOffice" maxlength="300" placeholder="Chamber / office address">
+          </div>
+        </div>
+
+        <div class="form-row-split">
+          <div class="form-row">
+            <label for="editExperience">Years of practice</label>
+            <input type="number" id="editExperience" min="0" max="65" aria-describedby="editExperienceHint">
+            <span class="hint" id="editExperienceHint" style="display:block;margin-top:6px"></span>
+          </div>
+          <div class="form-row">
+            <label for="editQualifications">Qualifications</label>
+            <input type="text" id="editQualifications" maxlength="300" placeholder="e.g. LL.B., LL.M.">
           </div>
         </div>
 
@@ -470,8 +615,8 @@
         </div>
 
         <div class="form-row">
-          <label for="editAbout">About</label>
-          <textarea id="editAbout" placeholder="Briefly describe your practice and experience..."></textarea>
+          <label for="editAbout">Professional introduction</label>
+          <textarea id="editAbout" maxlength="2000" placeholder="Your practice, courts you appear in, and how you work. Keep it factual — no rankings, success rates or promises (Bar Council of India rules)."></textarea>
         </div>
 
         <button type="submit" class="btn-save">Save Changes</button>
@@ -483,9 +628,14 @@
     <section class="view" id="view-requests">
       <div class="view-header">
         <h1>Consultation Requests</h1>
-        <p>Review incoming requests and accept or reject them. Accepted requests move to My Clients.</p>
+        <p>Real requests from clients. Accept or decline each one; the client sees your answer in their My Requests page.</p>
       </div>
-      <div id="requestsList"></div>
+      <div class="ls-tabs" role="tablist" aria-label="Request type" id="reqTabs">
+        <button class="ls-tab" role="tab" aria-selected="true" data-rfilter="all">All<span class="ls-count" id="rcAll">0</span></button>
+        <button class="ls-tab" role="tab" aria-selected="false" data-rfilter="paid">Paid<span class="ls-count" id="rcPaid">0</span></button>
+        <button class="ls-tab" role="tab" aria-selected="false" data-rfilter="free">Free<span class="ls-count" id="rcFree">0</span></button>
+      </div>
+      <div id="requestsList"><p class="empty-note">Loading…</p></div>
     </section>
 
     <!-- ============ MY CLIENTS ============ -->
@@ -532,21 +682,32 @@
           <div class="kv-item"><div class="k">Name</div><div class="v" id="settingsName">—</div></div>
           <div class="kv-item"><div class="k">Email</div><div class="v" id="settingsEmail">—</div></div>
           <div class="kv-item"><div class="k">Account Type</div><div class="v">Lawyer</div></div>
-          <div class="kv-item"><div class="k">Verification Status</div><div class="v" id="settingsVerify">—</div></div>
+          <div class="kv-item"><div class="k">Listing status</div><div class="v" id="settingsVerify">—</div></div>
+          <div class="kv-item"><div class="k">Public profile</div><div class="v" id="settingsPublic">—</div></div>
+          <div class="kv-item"><div class="k">Services</div><div class="v" id="settingsServices">—</div></div>
+          <div class="kv-item"><div class="k">Mobile (private)</div><div class="v" id="settingsPhone">—</div></div>
+          <div class="kv-item"><div class="k">State</div><div class="v" id="settingsState">—</div></div>
+        </div>
+        <div class="quick-links">
+          <button class="quick-link-btn" data-goto="edit">Edit profile</button>
+          <a class="quick-link-btn" href="forgot-password.html" style="text-decoration:none">Change password</a>
         </div>
       </div>
 
       <div class="card">
         <h2>Session</h2>
-        <p style="font-size:13px; color:var(--gray-600); margin:0 0 16px;">Leave the lawyer dashboard and return to Lawyer Connect.</p>
-        <button class="quick-link-btn" id="settingsLogoutBtn">Exit Dashboard</button>
+        <p style="font-size:13px; color:var(--gray-600); margin:0 0 16px;">Sign out of the Lawyer Portal on this device.</p>
+        <button class="quick-link-btn" id="settingsLogoutBtn">Log out</button>
       </div>
     </section>
 
   </main>
 </div>
 
+<script src="config.js"></script>
+<script src="auth.js"></script>
 <script src="lawyer-data.js"></script>
+<script src="lawyer-system.js"></script>
 <script>
 (async function () {
 
@@ -555,22 +716,93 @@
   const DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
 
   /* =========================================================
-     LOAD CURRENT LAWYER (no login required)
-     Register as a Lawyer opens this dashboard directly. There is no
-     lawyer authentication guard: the dashboard works with a browser-local
-     demo lawyer profile. If an earlier lawyer session left a lawyer id in
-     this browser, that profile is reused; otherwise a local demo id is used.
-     No token, session or account is created here.
+     LOAD CURRENT LAWYER (lawyer login required)
+     The profile shown and edited here is the lawyer's REAL profile in the
+     CASEONE database (GET /api/lawyer/profile, PUT /api/lawyers/me,
+     PUT /api/lawyer/availability). Without a lawyer session, auth.js sends
+     the visitor to lawyer-login.html.
      ========================================================= */
-  const DEMO_LAWYER_ID = 'demo-lawyer';
-  const lawyerId = localStorage.getItem('currentLawyerId') || DEMO_LAWYER_ID;
+  if (!(await requireRole('lawyer'))) return;
+  // The dashboard opens as soon as the lawyer has COMPLETED REGISTRATION (the
+  // server enforces the same rule on the dashboard and consultation
+  // endpoints). It does not depend on CASEONE approval: listing in Lawyer
+  // Connect and client requests still wait for the review. Lawyers who have
+  // not finished registering are sent back to finish it.
+  try {
+    const gate = await apiRequest('/lawyer/verification', { useAuth: true });
+    if (!gate.data || !gate.data.registrationComplete) { window.location.replace('lawyer-register.html'); return; }
+  } catch (err) {
+    if (err && err.statusCode === 401) { window.location.replace('lawyer-login.html'); return; }
+  }
+  document.getElementById('dashShell').style.visibility = '';
+  let lawyerId = localStorage.getItem('currentLawyerId') || '';
+  try {
+    const me = await apiRequest('/auth/me', { useAuth: true });
+    if (me && me.data && me.data.lawyerId) lawyerId = me.data.lawyerId;
+  } catch (e) { /* keep the id from login */ }
 
-  const { getLawyerProfile, updateLawyerProfile, getConsultRequestsForLawyer, updateConsultRequestStatus, getClientsForLawyer } = window.LegalLensLawyerData;
+  const D = window.LegalLensLawyerData;
+  const { getLawyerProfile, updateLawyerProfile, getConsultRequestsForLawyer, updateConsultRequestStatus, escapeHtml } = D;
+  const esc = escapeHtml;
+  const LS = window.LS;
 
-  // Profile / requests shown here are browser-local demo data. Make sure a
-  // local profile exists so the dashboard always opens (the lawyer can fill
-  // in their details from Edit Profile).
-  await window.LegalLensLawyerData.ensureLawyerProfile(lawyerId, { name: 'Demo Lawyer', email: '' });
+  // Lawyer-facing listing status, keyed by the server's onboarding code.
+  // Never "verified" for an unreviewed profile; a manual review is never shown
+  // as official verification.
+  const LISTING_BADGE = { registered: 'ls-badge ls-badge-dashed', action_required: 'ls-badge', not_listed: 'ls-badge ls-badge-muted', listed: 'ls-badge ls-badge-solid', in_progress: 'ls-badge ls-badge-muted' };
+  const LISTING_SHORT = { registered: 'Listed · not yet reviewed', action_required: 'Update requested', not_listed: 'Not listed', listed: 'Listed', in_progress: 'Registration in progress' };
+  const STATE_LABELS = { draft: 'Registration started', submitted: 'Registration completed / sent for review', under_review: 'CASEONE review started', more_info_required: 'Update requested by CASEONE', approved: 'Listed after CASEONE review', rejected: 'Not listed by CASEONE' };
+  const WHERE_TEXT = {
+    paid: 'the paid lawyer directory (Lawyer Connect).',
+    free: 'the Free Legal Aid list (₹0 consultations).',
+    both: 'the paid lawyer directory and the Free Legal Aid list (you offer both).'
+  };
+  const SERVICE_TEXT = { paid: 'Paid consultations', free: 'Free consultations (₹0)', both: 'Paid + free consultations' };
+
+  let verification = null;
+  let currentRequests = [];
+  let requestFilter = 'all';
+
+  const listingCode = () => (verification && verification.onboarding && verification.onboarding.code) || 'registered';
+  const isListed = () => !!(verification && verification.listing && verification.listing.listed);
+  const isReviewedListing = () => !!(verification && verification.listing && verification.listing.reviewed);
+  const isHidden = () => !!(verification && verification.listing && verification.listing.hiddenByCaseone);
+  const listingGaps = () => (verification && verification.listing && verification.listing.missingForListing) || [];
+  const awaitingReview = () => !!(verification && verification.listing && verification.listing.awaitingReviewForListing);
+  const AWAITING_TEXT = 'You registered before automatic listing was introduced, so your profile will appear in Lawyer Connect after a CASEONE review. Your dashboard is open in the meantime.';
+  function stateLabel() {
+    if (!verification) return 'Loading…';
+    if (isHidden()) return 'Hidden by CASEONE';
+    if (awaitingReview()) return 'Not listed · awaiting review';
+    if (listingGaps().length) return 'Not listed · details missing';
+    if (listingCode() === 'action_required') return isListed() ? 'Listed · update requested' : 'Update requested';
+    return LISTING_SHORT[listingCode()] || 'Listed · not yet reviewed';
+  }
+  const HIDDEN_TEXT = 'CASEONE has hidden your profile from Lawyer Connect. Your dashboard stays open. Contact support if you think this is a mistake.';
+
+  // A manual CASEONE approval is never presented as official verification.
+  function approvedLabel() {
+    return verification && verification.verificationMethod === 'official_sources' ? 'Verified Lawyer' : 'Credentials reviewed by CASEONE';
+  }
+  function statusLabel() {
+    if (verification && listingCode() === 'listed' && isListed()) return 'Listed · ' + approvedLabel();
+    return stateLabel();
+  }
+
+  function showFormMessage(id, text, isError) {
+    const el = document.getElementById(id);
+    el.textContent = text;
+    el.style.color = isError ? '#000' : '';
+    el.style.fontWeight = isError ? '600' : '';
+    el.classList.add('show');
+    setTimeout(() => { el.classList.remove('show'); el.textContent = 'Saved.'; el.style.color = ''; el.style.fontWeight = ''; }, isError ? 6000 : 3500);
+  }
+
+  function showGlobalError(msg) {
+    const el = document.getElementById('globalError');
+    el.textContent = msg;
+    el.hidden = !msg;
+  }
 
   let currentProfile = null;
   let selectedPracticeAreas = [];
@@ -578,7 +810,7 @@
   let selectedDays = [];
 
   function initials(name) {
-    return (name || '?').replace('Adv. ', '').split(' ').map(w => w.charAt(0)).slice(0, 2).join('').toUpperCase();
+    return D.initials(name);
   }
 
   /* =========================================================
@@ -595,11 +827,13 @@
     sidebar.classList.remove('open');
     sidebarScrim.style.display = 'none';
     window.scrollTo({ top: 0, behavior: 'smooth' });
+    try { history.replaceState(null, '', '#' + name); } catch (e) { /* ignore */ }
   }
 
   navButtons.forEach(btn => btn.addEventListener('click', () => showView(btn.dataset.view)));
-  document.querySelectorAll('[data-goto]').forEach(btn => {
-    btn.addEventListener('click', () => showView(btn.dataset.goto));
+  document.addEventListener('click', (e) => {
+    const g = e.target.closest && e.target.closest('[data-goto]');
+    if (g) showView(g.dataset.goto);
   });
 
   document.getElementById('sidebarToggle').addEventListener('click', () => {
@@ -611,98 +845,201 @@
     sidebarScrim.style.display = 'none';
   });
 
-  /* =========================================================
-     EXIT DASHBOARD (no lawyer login, so nothing to log out of)
-     ========================================================= */
-  function exitDashboard() {
-    window.location.href = 'lawyer-connect.html';
-  }
-  document.getElementById('logoutBtn').addEventListener('click', exitDashboard);
-  document.getElementById('settingsLogoutBtn').addEventListener('click', exitDashboard);
+  document.getElementById('logoutBtn').addEventListener('click', () => { logoutUser(); });
+  document.getElementById('settingsLogoutBtn').addEventListener('click', () => { logoutUser(); });
 
   /* =========================================================
      RENDER: TOPBAR + OVERVIEW
      ========================================================= */
-  function renderTopbar(profile) {
-    document.getElementById('topbarAvatar').textContent = initials(profile.name);
-    document.getElementById('topbarName').textContent = profile.name;
-    document.getElementById('topbarStatus').textContent = profile.verified ? 'Verified Lawyer' : 'Verification Pending';
-  }
-
-  function computeCompletion(profile) {
-    const checks = [
-      { label: 'Practice areas added', done: (profile.practiceAreas || []).length > 0 },
-      { label: 'Location added', done: !!profile.location },
-      { label: 'Languages added', done: (profile.languages || []).length > 0 },
-      { label: 'Years of experience added', done: (profile.experience || 0) > 0 },
-      { label: 'Consultation fee set', done: (profile.consultationFee || 0) > 0 },
-      { label: 'About / bio written', done: !!(profile.description && profile.description.trim().length > 10) },
-      { label: 'Bar / enrollment number added', done: !!profile.barNumber },
-      { label: 'Availability set', done: !!(profile.availability && profile.availability.days && profile.availability.days.length > 0) }
-    ];
-    const doneCount = checks.filter(c => c.done).length;
-    const pct = Math.round((doneCount / checks.length) * 100);
-    return { checks, pct };
-  }
-
-  function renderOverview(profile, pendingCount, clientCount) {
-    document.getElementById('welcomeHeading').textContent = 'Welcome back, ' + profile.name;
-    const badge = document.getElementById('welcomeVerifyBadge');
-    if (profile.verified) {
-      badge.className = 'welcome-status verified';
-      badge.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg> Verified Lawyer';
+  let ownPhotoUrl = '';
+  function setAvatar(el) {
+    el.innerHTML = '';
+    if (ownPhotoUrl) {
+      const img = document.createElement('img');
+      img.src = ownPhotoUrl;
+      img.alt = '';
+      img.style.cssText = 'width:100%;height:100%;object-fit:cover;border-radius:50%;';
+      el.appendChild(img);
     } else {
-      badge.className = 'welcome-status pending';
-      badge.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg> Verification Pending';
+      el.textContent = initials(currentProfile ? currentProfile.name : '');
     }
+  }
 
-    document.getElementById('statPending').textContent = pendingCount;
-    document.getElementById('statClients').textContent = clientCount;
+  function renderTopbar(profile) {
+    setAvatar(document.getElementById('topbarAvatar'));
+    document.getElementById('topbarName').textContent = profile.name;
+    document.getElementById('topbarStatus').textContent = statusLabel();
+  }
+
+  // Only items that genuinely help clients and are not already required for
+  // registration (photo, location, practice areas and enrollment are always
+  // complete for a registered lawyer). Older profiles may still miss some of
+  // them, so they are listed only when missing.
+  function computeCompletion(profile) {
+    const checks = [];
+    if (!profile.hasPhoto) checks.push({ label: 'Professional photo added', done: false });
+    if (!profile.location) checks.push({ label: 'City added', done: false });
+    if (!(profile.practiceAreas || []).length) checks.push({ label: 'Practice areas added', done: false });
+    if (!(profile.languages || []).length) checks.push({ label: 'Languages added', done: false });
+    if (profile.offersPaid) checks.push({ label: 'Paid consultation fee set (needed for paid requests)', done: (profile.consultationFee || 0) > 0 });
+    checks.push({ label: 'Professional introduction written', done: !!(profile.description && profile.description.trim().length > 10) });
+    checks.push({ label: 'Availability set', done: !!(profile.availability && profile.availability.days && profile.availability.days.length > 0) });
+    const doneCount = checks.filter(c => c.done).length;
+    return { checks, pct: checks.length ? Math.round((doneCount / checks.length) * 100) : 100 };
+  }
+
+  function renderOverview(profile) {
+    document.getElementById('welcomeHeading').textContent = 'Welcome back, ' + profile.name;
+    setAvatar(document.getElementById('welcomeAvatar'));
+    const badge = document.getElementById('welcomeVerifyBadge');
+    const approved = listingCode() === 'listed' && isListed();
+    badge.className = 'welcome-status ' + (approved ? 'verified' : 'pending');
+    // Reviewed → "Credentials reviewed by CASEONE" / "Verified Lawyer"; otherwise the listing state (never "verified").
+    badge.innerHTML = approved
+      ? '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg> ' + esc(approvedLabel())
+      : '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg> ' + esc(stateLabel());
 
     const { checks, pct } = computeCompletion(profile);
-    document.getElementById('statCompletion').textContent = pct + '%';
+    document.getElementById('completionCard').hidden = pct === 100;
+    document.getElementById('feeNotice').hidden = !(profile.offersPaid && !(profile.consultationFee > 0));
     document.getElementById('completionBarFill').style.width = pct + '%';
     document.getElementById('completionPctText').textContent = pct + '%';
+    document.getElementById('completionChecklist').innerHTML = checks.map(c => `<li class="${c.done ? 'done' : ''}"><span class="dot"></span>${esc(c.label)}</li>`).join('');
 
-    const list = document.getElementById('completionChecklist');
-    list.innerHTML = checks.map(c => `<li class="${c.done ? 'done' : ''}"><span class="dot"></span>${c.label}</li>`).join('');
+    if (verification) {
+      const code = listingCode();
+      const vb = document.getElementById('verifyStateBadge');
+      vb.className = LISTING_BADGE[code] || 'ls-badge';
+      vb.textContent = stateLabel();
+      let text = (verification.onboarding && verification.onboarding.message) || '';
+      if (isHidden()) text = HIDDEN_TEXT;
+      else if (awaitingReview()) text = AWAITING_TEXT;
+      else if (listingGaps().length) text = 'Your profile is not shown in Lawyer Connect right now because these details are missing: ' + listingGaps().join(', ') + '. Add them in Edit Profile and it appears again automatically.';
+      document.getElementById('verifyExplainer').textContent = text;
+      document.getElementById('verifyUpdateLink').hidden = !verification.canEdit;
+      document.getElementById('verifyCard').hidden = false;
+    }
+  }
 
-    document.getElementById('verifyExplainer').textContent = profile.verified
-      ? 'Your profile is verified. Verified lawyers are clearly marked across Legal Lens so clients know who they\'re connecting with.'
-      : 'Your profile is currently pending verification. Verified lawyers are clearly marked across Legal Lens so clients know who they\'re connecting with. Completing your profile helps move this along.';
+  function renderUpcoming(requests, summary) {
+    // Upcoming = accepted consultations from today onwards (or without a fixed date), from GET /api/lawyer/dashboard.
+    const upcoming = summary && Array.isArray(summary.upcoming) ? summary.upcoming
+      : requests.filter(r => r.status === 'accepted').map(r => ({ clientName: r.customerName, issue: r.issue, serviceType: r.serviceType, date: r.date, time: r.time, type: r.type }));
+    document.getElementById('statClients').textContent = upcoming.length;
+    document.getElementById('statTotal').textContent = summary && typeof summary.totalRequests === 'number' ? summary.totalRequests : requests.length;
+    const el = document.getElementById('upcomingList');
+    el.innerHTML = upcoming.length
+      ? upcoming.slice(0, 6).map(r => `<div class="upcoming-item"><span><strong>${esc(r.clientName)}</strong> · ${esc(r.issue)} · ${r.serviceType === 'free' ? 'Free' : 'Paid'}</span><span>${esc([r.date, r.time].filter(Boolean).join(' ') || 'Time to be agreed')} · ${esc(r.type)}</span></div>`).join('')
+      : '<p class="empty-note">No upcoming consultations. Accepted requests appear here.</p>';
+    const ACT = { pending: 'sent you a request', accepted: 'consultation accepted', rejected: 'request declined', completed: 'consultation completed', cancelled: 'cancelled the request' };
+    const act = summary && Array.isArray(summary.recentActivity) ? summary.recentActivity : [];
+    document.getElementById('activityList').innerHTML = act.length
+      ? act.map(a => `<div class="activity-item"><span><strong>${esc(a.clientName)}</strong> ${esc(ACT[a.status] || a.status)}<br><span class="when">${esc(a.issue || '')} · ${a.serviceType === 'free' ? 'Free' : 'Paid'}</span></span><span class="when">${esc(LS.fmtDate(a.at, true))}</span></div>`).join('')
+      : '<p class="empty-note">No client activity yet. New requests will appear here.</p>';
+  }
+
+  /* =========================================================
+     LISTING STATUS (read-only)
+     Registration details and documents are edited in lawyer-register.html
+     (?update=1 when CASEONE asks for an update), never duplicated here.
+     ========================================================= */
+  async function loadVerification() {
+    const res = await apiRequest('/lawyer/verification', { useAuth: true }).catch(async (err) => {
+      if (err.statusCode === 401 && await refreshSession()) return apiRequest('/lawyer/verification', { useAuth: true });
+      throw err;
+    });
+    verification = res.data;
+    return verification;
+  }
+
+  const DOC_ORDER = ['aadhaar_card', 'pan_card', 'enrollment_certificate', 'law_degree'];
+  const rank = (kind) => (DOC_ORDER.indexOf(kind) === -1 ? DOC_ORDER.length : DOC_ORDER.indexOf(kind));
+  function docRow(d) {
+    return `<div class="req-doc-row"><div><div class="t">${esc(LS.DOC_LABELS[d.kind] || (verification.documentLabels || {})[d.kind] || d.kind)}</div><div class="m">${esc(d.fileName)} · ${esc(LS.fmtSize(d.size))} · uploaded ${esc(LS.fmtDate(d.uploadedAt))}</div></div>
+      <div style="display:flex;gap:6px"><button type="button" class="ls-btn ls-btn-outline ls-btn-sm" data-vview="${esc(d.id)}">View</button></div></div>`;
+  }
+
+  function renderVerification() {
+    const v = verification;
+    if (!v) return;
+    const code = listingCode();
+    const ob = v.onboarding || {};
+    document.getElementById('verifyNavBadge').classList.toggle('zero', !(code === 'action_required' || code === 'not_listed'));
+    document.getElementById('vStateTitle').textContent = ob.label || 'Status';
+    const b = document.getElementById('vStateBadge');
+    b.className = LISTING_BADGE[code] || 'ls-badge';
+    b.textContent = stateLabel();
+    let text = ob.message || '';
+    if (isHidden()) text = HIDDEN_TEXT;
+    else if (awaitingReview()) text = AWAITING_TEXT;
+    else if (listingGaps().length) text = 'Your profile is not shown in Lawyer Connect right now because these details are missing: ' + listingGaps().join(', ') + '. Add them in Edit Profile and it appears again automatically.';
+    document.getElementById('vStateText').textContent = text;
+    const reason = document.getElementById('vReason');
+    if (v.decisionReason && (code === 'action_required' || code === 'not_listed')) {
+      reason.hidden = false;
+      reason.innerHTML = '<strong>Message from CASEONE:</strong><br>' + esc(v.decisionReason);
+    } else {
+      reason.hidden = true;
+    }
+    document.getElementById('vUpdateBox').hidden = !v.canEdit;
+
+    const type = (v.details && v.details.serviceType) || 'paid';
+    // The Free Legal Aid list shows only lawyers reviewed by CASEONE.
+    const UNREVIEWED_WHERE = {
+      paid: 'You are listed in ' + WHERE_TEXT.paid + ' Your profile is marked “Not yet reviewed by CASEONE”; clients can send requests after the review.',
+      free: 'Your profile is marked “Not yet reviewed by CASEONE”. You appear in the Free Legal Aid list, and clients can send requests, after the CASEONE review.',
+      both: 'You are listed in the paid lawyer directory, marked “Not yet reviewed by CASEONE”. You appear in the Free Legal Aid list, and clients can send requests, after the CASEONE review.'
+    };
+    document.getElementById('vWhere').textContent = isListed()
+      ? (isReviewedListing() ? 'You are listed in ' + (WHERE_TEXT[type] || WHERE_TEXT.paid) + ' Clients can send you requests.' : (UNREVIEWED_WHERE[type] || UNREVIEWED_WHERE.paid))
+      : 'You are not listed right now. When listed, you appear in ' + (WHERE_TEXT[type] || WHERE_TEXT.paid);
+
+    const docs = (v.documents || []).filter(d => DOC_ORDER.includes(d.kind) || d.kind === 'identity_proof' || d.kind === 'other')
+      .sort((a, c) => rank(a.kind) - rank(c.kind));
+    const have = DOC_ORDER.filter(k => docs.some(d => d.kind === k)).length;
+    document.getElementById('vDocsBadge').textContent = have + ' of 4 uploaded · private';
+    document.getElementById('vRequiredDocs').innerHTML = docs.length ? docs.map(docRow).join('') : '<p class="empty-note">No documents uploaded.</p>';
+
+    const who = { lawyer: 'You', admin: 'CASEONE', system: 'Automatic (authorised official source)' };
+    document.getElementById('vHistory').innerHTML = (v.history || []).slice().reverse().map(h => `<li><strong>${esc(STATE_LABELS[h.state] || h.state)}</strong> · ${esc(LS.fmtDate(h.at, true))} · ${esc(who[h.byRole] || '')}</li>`).join('') || '<li>No history yet.</li>';
+
+    document.querySelectorAll('[data-vview]').forEach(btn => btn.addEventListener('click', () => {
+      D.openPrivateFile('/lawyer/verification/documents/' + encodeURIComponent(btn.dataset.vview) + '/file').catch(e => LS.toast(e.message));
+    }));
   }
 
   /* =========================================================
      RENDER: MY PROFILE (read-only)
      ========================================================= */
+  function servicesText(profile) {
+    const parts = [];
+    if (profile.offersPaid) parts.push('Paid: ' + (profile.consultationFee ? '₹' + profile.consultationFee.toLocaleString('en-IN') : 'fee not set'));
+    if (profile.offersFree) parts.push('Free: ₹0');
+    return parts.join(' · ') || '—';
+  }
+
   function renderProfileView(profile) {
-    document.getElementById('profAvatar').textContent = initials(profile.name);
+    setAvatar(document.getElementById('profAvatar'));
     document.getElementById('profName').textContent = profile.name;
-
-    document.getElementById('profVerifiedBadge').innerHTML = profile.verified
-      ? '<span class="verified-badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg> Verified Lawyer</span>'
-      : '<span class="pending-badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg> Verification Pending</span>';
-
-    document.getElementById('profLocation').textContent = profile.location || '—';
+    const approved = listingCode() === 'listed' && isListed();
+    document.getElementById('profVerifiedBadge').innerHTML = approved
+      ? '<span class="verified-badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg> ' + esc(approvedLabel()) + '</span>'
+      : '<span class="pending-badge">' + esc(stateLabel()) + (isListed() ? ' — visible to clients, requests after review' : ' — not visible to clients') + '</span>';
+    document.getElementById('profLocation').textContent = [profile.location, profile.state].filter(Boolean).join(', ') || '—';
+    document.getElementById('profEnrolled').textContent = profile.enrollmentDate ? LS.fmtDate(profile.enrollmentDate) : '—';
+    document.getElementById('profOffice').textContent = profile.officeAddress || '—';
     document.getElementById('profExperience').textContent = profile.experience ? profile.experience + ' years' : '—';
-    document.getElementById('profFee').textContent = profile.consultationFee ? '₹' + profile.consultationFee.toLocaleString('en-IN') : '—';
-    document.getElementById('profBar').textContent = profile.barNumber || '—';
-
+    document.getElementById('profFee').textContent = servicesText(profile);
+    document.getElementById('profBar').textContent = [profile.stateBarCouncil, profile.barNumber].filter(Boolean).join(' · ') || '—';
     const paEl = document.getElementById('profPracticeAreas');
-    paEl.innerHTML = (profile.practiceAreas || []).length
-      ? profile.practiceAreas.map(p => `<span>${p}</span>`).join('')
-      : '<span class="tag-row empty-hint">No practice areas added yet.</span>';
-
+    paEl.innerHTML = (profile.practiceAreas || []).length ? profile.practiceAreas.map(p => `<span>${esc(p)}</span>`).join('') : '<span class="tag-row empty-hint">No practice areas added yet.</span>';
     const langEl = document.getElementById('profLanguages');
-    langEl.innerHTML = (profile.languages || []).length
-      ? profile.languages.map(l => `<span>${l}</span>`).join('')
-      : '<span class="tag-row empty-hint">No languages added yet.</span>';
-
-    document.getElementById('profAbout').textContent = profile.description || 'No bio written yet.';
+    langEl.innerHTML = (profile.languages || []).length ? profile.languages.map(l => `<span>${esc(l)}</span>`).join('') : '<span class="tag-row empty-hint">No languages added yet.</span>';
+    document.getElementById('profAbout').textContent = profile.description || 'No introduction written yet.';
   }
 
   /* =========================================================
-     RENDER: EDIT PROFILE FORM
+     RENDER: EDIT PROFILE FORM (+ services, photo)
      ========================================================= */
   function renderChips(container, options, selected, onToggle) {
     container.innerHTML = '';
@@ -711,100 +1048,167 @@
       chip.type = 'button';
       chip.className = 'chip-toggle' + (selected.includes(opt) ? ' selected' : '');
       chip.textContent = opt;
+      chip.setAttribute('aria-pressed', selected.includes(opt) ? 'true' : 'false');
       chip.addEventListener('click', () => {
         const idx = selected.indexOf(opt);
         if (idx === -1) selected.push(opt); else selected.splice(idx, 1);
         chip.classList.toggle('selected');
+        chip.setAttribute('aria-pressed', chip.classList.contains('selected') ? 'true' : 'false');
         onToggle();
       });
       container.appendChild(chip);
     });
   }
 
+  function syncServiceRows() {
+    const t = (document.querySelector('input[name="serviceType"]:checked') || {}).value || 'paid';
+    document.getElementById('feeRow').hidden = t === 'free';
+    document.getElementById('freeNoteRow').hidden = t === 'paid';
+    document.getElementById('emergencyRow').hidden = t === 'paid';
+  }
+  document.querySelectorAll('input[name="serviceType"]').forEach(r => r.addEventListener('change', syncServiceRows));
+
   function renderEditForm(profile) {
     document.getElementById('editName').value = profile.name || '';
     document.getElementById('editBar').value = profile.barNumber || '';
     document.getElementById('editLocation').value = profile.location || '';
+    document.getElementById('editState').value = profile.state || '';
+    document.getElementById('editOffice').value = profile.officeAddress || '';
     document.getElementById('editExperience').value = profile.experience || '';
+    // Calculated from the enrollment date when it is known (read-only); older profiles can still type it.
+    document.getElementById('editExperience').disabled = !!profile.experienceFromEnrollment;
+    document.getElementById('editExperienceHint').textContent = profile.experienceFromEnrollment ? 'Calculated from your enrollment date.' : '';
     document.getElementById('editFee').value = profile.consultationFee || '';
     document.getElementById('editAbout').value = profile.description || '';
-
+    document.getElementById('editQualifications').value = profile.qualifications || '';
+    document.getElementById('editFreeNote').value = profile.freeServiceNote || '';
+    document.getElementById('editEmergency').checked = !!profile.acceptsEmergencyRequests;
+    const st = document.querySelector(`input[name="serviceType"][value="${profile.serviceType || 'paid'}"]`);
+    if (st) st.checked = true;
+    syncServiceRows();
     selectedPracticeAreas = (profile.practiceAreas || []).slice();
     selectedLanguages = (profile.languages || []).slice();
-
     renderChips(document.getElementById('practiceAreaChips'), PRACTICE_AREAS, selectedPracticeAreas, function () {});
     renderChips(document.getElementById('languageChips'), LANGUAGES, selectedLanguages, function () {});
+    setAvatar(document.getElementById('photoPreview'));
+    document.getElementById('photoRemove').hidden = !profile.hasPhoto;
   }
 
   document.getElementById('editProfileForm').addEventListener('submit', function (e) {
     e.preventDefault();
-
+    const serviceType = (document.querySelector('input[name="serviceType"]:checked') || {}).value || 'paid';
+    const fee = parseInt(document.getElementById('editFee').value, 10) || 0;
+    if (serviceType !== 'free' && fee <= 0) {
+      showFormMessage('editSaveConfirm', 'Please set your paid consultation fee (or choose Free).', true);
+      document.getElementById('editFee').focus();
+      return;
+    }
     const updates = {
       name: document.getElementById('editName').value.trim() || currentProfile.name,
       barNumber: document.getElementById('editBar').value.trim(),
       location: document.getElementById('editLocation').value.trim(),
-      experience: parseInt(document.getElementById('editExperience').value, 10) || 0,
-      consultationFee: parseInt(document.getElementById('editFee').value, 10) || 0,
+      state: document.getElementById('editState').value.trim(),
+      officeAddress: document.getElementById('editOffice').value.trim(),
+      ...(currentProfile.experienceFromEnrollment ? {} : { experience: parseInt(document.getElementById('editExperience').value, 10) || 0 }),
+      consultationFee: serviceType === 'free' ? (currentProfile.consultationFee || 0) : fee,
       description: document.getElementById('editAbout').value.trim(),
       practiceAreas: selectedPracticeAreas.slice(),
-      languages: selectedLanguages.slice()
+      languages: selectedLanguages.slice(),
+      serviceType,
+      freeServiceNote: serviceType === 'paid' ? '' : document.getElementById('editFreeNote').value.trim(),
+      acceptsEmergencyRequests: serviceType !== 'paid' && document.getElementById('editEmergency').checked,
+      qualifications: document.getElementById('editQualifications').value.trim()
     };
-
     updateLawyerProfile(lawyerId, updates).then(updated => {
       currentProfile = updated;
-      localStorage.setItem('userName', updated.name);
+      try { localStorage.setItem('userName', updated.name); } catch (err) { /* ignore */ }
       renderAll();
-
-      const confirm = document.getElementById('editSaveConfirm');
-      confirm.classList.add('show');
-      setTimeout(() => confirm.classList.remove('show'), 2200);
+      showFormMessage('editSaveConfirm', updated.reverificationRequired
+        ? 'Saved. Because your name or Bar Council details changed, your profile will be reviewed again.'
+        : 'Saved.', false);
+    }).catch(err => {
+      showFormMessage('editSaveConfirm', (err && err.message) || 'Could not save. Please try again.', true);
     });
   });
 
-  /* =========================================================
-     RENDER: CONSULTATION REQUESTS
-     ========================================================= */
-  function formatDate(iso) {
-    if (!iso) return '—';
-    const d = new Date(iso);
-    return isNaN(d) ? iso : d.toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
+  async function refreshOwnPhoto() {
+    if (ownPhotoUrl) { URL.revokeObjectURL(ownPhotoUrl); ownPhotoUrl = ''; }
+    if (currentProfile && currentProfile.hasPhoto) ownPhotoUrl = await D.privateImageUrl('/lawyer/photo');
   }
 
+  document.getElementById('photoFile').addEventListener('change', async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    if (file.size > 2 * 1024 * 1024) { LS.toast('Photos can be up to 2 MB.'); e.target.value = ''; return; }
+    try {
+      await D.uploadPrivateFile('/lawyer/photo', file, 'PUT');
+      LS.toast('Photo updated.');
+      e.target.value = '';
+      renderAll();
+    } catch (err) { LS.toast(err.message); e.target.value = ''; }
+  });
+  document.getElementById('photoRemove').addEventListener('click', async () => {
+    if (!window.confirm('Remove your photo?')) return;
+    try { await apiRequest('/lawyer/photo', { method: 'DELETE', useAuth: true }); LS.toast('Photo removed.'); renderAll(); } catch (err) { LS.toast(err.message); }
+  });
+
+  /* =========================================================
+     RENDER: CONSULTATION REQUESTS (real API, Paid / Free tabs)
+     ========================================================= */
+  function formatDate(iso) {
+    return iso ? LS.fmtDate(iso) : '—';
+  }
+
+  const STATUS_TEXT = { pending: 'New', accepted: 'Accepted', rejected: 'Declined', completed: 'Completed', cancelled: 'Cancelled by client' };
+
   function renderRequests(requests) {
+    currentRequests = requests;
     const list = document.getElementById('requestsList');
     const pending = requests.filter(r => r.status === 'pending');
-    const resolved = requests.filter(r => r.status !== 'pending').sort((a, b) => new Date(b.requestedAt) - new Date(a.requestedAt));
-    const ordered = pending.concat(resolved);
-
     const badge = document.getElementById('pendingBadge');
     badge.textContent = pending.length;
     badge.classList.toggle('zero', pending.length === 0);
     document.getElementById('statPending').textContent = pending.length;
+    document.getElementById('rcAll').textContent = requests.length;
+    document.getElementById('rcPaid').textContent = requests.filter(r => r.serviceType !== 'free').length;
+    document.getElementById('rcFree').textContent = requests.filter(r => r.serviceType === 'free').length;
+    const offersBoth = currentProfile && currentProfile.offersPaid && currentProfile.offersFree;
+    document.getElementById('reqTabs').hidden = !offersBoth && !requests.some(r => r.serviceType === 'free');
+
+    const shown = requests.filter(r => requestFilter === 'all' || (requestFilter === 'free' ? r.serviceType === 'free' : r.serviceType !== 'free'));
+    const ordered = shown.filter(r => r.status === 'pending').concat(shown.filter(r => r.status !== 'pending').sort((a, b) => new Date(b.requestedAt) - new Date(a.requestedAt)));
 
     if (ordered.length === 0) {
-      list.innerHTML = '<div class="card"><p class="empty-note">No consultation requests yet. New requests from customers will appear here.</p></div>';
+      list.innerHTML = '<div class="card"><p class="empty-note">' + (!(isListed() && isReviewedListing())
+        ? 'No requests yet. Clients can send requests once CASEONE has reviewed your profile.'
+        : 'No consultation requests yet. New requests from clients will appear here.') + '</p></div>';
       return;
     }
 
     list.innerHTML = ordered.map(r => `
-      <div class="request-card" data-request-id="${r.id}">
+      <div class="request-card" data-request-id="${esc(r.id)}">
         <div class="request-top">
           <div>
-            <div class="request-customer">${r.customerName || 'Guest Client'}</div>
-            <div class="request-meta">${r.customerEmail || 'No email on file'} • Requested ${formatDate(r.requestedAt)}</div>
+            <div class="request-customer">${esc(r.customerName || 'Client')}</div>
+            <div class="request-meta">${r.status === 'accepted' || r.status === 'completed' ? esc(r.customerEmail || '') + ' • ' : ''}Requested ${esc(formatDate(r.requestedAt))}</div>
+            <div class="request-tags"><span class="status-pill ${r.serviceType === 'free' ? 'free' : ''}">${r.serviceType === 'free' ? 'Free · ₹0' : 'Paid · ' + esc(r.feeAtRequest ? '₹' + Number(r.feeAtRequest).toLocaleString('en-IN') : 'fee not set')}</span>${r.eligibility === 'unverified_emergency' ? '<span class="ls-urgent-tag">Urgent · eligibility not verified</span>' : ''}</div>
           </div>
-          <span class="status-pill ${r.status}">${r.status}</span>
+          <span class="status-pill ${esc(r.status)}">${esc(STATUS_TEXT[r.status] || r.status)}</span>
         </div>
         <div class="request-detail-grid">
-          <div class="d-item"><div class="k">Legal Issue</div><div class="v">${r.issue || '—'}</div></div>
-          <div class="d-item"><div class="k">Preferred Date</div><div class="v">${r.date || '—'} ${r.time || ''}</div></div>
-          <div class="d-item"><div class="k">Type / Language</div><div class="v">${r.type || '—'} • ${r.language || '—'}</div></div>
+          <div class="d-item"><div class="k">Legal Issue</div><div class="v">${esc(r.issue || '—')}</div></div>
+          <div class="d-item"><div class="k">Preferred Date</div><div class="v">${esc(r.date || '—')} ${esc(r.time || '')}</div></div>
+          <div class="d-item"><div class="k">Type / Language</div><div class="v">${esc(r.type || '—')} • ${esc(r.language || '—')}</div></div>
         </div>
-        <div class="request-desc">${r.description || 'No description provided.'}</div>
+        <div class="request-desc">${esc(r.description || 'No description provided.')}</div>
         ${r.status === 'pending' ? `
           <div class="request-actions">
-            <button class="btn-accept" data-action="accept" data-id="${r.id}">Accept</button>
-            <button class="btn-reject" data-action="reject" data-id="${r.id}">Reject</button>
+            <button class="btn-accept" data-action="accept" data-id="${esc(r.id)}">Accept</button>
+            <button class="btn-reject" data-action="reject" data-id="${esc(r.id)}">Decline</button>
+          </div>` : ''}
+        ${r.status === 'accepted' ? `
+          <div class="request-actions">
+            <button class="btn-reject" data-action="complete" data-id="${esc(r.id)}">Mark as completed</button>
           </div>` : ''}
       </div>
     `).join('');
@@ -812,36 +1216,53 @@
     list.querySelectorAll('[data-action]').forEach(btn => {
       btn.addEventListener('click', () => {
         const action = btn.dataset.action;
-        const id = btn.dataset.id;
-        updateConsultRequestStatus(id, action === 'accept' ? 'accepted' : 'rejected').then(() => {
-          renderAll();
-        });
+        if (action === 'reject' && !window.confirm('Decline this request? The client will see it as declined.')) return;
+        btn.disabled = true;
+        const status = { accept: 'accepted', reject: 'rejected', complete: 'completed' }[action];
+        updateConsultRequestStatus(btn.dataset.id, status).then(() => {
+          LS.toast({ accepted: 'Request accepted.', rejected: 'Request declined.', completed: 'Marked as completed.' }[status]);
+          renderAll(true);
+        }).catch(err => { btn.disabled = false; LS.toast(err.message); });
       });
     });
   }
 
-  /* =========================================================
-     RENDER: MY CLIENTS
-     ========================================================= */
-  function renderClients(clients) {
-    const list = document.getElementById('clientsList');
-    document.getElementById('statClients').textContent = clients.length;
+  document.getElementById('reqTabs').addEventListener('click', (e) => {
+    const t = e.target.closest('[data-rfilter]');
+    if (!t) return;
+    requestFilter = t.dataset.rfilter;
+    document.querySelectorAll('[data-rfilter]').forEach(x => x.setAttribute('aria-selected', x === t ? 'true' : 'false'));
+    renderRequests(currentRequests);
+  });
 
+  /* =========================================================
+     RENDER: MY CLIENTS (accepted requests, from the API)
+     ========================================================= */
+  function renderClients(requests) {
+    const list = document.getElementById('clientsList');
+    const accepted = requests.filter(r => r.status === 'accepted' || r.status === 'completed');
+    const byClient = new Map();
+    accepted.forEach(r => {
+      const c = byClient.get(r.customerId) || { name: r.customerName, email: r.customerEmail, count: 0, last: r };
+      c.count += 1;
+      if (new Date(r.requestedAt) > new Date(c.last.requestedAt)) c.last = r;
+      byClient.set(r.customerId, c);
+    });
+    const clients = Array.from(byClient.values());
     if (clients.length === 0) {
       list.innerHTML = '<div class="card"><p class="empty-note">No clients yet. Accept a consultation request to add your first client.</p></div>';
       return;
     }
-
     list.innerHTML = clients.map(c => `
       <div class="client-card">
         <div class="client-left">
-          <div class="client-avatar">${initials(c.customerName)}</div>
+          <div class="client-avatar">${esc(initials(c.name))}</div>
           <div>
-            <div class="client-name">${c.customerName}</div>
-            <div class="client-sub">${c.customerEmail || 'No email on file'} • Last: ${c.lastIssue || '—'} (${c.lastType || '—'})</div>
+            <div class="client-name">${esc(c.name)}</div>
+            <div class="client-sub">${esc(c.email || '')} • Last: ${esc(c.last.issue || '—')} (${c.last.serviceType === 'free' ? 'Free' : 'Paid'})</div>
           </div>
         </div>
-        <span class="client-count">${c.consultationCount} consultation${c.consultationCount === 1 ? '' : 's'}</span>
+        <span class="client-count">${esc(c.count)} consultation${c.count === 1 ? '' : 's'}</span>
       </div>
     `).join('');
   }
@@ -858,7 +1279,7 @@
       const row = document.createElement('div');
       row.className = 'slot-row';
       row.innerHTML = `
-        <input type="text" placeholder="e.g. 10:00 AM - 1:00 PM" value="${val.replace(/"/g, '&quot;')}">
+        <input type="text" placeholder="e.g. 10:00 AM - 1:00 PM" maxlength="60" aria-label="Time slot ${idx + 1}" value="${esc(val)}">
         <button type="button" class="btn-remove-slot" aria-label="Remove time slot">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="5" y1="5" x2="15" y2="15"></line><line x1="15" y1="5" x2="5" y2="15"></line></svg>
         </button>
@@ -881,7 +1302,6 @@
     const availability = profile.availability || { days: [], slots: [] };
     selectedDays = (availability.days || []).slice();
     slotValues = (availability.slots || []).slice();
-
     renderChips(document.getElementById('availDayChips'), DAYS, selectedDays, function () {});
     renderSlotRows();
   }
@@ -889,14 +1309,12 @@
   document.getElementById('availabilityForm').addEventListener('submit', function (e) {
     e.preventDefault();
     const cleanSlots = slotValues.map(s => s.trim()).filter(Boolean);
-
     updateLawyerProfile(lawyerId, { availability: { days: selectedDays.slice(), slots: cleanSlots } }).then(updated => {
       currentProfile = updated;
       renderAll();
-
-      const confirm = document.getElementById('availSaveConfirm');
-      confirm.classList.add('show');
-      setTimeout(() => confirm.classList.remove('show'), 2200);
+      showFormMessage('availSaveConfirm', 'Saved.', false);
+    }).catch(err => {
+      showFormMessage('availSaveConfirm', (err && err.message) || 'Could not save. Please try again.', true);
     });
   });
 
@@ -906,34 +1324,54 @@
   function renderSettings(profile) {
     document.getElementById('settingsName').textContent = profile.name;
     document.getElementById('settingsEmail').textContent = profile.email || '—';
-    document.getElementById('settingsVerify').textContent = profile.verified ? 'Verified Lawyer' : 'Verification Pending';
+    document.getElementById('settingsVerify').textContent = statusLabel();
+    document.getElementById('settingsPublic').textContent = verification && verification.inPublicDirectory ? (isReviewedListing() ? 'Visible to clients · reviewed' : 'Visible to clients · not yet reviewed') : 'Not visible to clients';
+    document.getElementById('settingsServices').textContent = SERVICE_TEXT[profile.serviceType] || SERVICE_TEXT.paid;
+    document.getElementById('settingsPhone').textContent = profile.phone || '—';
+    document.getElementById('settingsState').textContent = profile.state || '—';
   }
 
   /* =========================================================
      MASTER RENDER
      ========================================================= */
-  function renderAll() {
-    Promise.all([
-      getLawyerProfile(lawyerId),
-      getConsultRequestsForLawyer(lawyerId),
-      getClientsForLawyer(lawyerId)
-    ]).then(([profile, requests, clients]) => {
-      if (!profile) {
-        // Only possible if browser storage is blocked; return to Lawyer Connect instead of a login page.
-        window.location.href = 'lawyer-connect.html';
-        return;
-      }
-      currentProfile = profile;
-
-      renderTopbar(profile);
-      renderOverview(profile, requests.filter(r => r.status === 'pending').length, clients.length);
-      renderProfileView(profile);
-      renderEditForm(profile);
-      renderRequests(requests);
-      renderClients(clients);
-      renderAvailability(profile);
-      renderSettings(profile);
-    });
+  let firstRender = true;
+  async function renderAll(keepForms) {
+    let profile = null;
+    let requests = [];
+    let summary = null;
+    // Registration not finished (or an older server answering "not verified") → back to registration.
+    const notVerified = (err) => err && err.statusCode === 403 && err.details && (err.details.code === 'LAWYER_REGISTRATION_INCOMPLETE' || err.details.code === 'LAWYER_NOT_VERIFIED');
+    try {
+      [profile, , requests, summary] = await Promise.all([
+        getLawyerProfile(lawyerId),
+        loadVerification(),
+        getConsultRequestsForLawyer().catch((err) => { if (notVerified(err)) throw err; showGlobalError('Could not load consultation requests: ' + err.message); return currentRequests; }),
+        apiRequest('/lawyer/dashboard', { useAuth: true }).then(r => r.data).catch((err) => { if (notVerified(err)) throw err; return null; })
+      ]);
+    } catch (err) {
+      if (notVerified(err)) { window.location.replace('lawyer-register.html'); return; }
+      showGlobalError("Couldn't load your dashboard: " + (err.message || 'please refresh the page or log in again.'));
+      document.getElementById('welcomeHeading').textContent = "Couldn't load your profile";
+      return;
+    }
+    currentProfile = profile;
+    await refreshOwnPhoto();
+    renderTopbar(profile);
+    renderOverview(profile);
+    renderUpcoming(requests, summary);
+    if (!keepForms || firstRender) renderVerification();
+    renderProfileView(profile);
+    if (!keepForms || firstRender) renderEditForm(profile);
+    renderRequests(requests);
+    renderClients(requests);
+    if (!keepForms || firstRender) renderAvailability(profile);
+    renderSettings(profile);
+    if (firstRender) {
+      firstRender = false;
+      const hash = (location.hash || '').slice(1);
+      if (hash && document.getElementById('view-' + hash)) showView(hash);
+      else if (['action_required', 'not_listed'].includes(listingCode())) showView('verification');
+    }
   }
 
   renderAll();

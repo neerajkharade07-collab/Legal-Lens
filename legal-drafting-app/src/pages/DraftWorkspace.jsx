@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { FileX, CloudOff } from 'lucide-react';
 import { useDocuments } from '../hooks/useDocuments';
+import { useAuth } from '../hooks/useAuth';
 import { useDocumentTitle } from '../hooks/useDocumentTitle';
 import { EmptyState } from '../components/common/EmptyState';
 import { Button } from '../components/common/Button';
@@ -13,16 +14,28 @@ import { getDocumentSchema } from '../data/documentSchemas';
 export default function DraftWorkspace() {
   const { docId } = useParams();
   const { getDocument, loadDocument } = useDocuments();
+  const { status: authStatus } = useAuth();
   const [state, setState] = useState({ status: 'loading', error: null, attempt: 0 });
-  const doc = getDocument(docId);
+  // The document as it was opened. It stays on screen if the session changes (e.g. it
+  // ended): unsaved edits are never thrown away, and saving reports honestly where it fails.
+  const [opened, setOpened] = useState(null);
+  const listed = getDocument(docId);
+  const doc = listed?.workspace ? listed : opened?.id === docId ? opened : listed;
   useDocumentTitle(doc?.name ?? 'Draft workspace');
 
   const attempt = state.attempt;
   useEffect(() => {
+    // Wait until we know where documents live. Server unreachable / session ended: keep
+    // what is on screen (nothing is re-loaded from, or saved to, the wrong place).
+    if (authStatus !== 'authenticated' && authStatus !== 'anonymous') return undefined;
     let cancelled = false;
     setState((s) => ({ ...s, status: 'loading', error: null }));
     loadDocument(docId).then(
-      () => !cancelled && setState((s) => ({ ...s, status: 'ready' })),
+      (full) => {
+        if (cancelled) return;
+        setOpened(full);
+        setState((s) => ({ ...s, status: 'ready' }));
+      },
       (err) =>
         !cancelled &&
         setState((s) => ({
@@ -34,7 +47,7 @@ export default function DraftWorkspace() {
     return () => {
       cancelled = true;
     };
-  }, [docId, loadDocument, attempt]);
+  }, [docId, loadDocument, attempt, authStatus]);
 
   if (state.status === 'loading' && !doc?.workspace) return <PageLoader />;
 

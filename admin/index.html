@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<meta name="referrer" content="no-referrer">
+<title>CASEONE Admin</title>
+<link rel="icon" href="../favicon.ico">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="admin.css">
+</head>
+<body class="lla">
+
+<!-- Boot / loading -->
+<div class="lla-boot" id="llaBoot" role="status" aria-live="polite">
+  <div class="lla-boot-mark" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3 4 6v6c0 5 3.4 9.2 8 10 4.6-.8 8-5 8-10V6z"></path></svg></div>
+  <p>Checking your admin session…</p>
+</div>
+
+<!-- Login -->
+<section class="lla-auth" id="llaLogin" hidden aria-labelledby="llaLoginTitle">
+  <div class="lla-auth-card">
+    <div class="lla-auth-brand">
+      <span class="lla-auth-logo lla-brand-mark"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3 4 6v6c0 5 3.4 9.2 8 10 4.6-.8 8-5 8-10V6z"></path></svg></span>
+      <p class="lla-auth-kicker">CASEONE</p>
+      <h1 class="lla-auth-title" id="llaLoginTitle">Admin Console</h1>
+      <p class="lla-auth-copy">Manage accounts, lawyer verification, consultations and support messages. Access is limited to authorised administrators and every action is recorded.</p>
+      <ul class="lla-auth-points">
+        <li>Role-based permissions</li>
+        <li>Private legal content is never shown</li>
+        <li>Full activity audit log</li>
+      </ul>
+    </div>
+    <p class="lla-form-notice" id="llaLoginNotice" role="status" hidden></p>
+    <form class="lla-auth-form" id="llaLoginForm" novalidate>
+      <h2>Sign in</h2>
+      <p class="lla-muted">Admin accounts are created on the server. There is no public registration.</p>
+      <label for="llaEmail">Email</label>
+      <input type="email" id="llaEmail" autocomplete="username" required maxlength="254">
+      <label for="llaPassword">Password</label>
+      <input type="password" id="llaPassword" autocomplete="current-password" required maxlength="128">
+      <p class="lla-form-error" id="llaLoginError" role="alert" hidden></p>
+      <button type="submit" class="lla-btn lla-btn-primary lla-btn-block" id="llaLoginBtn">Sign in</button>
+      <a class="lla-link" href="../index.html">← Back to CASEONE</a>
+    </form>
+  </div>
+</section>
+
+<!-- Forced password change (temporary password) -->
+<section class="lla-auth" id="llaPwd" hidden aria-labelledby="llaPwdTitle">
+  <div class="lla-auth-card lla-auth-card-narrow">
+    <form class="lla-auth-form" id="llaPwdForm" novalidate>
+      <h2 id="llaPwdTitle">Choose a new password</h2>
+      <p class="lla-muted">You signed in with a temporary password. Choose your own password to continue. Other sessions will be signed out.</p>
+      <label for="llaPwdCurrent">Temporary (current) password</label>
+      <input type="password" id="llaPwdCurrent" autocomplete="current-password" maxlength="128">
+      <label for="llaPwdNew">New password</label>
+      <input type="password" id="llaPwdNew" autocomplete="new-password" maxlength="128" aria-describedby="llaPwdHint">
+      <p class="lla-hint" id="llaPwdHint">At least 8 characters with an uppercase letter, a lowercase letter, a number and a special character.</p>
+      <label for="llaPwdNew2">Repeat new password</label>
+      <input type="password" id="llaPwdNew2" autocomplete="new-password" maxlength="128">
+      <p class="lla-form-error" id="llaPwdError" role="alert" hidden></p>
+      <button type="submit" class="lla-btn lla-btn-primary lla-btn-block" id="llaPwdBtn">Save new password</button>
+      <button type="button" class="lla-btn lla-btn-ghost lla-btn-block" data-action="logout">Sign out</button>
+    </form>
+  </div>
+</section>
+
+<!-- Dashboard shell -->
+<div class="lla-shell" id="llaApp" hidden>
+  <aside class="lla-sidebar" id="llaSidebar" aria-label="Admin navigation">
+    <div class="lla-side-brand">
+      <span class="lla-side-mark lla-brand-mark"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3 4 6v6c0 5 3.4 9.2 8 10 4.6-.8 8-5 8-10V6z"></path></svg></span>
+      <div><strong>CASEONE</strong><span>Admin Console</span></div>
+    </div>
+    <nav class="lla-nav" id="llaNav"></nav>
+    <div class="lla-side-foot">
+      <p class="lla-side-user" id="llaSideUser"></p>
+      <button type="button" class="lla-btn lla-btn-side" data-action="logout">Sign out</button>
+    </div>
+  </aside>
+  <div class="lla-scrim" id="llaScrim" hidden></div>
+
+  <div class="lla-main">
+    <header class="lla-topbar">
+      <button type="button" class="lla-icon-btn lla-menu-btn" id="llaMenuBtn" aria-label="Open navigation" aria-controls="llaSidebar" aria-expanded="false">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+      </button>
+      <div class="lla-top-title">
+        <h1 id="llaPageTitle">Overview</h1>
+        <p id="llaPageSub" class="lla-muted"></p>
+      </div>
+      <div class="lla-top-actions">
+        <button type="button" class="lla-btn lla-btn-ghost lla-btn-sm" id="llaRefresh">Refresh</button>
+        <span class="lla-admin-chip" id="llaAdminChip"></span>
+      </div>
+    </header>
+    <main class="lla-content" id="llaView" tabindex="-1" aria-live="polite"></main>
+  </div>
+</div>
+
+<!-- Detail drawer -->
+<div class="lla-drawer-wrap" id="llaDrawerWrap" hidden>
+  <div class="lla-drawer-scrim" data-close-drawer></div>
+  <aside class="lla-drawer" role="dialog" aria-modal="true" aria-labelledby="llaDrawerTitle" tabindex="-1" id="llaDrawer">
+    <div class="lla-drawer-head">
+      <h2 id="llaDrawerTitle"></h2>
+      <button type="button" class="lla-icon-btn" data-close-drawer aria-label="Close details">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
+      </button>
+    </div>
+    <div class="lla-drawer-body" id="llaDrawerBody"></div>
+  </aside>
+</div>
+
+<!-- Modal (confirmations and forms) -->
+<div class="lla-modal-wrap" id="llaModalWrap" hidden>
+  <div class="lla-modal" role="dialog" aria-modal="true" aria-labelledby="llaModalTitle" id="llaModal" tabindex="-1">
+    <h2 id="llaModalTitle"></h2>
+    <div id="llaModalBody"></div>
+    <p class="lla-form-error" id="llaModalError" role="alert" hidden></p>
+    <div class="lla-modal-actions">
+      <button type="button" class="lla-btn lla-btn-ghost" id="llaModalCancel">Cancel</button>
+      <button type="button" class="lla-btn lla-btn-primary" id="llaModalOk">Confirm</button>
+    </div>
+  </div>
+</div>
+
+<div class="lla-toasts" id="llaToasts" aria-live="polite" aria-atomic="false"></div>
+
+<!-- Shared CASEONE API config + session handling (unchanged files) -->
+<script src="../config.js"></script>
+<script src="../auth.js"></script>
+<script src="admin-api.js"></script>
+<script src="admin-ui.js"></script>
+<script src="admin.js"></script>
+</body>
+</html>

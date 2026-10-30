@@ -1,1356 +1,1938 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Legal Lens — Blog</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-<style>
-  :root {
-    --black: #0a0a0a;
-    --white: #ffffff;
-    --off-white: #fafafa;
-    --gray-100: #f5f5f5;
-    --gray-200: #e8e8e8;
-    --gray-300: #d8d8d8;
-    --gray-500: #8f8f8f;
-    --gray-600: #6b6b6b;
-    --gray-800: #2b2b2b;
-    --radius-sm: 10px;
-    --radius-md: 16px;
-    --radius-lg: 22px;
-    --shadow-soft: 0 1px 2px rgba(0,0,0,0.04), 0 10px 28px rgba(0,0,0,0.05);
-    --ease: cubic-bezier(0.4, 0, 0.2, 1);
-    --max-width: 1220px;
-  }
-
-  * { box-sizing: border-box; }
-
-  body {
-    margin: 0;
-    font-family: 'Poppins', sans-serif;
-    background: var(--white);
-    color: var(--black);
-    -webkit-font-smoothing: antialiased;
-    overflow-x: hidden;
-  }
-
-  .blog-page {
-    max-width: var(--max-width);
-    margin: 0 auto;
-    padding: 0 24px 110px;
-  }
-
-  section { margin-bottom: 100px; }
-
-  .section-head {
-    display: flex;
-    align-items: flex-end;
-    justify-content: space-between;
-    margin-bottom: 36px;
-    gap: 20px;
-    flex-wrap: wrap;
-  }
-
-  .section-head h2 {
-    font-size: 28px;
-    font-weight: 700;
-    margin: 0;
-    letter-spacing: -0.01em;
-  }
-
-  .section-head p {
-    font-size: 14px;
-    color: var(--gray-600);
-    margin: 6px 0 0;
-  }
-
-  .reveal {
-    opacity: 0;
-    transform: translateY(24px);
-    transition: opacity 0.7s var(--ease), transform 0.7s var(--ease);
-  }
-
-  .reveal.in-view { opacity: 1; transform: translateY(0); }
-
-  /* ================= HERO ================= */
-  .blog-hero {
-    position: relative;
-    text-align: center;
-    max-width: 760px;
-    margin: 0 auto 44px;
-    padding-top: 0;
-  }
-
-  .blog-hero-bg {
-    position: absolute;
-    inset: -60px -40px auto -40px;
-    height: 420px;
-    z-index: -1;
-    opacity: 0.9;
-    pointer-events: none;
-  }
-
-  .eyebrow {
-    font-size: 12.5px;
-    font-weight: 600;
-    letter-spacing: 0.16em;
-    color: var(--gray-600);
-    margin-bottom: 20px;
-    opacity: 0;
-    animation: fadeSlideUp 0.7s var(--ease) forwards;
-    animation-delay: 0.1s;
-  }
-
-  .blog-hero h1 {
-    font-size: 50px;
-    font-weight: 800;
-    line-height: 1.14;
-    margin: 0 0 20px;
-    letter-spacing: -0.02em;
-    opacity: 0;
-    animation: fadeSlideUp 0.8s var(--ease) forwards;
-    animation-delay: 0.2s;
-  }
-
-  .blog-hero p.hero-sub {
-    font-size: 16px;
-    line-height: 1.7;
-    color: var(--gray-600);
-    margin: 0 0 40px;
-    opacity: 0;
-    animation: fadeSlideUp 0.8s var(--ease) forwards;
-    animation-delay: 0.32s;
-  }
-
-  @keyframes fadeSlideUp {
-    from { opacity: 0; transform: translateY(16px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
-
-  .blog-search {
-    position: relative;
-    max-width: 560px;
-    margin: 0 auto;
-    opacity: 0;
-    animation: fadeSlideUp 0.8s var(--ease) forwards;
-    animation-delay: 0.44s;
-  }
-
-  .blog-search input {
-    width: 100%;
-    padding: 17px 46px 17px 50px;
-    border: 1px solid var(--gray-300);
-    border-radius: 999px;
-    font-family: 'Poppins', sans-serif;
-    font-size: 14.5px;
-    color: var(--black);
-    outline: none;
-    transition: border-color 0.2s var(--ease), box-shadow 0.2s var(--ease);
-    background: var(--white);
-  }
-
-  .blog-search input::placeholder { color: var(--gray-500); }
-
-  .blog-search input:focus {
-    border-color: var(--black);
-    box-shadow: 0 0 0 3px rgba(0,0,0,0.06);
-  }
-
-  .blog-search svg.search-icon {
-    position: absolute;
-    left: 20px;
-    top: 50%;
-    transform: translateY(-50%);
-    width: 17px;
-    height: 17px;
-    stroke: var(--gray-500);
-    pointer-events: none;
-  }
-
-  .search-clear {
-    position: absolute;
-    right: 16px;
-    top: 50%;
-    transform: translateY(-50%);
-    width: 24px;
-    height: 24px;
-    border-radius: 50%;
-    border: none;
-    background: var(--gray-100);
-    cursor: pointer;
-    display: none;
-    align-items: center;
-    justify-content: center;
-    transition: background 0.2s var(--ease);
-  }
-
-  .search-clear.visible { display: flex; }
-  .search-clear:hover { background: var(--gray-200); }
-
-  .search-clear svg { width: 11px; height: 11px; stroke: var(--gray-600); }
-
-  /* ================= CATEGORY NAV ================= */
-  .category-nav {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 10px;
-    margin-bottom: 64px;
-  }
-
-  .cat-btn {
-    font-family: 'Poppins', sans-serif;
-    font-size: 13.5px;
-    font-weight: 500;
-    padding: 10px 18px;
-    border-radius: 999px;
-    border: 1px solid var(--black);
-    background: var(--white);
-    color: var(--black);
-    cursor: pointer;
-    white-space: nowrap;
-    transition: background 0.2s var(--ease), color 0.2s var(--ease), transform 0.15s var(--ease);
-  }
-
-  .cat-btn:hover { transform: translateY(-1px); }
-  .cat-btn.active { background: var(--black); color: var(--white); }
-
-  /* ================= FEATURED ARTICLE ================= */
-  .featured-article {
-    display: grid;
-    grid-template-columns: 1.05fr 0.95fr;
-    gap: 0;
-    border: 1px solid var(--gray-200);
-    border-radius: var(--radius-lg);
-    overflow: hidden;
-    cursor: pointer;
-    transition: box-shadow 0.3s var(--ease), transform 0.3s var(--ease), border-color 0.3s var(--ease);
-  }
-
-  .featured-article:hover {
-    box-shadow: 0 20px 50px rgba(0,0,0,0.08);
-    transform: translateY(-3px);
-    border-color: var(--gray-300);
-  }
-
-  .featured-visual {
-    background: var(--black);
-    position: relative;
-    min-height: 340px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    overflow: hidden;
-  }
-
-  .featured-visual svg {
-    width: 100px;
-    height: 100px;
-    stroke: rgba(255,255,255,0.18);
-    fill: none;
-    transition: transform 0.6s var(--ease);
-  }
-
-  .featured-article:hover .featured-visual svg { transform: scale(1.08) rotate(-2deg); }
-
-  .featured-visual::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background:
-      linear-gradient(rgba(255,255,255,0.05) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(255,255,255,0.05) 1px, transparent 1px);
-    background-size: 42px 42px;
-  }
-
-  .featured-body {
-    padding: 44px 48px;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-  }
-
-  .badge {
-    display: inline-block;
-    font-size: 11.5px;
-    font-weight: 600;
-    letter-spacing: 0.04em;
-    padding: 6px 13px;
-    border: 1px solid var(--black);
-    border-radius: 999px;
-    margin-bottom: 20px;
-    align-self: flex-start;
-    width: fit-content;
-  }
-
-  .featured-body h3 {
-    font-size: 27px;
-    font-weight: 700;
-    line-height: 1.28;
-    margin: 0 0 14px;
-    letter-spacing: -0.01em;
-  }
-
-  .featured-body .desc {
-    font-size: 14.5px;
-    line-height: 1.7;
-    color: var(--gray-600);
-    margin: 0 0 24px;
-  }
-
-  .meta-row {
-    display: flex;
-    align-items: center;
-    gap: 16px;
-    font-size: 12.5px;
-    color: var(--gray-500);
-    margin-bottom: 26px;
-  }
-
-  .meta-row .dot { width: 3px; height: 3px; border-radius: 50%; background: var(--gray-500); }
-
-  .read-link {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    font-size: 14px;
-    font-weight: 600;
-    color: var(--black);
-    background: none;
-    border: none;
-    cursor: pointer;
-    padding: 0;
-    width: fit-content;
-  }
-
-  .read-link svg { width: 15px; height: 15px; transition: transform 0.25s var(--ease); }
-  .featured-article:hover .read-link svg,
-  .article-card:hover .read-link svg { transform: translateX(4px); }
-
-  /* ================= ARTICLE GRID ================= */
-  .article-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 22px;
-  }
-
-  .article-card {
-    border: 1px solid var(--gray-200);
-    border-radius: var(--radius-md);
-    overflow: hidden;
-    cursor: pointer;
-    background: var(--white);
-    transition: box-shadow 0.3s var(--ease), transform 0.3s var(--ease), border-color 0.3s var(--ease);
-    opacity: 0;
-    transform: translateY(20px);
-  }
-
-  .article-card.card-in { opacity: 1; transform: translateY(0); }
-
-  .article-card:hover {
-    box-shadow: var(--shadow-soft);
-    transform: translateY(-4px);
-    border-color: var(--gray-300);
-  }
-
-  .card-visual {
-    background: var(--gray-100);
-    height: 168px;
-    position: relative;
-    overflow: hidden;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-
-  .card-visual svg {
-    width: 46px;
-    height: 46px;
-    stroke: var(--gray-300);
-    fill: none;
-    transition: transform 0.5s var(--ease);
-  }
-
-  .article-card:hover .card-visual svg { transform: scale(1.12); }
-
-  .card-body { padding: 22px 22px 24px; }
-
-  .card-badge {
-    font-size: 11px;
-    font-weight: 600;
-    letter-spacing: 0.03em;
-    color: var(--gray-600);
-    margin-bottom: 12px;
-  }
-
-  .card-body h3 {
-    font-size: 16.5px;
-    font-weight: 600;
-    line-height: 1.4;
-    margin: 0 0 10px;
-  }
-
-  .card-body .desc {
-    font-size: 13.5px;
-    line-height: 1.65;
-    color: var(--gray-600);
-    margin: 0 0 18px;
-  }
-
-  .card-meta {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    font-size: 12px;
-    color: var(--gray-500);
-  }
-
-  .card-meta .read-link { font-size: 13px; }
-
-  /* ================= NO RESULTS ================= */
-  .no-results {
-    display: none;
-    text-align: center;
-    padding: 60px 20px;
-    color: var(--gray-500);
-    font-size: 15px;
-  }
-
-  .no-results.visible { display: block; }
-
-  /* ================= GUIDES ================= */
-  .guides-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 16px;
-  }
-
-  .guide-card {
-    display: flex;
-    align-items: center;
-    gap: 16px;
-    border: 1px solid var(--gray-200);
-    border-radius: var(--radius-md);
-    padding: 22px;
-    cursor: pointer;
-    transition: box-shadow 0.25s var(--ease), transform 0.2s var(--ease), border-color 0.2s var(--ease);
-  }
-
-  .guide-card:hover {
-    box-shadow: var(--shadow-soft);
-    transform: translateY(-3px);
-    border-color: var(--gray-300);
-  }
-
-  .guide-icon {
-    width: 44px;
-    height: 44px;
-    border-radius: 50%;
-    border: 1px solid var(--black);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-  }
-
-  .guide-icon svg { width: 19px; height: 19px; stroke: var(--black); fill: none; }
-
-  .guide-text h4 {
-    font-size: 14.5px;
-    font-weight: 600;
-    margin: 0 0 4px;
-  }
-
-  .guide-text p {
-    font-size: 12.5px;
-    color: var(--gray-600);
-    margin: 0;
-    line-height: 1.5;
-  }
-
-  .guide-arrow {
-    margin-left: auto;
-    width: 15px;
-    height: 15px;
-    stroke: var(--gray-500);
-    flex-shrink: 0;
-    transition: transform 0.25s var(--ease);
-  }
-
-  .guide-card:hover .guide-arrow { transform: translateX(3px); stroke: var(--black); }
-
-  /* ================= EDITORIAL / TRUST ================= */
-  .editorial-section {
-    background: var(--black);
-    color: var(--white);
-    border-radius: var(--radius-lg);
-    padding: 72px 56px;
-    text-align: center;
-  }
-
-  .editorial-section h2 {
-    font-size: 32px;
-    font-weight: 700;
-    max-width: 620px;
-    margin: 0 auto 22px;
-    line-height: 1.3;
-    letter-spacing: -0.01em;
-  }
-
-  .editorial-section p {
-    font-size: 15px;
-    line-height: 1.75;
-    color: rgba(255,255,255,0.65);
-    max-width: 560px;
-    margin: 0 auto;
-  }
-
-  /* ================= ARTICLE MODAL ================= */
-  .modal-overlay {
-    position: fixed;
-    inset: 0;
-    background: rgba(10,10,10,0.5);
-    backdrop-filter: blur(2px);
-    display: none;
-    align-items: flex-start;
-    justify-content: center;
-    z-index: 1000;
-    opacity: 0;
-    transition: opacity 0.3s var(--ease);
-    overflow-y: auto;
-    padding: 40px 20px;
-  }
-
-  .modal-overlay.active { display: flex; opacity: 1; }
-
-  .article-modal {
-    background: var(--white);
-    border-radius: var(--radius-lg);
-    max-width: 760px;
-    width: 100%;
-    margin-top: 20px;
-    transform: translateY(24px);
-    transition: transform 0.35s var(--ease);
-    position: relative;
-  }
-
-  .modal-overlay.active .article-modal { transform: translateY(0); }
-
-  .modal-close {
-    position: sticky;
-    top: 20px;
-    float: right;
-    margin: 20px 20px 0 0;
-    width: 38px;
-    height: 38px;
-    border-radius: 50%;
-    border: 1px solid var(--gray-300);
-    background: var(--white);
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: background 0.2s var(--ease), transform 0.2s var(--ease);
-    z-index: 2;
-  }
-
-  .modal-close:hover { background: var(--black); transform: rotate(90deg); }
-  .modal-close:hover svg { stroke: var(--white); }
-  .modal-close svg { width: 15px; height: 15px; stroke: var(--black); transition: stroke 0.2s var(--ease); }
-
-  .modal-hero-visual {
-    background: var(--black);
-    border-radius: var(--radius-lg) var(--radius-lg) 0 0;
-    height: 220px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    position: relative;
-    overflow: hidden;
-    margin-top: -58px;
-  }
-
-  .modal-hero-visual::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background:
-      linear-gradient(rgba(255,255,255,0.05) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(255,255,255,0.05) 1px, transparent 1px);
-    background-size: 38px 38px;
-  }
-
-  .modal-hero-visual svg { width: 70px; height: 70px; stroke: rgba(255,255,255,0.2); fill: none; }
-
-  .article-reader {
-    max-width: 620px;
-    margin: 0 auto;
-    padding: 40px 32px 56px;
-  }
-
-  .article-reader .badge { margin-bottom: 18px; }
-
-  .article-reader h1 {
-    font-size: 30px;
-    font-weight: 700;
-    line-height: 1.32;
-    margin: 0 0 16px;
-    letter-spacing: -0.01em;
-  }
-
-  .article-reader .meta-row { margin-bottom: 32px; }
-
-  .article-reader .article-body p {
-    font-size: 15.5px;
-    line-height: 1.85;
-    color: var(--gray-800);
-    margin: 0 0 22px;
-  }
-
-  .article-reader .article-body h3 {
-    font-size: 19px;
-    font-weight: 600;
-    margin: 34px 0 14px;
-  }
-
-  .article-reader .article-body ul {
-    margin: 0 0 22px;
-    padding-left: 20px;
-  }
-
-  .article-reader .article-body li {
-    font-size: 15px;
-    line-height: 1.8;
-    color: var(--gray-800);
-    margin-bottom: 8px;
-  }
-
-  .legal-note {
-    border-left: 2px solid var(--black);
-    padding: 4px 0 4px 18px;
-    margin: 26px 0;
-    font-size: 14px;
-    color: var(--gray-800);
-    line-height: 1.7;
-  }
-
-  .takeaways-box {
-    border: 1px solid var(--gray-200);
-    border-radius: var(--radius-md);
-    padding: 26px 28px;
-    margin: 34px 0;
-  }
-
-  .takeaways-box h3 {
-    font-size: 15px;
-    font-weight: 600;
-    margin: 0 0 14px;
-  }
-
-  .takeaways-box ul { margin: 0; padding-left: 18px; }
-  .takeaways-box li { font-size: 14px; line-height: 1.75; color: var(--gray-800); margin-bottom: 6px; }
-
-  .related-section { margin-top: 48px; }
-
-  .related-section h3 {
-    font-size: 15px;
-    font-weight: 600;
-    margin: 0 0 18px;
-  }
-
-  .related-list { display: flex; flex-direction: column; gap: 10px; }
-
-  .related-item {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 16px 18px;
-    border: 1px solid var(--gray-200);
-    border-radius: var(--radius-sm);
-    cursor: pointer;
-    transition: border-color 0.2s var(--ease), background 0.2s var(--ease);
-  }
-
-  .related-item:hover { border-color: var(--black); background: var(--gray-100); }
-  .related-item span.title { font-size: 13.5px; font-weight: 500; }
-  .related-item svg { width: 14px; height: 14px; stroke: var(--gray-600); flex-shrink: 0; }
-
-  .back-to-blog {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    font-size: 13.5px;
-    font-weight: 500;
-    color: var(--gray-600);
-    background: none;
-    border: none;
-    cursor: pointer;
-    padding: 0;
-    margin-bottom: 26px;
-    transition: color 0.2s var(--ease);
-  }
-
-  .back-to-blog:hover { color: var(--black); }
-  .back-to-blog svg { width: 14px; height: 14px; transition: transform 0.2s var(--ease); }
-  .back-to-blog:hover svg { transform: translateX(-3px); }
-
-  .modal-disclaimer {
-    margin-top: 42px;
-    padding-top: 22px;
-    border-top: 1px solid var(--gray-200);
-    font-size: 11.5px;
-    color: var(--gray-500);
-    line-height: 1.6;
-  }
-
-  /* ================= PAGE DISCLAIMER ================= */
-  .page-disclaimer {
-    text-align: center;
-    font-size: 12px;
-    color: var(--gray-500);
-    line-height: 1.6;
-    max-width: 640px;
-    margin: 0 auto;
-  }
-
-  /* ================= RESPONSIVE ================= */
-  @media (max-width: 980px) {
-    .article-grid { grid-template-columns: repeat(2, 1fr); }
-    .guides-grid { grid-template-columns: repeat(2, 1fr); }
-    .featured-article { grid-template-columns: 1fr; }
-    .featured-visual { min-height: 220px; }
-    .featured-body { padding: 36px 32px; }
-  }
-
-  @media (max-width: 700px) {
-    .blog-page { padding: 56px 20px 90px; }
-    section { margin-bottom: 72px; }
-    .blog-hero h1 { font-size: 32px; }
-    .blog-hero p.hero-sub { font-size: 14.5px; }
-    .article-grid { grid-template-columns: 1fr; }
-    .guides-grid { grid-template-columns: 1fr; }
-    .category-nav {
-      flex-wrap: nowrap;
-      overflow-x: auto;
-      justify-content: flex-start;
-      margin: 0 -20px 48px;
-      padding: 0 20px 4px;
-      -ms-overflow-style: none;
-      scrollbar-width: none;
-    }
-    .category-nav::-webkit-scrollbar { display: none; }
-    .featured-body { padding: 28px 22px; }
-    .featured-body h3 { font-size: 22px; }
-    .editorial-section { padding: 48px 26px; }
-    .editorial-section h2 { font-size: 24px; }
-    .section-head h2 { font-size: 22px; }
-    .article-reader { padding: 32px 20px 44px; }
-    .article-reader h1 { font-size: 24px; }
-    .modal-overlay { padding: 0; }
-    .article-modal { border-radius: 0; min-height: 100vh; margin-top: 0; }
-    .modal-hero-visual { border-radius: 0; margin-top: 0; }
-    .modal-close { top: 16px; margin: 16px 16px 0 0; }
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    * { transition: none !important; animation: none !important; }
-    .reveal, .article-card { opacity: 1 !important; transform: none !important; }
-  }
-
-  button:focus-visible, input:focus-visible, [tabindex]:focus-visible {
-    outline: 2px solid var(--black);
-    outline-offset: 2px;
-  }
-</style>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Legal Lens Journal — Blog</title>
+<meta name="description" content="Clear, practical legal knowledge for everyday situations in India — explained without unnecessary legal jargon." />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+<!-- Shared Legal Lens styles (navbar + footer). Not modified. -->
+<link rel="stylesheet" href="style.css">
+<!-- Blog styles (all classes are prefixed "bl-") -->
+<link rel="stylesheet" href="blog.css">
 </head>
-<body>
+<style>
+  /* =====================================================================
+   Legal Lens — Blog / Legal Lens Journal
+   All selectors are prefixed "bl-" so nothing here touches the shared
+   navbar/footer styles in style.css. Strict black / white / grayscale.
+   ===================================================================== */
 
-<div class="blog-page">
+.bl-page {
+  --bl-ink: #0a0a0a;
+  --bl-ink-2: #161616;
+  --bl-paper: #ffffff;
+  --bl-paper-2: #f5f5f5;
+  --bl-paper-3: #ececec;
+  --bl-line: #e4e4e4;
+  --bl-line-2: #d4d4d4;
+  --bl-text: #1c1c1c;
+  --bl-muted: #5c5c5c;
+  --bl-muted-2: #767676;
+  --bl-d-line: #262626;
+  --bl-d-muted: #a3a3a3;
+  --bl-d-muted-2: #8a8a8a;
+  --bl-radius: 10px;
+  --bl-ease: cubic-bezier(.2, .7, .2, 1);
+  --bl-wrap: 1280px;
+  --bl-gutter: 40px;
+  background: var(--bl-ink);
+  color: var(--bl-text);
+  font-family: 'Poppins', sans-serif;
+}
 
-  <!-- HERO -->
-  <section class="blog-hero-section">
-    <div class="blog-hero">
-      <svg class="blog-hero-bg" id="heroCanvas" viewBox="0 0 1000 420" preserveAspectRatio="none" aria-hidden="true"></svg>
-      <h1>Legal Knowledge, Made Simple</h1>
-      <p class="hero-sub">Understand your rights, legal documents, government processes and important legal updates in simple language.</p>
-      <div class="blog-search">
-        <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <circle cx="11" cy="11" r="7"></circle>
-          <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-        </svg>
-        <input type="text" id="blogSearchInput" placeholder="Search legal articles..." autocomplete="off" aria-label="Search legal articles">
-        <button class="search-clear" id="searchClearBtn" aria-label="Clear search">
-          <svg viewBox="0 0 24 24" fill="none" stroke-width="2.4" stroke-linecap="round"><line x1="4" y1="4" x2="16" y2="16"></line><line x1="16" y1="4" x2="4" y2="16"></line></svg>
-        </button>
-      </div>
+html.bl-locked, html.bl-locked body { overflow: hidden; }
+
+.bl-sr {
+  position: absolute !important; width: 1px; height: 1px; padding: 0; margin: -1px;
+  overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0;
+}
+
+.bl-skip {
+  position: fixed; top: 10px; left: 10px; z-index: 2000;
+  background: #fff; color: #000; padding: 10px 16px; border-radius: 8px;
+  font-size: 14px; font-weight: 600; transform: translateY(-160%);
+  transition: transform .2s var(--bl-ease);
+}
+.bl-skip:focus { transform: none; outline: 2px solid #000; outline-offset: 2px; }
+
+.bl-main { background: var(--bl-paper); display: block; outline: none; }
+
+.bl-wrap {
+  max-width: var(--bl-wrap);
+  margin: 0 auto;
+  padding: 0 var(--bl-gutter);
+}
+
+/* Shared focus treatment */
+.bl-page button:focus-visible,
+.bl-page a:focus-visible,
+.bl-page input:focus-visible {
+  outline: 2px solid var(--bl-ink);
+  outline-offset: 3px;
+}
+.bl-hero button:focus-visible,
+.bl-hero a:focus-visible,
+.bl-trust a:focus-visible,
+.bl-trust button:focus-visible { outline-color: #fff; }
+
+/* Shared line icon */
+.bl-page svg { display: block; }
+.bl-arrow {
+  width: 16px; height: 16px; flex: none;
+  fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round;
+  transition: transform .3s var(--bl-ease);
+}
+
+/* Eyebrow / meta */
+.bl-eyebrow {
+  margin: 0 0 12px;
+  font-size: 11.5px; font-weight: 600; letter-spacing: .16em; text-transform: uppercase;
+  color: var(--bl-muted);
+}
+.bl-meta {
+  display: flex; flex-wrap: wrap; align-items: center; gap: 4px 10px;
+  font-size: 13px; color: var(--bl-muted);
+}
+.bl-dot { width: 3px; height: 3px; border-radius: 50%; background: currentColor; opacity: .6; }
+.bl-desc { margin: 0; font-size: 15px; line-height: 1.65; color: var(--bl-muted); }
+
+/* Buttons */
+.bl-btn {
+  display: inline-flex; align-items: center; gap: 10px;
+  padding: 14px 24px; border-radius: var(--bl-radius);
+  background: var(--bl-ink); color: #fff; border: 1px solid var(--bl-ink);
+  font-size: 15px; font-weight: 600; font-family: inherit;
+  transition: background .25s var(--bl-ease), color .25s var(--bl-ease), transform .25s var(--bl-ease);
+}
+.bl-btn--outline { background: transparent; color: var(--bl-ink); }
+.bl-btn--outline:hover { background: var(--bl-ink); color: #fff; }
+.bl-btn:hover .bl-arrow, .bl-feature:hover .bl-btn .bl-arrow { transform: translateX(4px); }
+
+/* ===================================================================
+   HERO
+   =================================================================== */
+.bl-hero {
+  position: relative; overflow: hidden;
+  background: var(--bl-ink); color: #fff;
+  padding: 88px 0 96px;
+  border-bottom: 1px solid var(--bl-d-line);
+}
+.bl-hero-deco {
+  position: absolute; right: -180px; top: -200px; width: 680px; height: 680px;
+  pointer-events: none;
+}
+.bl-hero-deco svg { width: 100%; height: 100%; fill: none; stroke: rgba(255, 255, 255, .07); stroke-width: 1; }
+.bl-hero-grid {
+  position: relative;
+  display: grid; grid-template-columns: minmax(0, 1.55fr) minmax(0, .8fr); gap: 72px; align-items: end;
+}
+.bl-kicker {
+  display: flex; align-items: center; gap: 14px; margin: 0 0 28px;
+  font-size: 12px; font-weight: 600; letter-spacing: .24em; text-transform: uppercase; color: var(--bl-d-muted);
+}
+.bl-kicker-rule { width: 36px; height: 1px; background: #fff; opacity: .6; }
+.bl-hero-title {
+  margin: 0; font-size: clamp(40px, 5.2vw, 68px); line-height: 1.02; font-weight: 600; letter-spacing: -.035em;
+}
+.bl-hero-line { display: block; }
+.bl-hero-line--muted { color: #8f8f8f; }
+.bl-hero-sub {
+  margin: 28px 0 0; max-width: 34em;
+  font-size: 18px; line-height: 1.65; color: #cfcfcf; font-weight: 400;
+}
+
+/* Search */
+.bl-search {
+  position: relative; display: flex; align-items: center;
+  margin-top: 40px; max-width: 620px; height: 62px;
+  background: #fff; color: var(--bl-ink); border-radius: var(--bl-radius);
+  padding: 0 7px 0 18px;
+  box-shadow: 0 0 0 0 rgba(255, 255, 255, 0);
+  transition: box-shadow .3s var(--bl-ease);
+}
+.bl-search:focus-within { box-shadow: 0 0 0 4px rgba(255, 255, 255, .2); }
+.bl-search-icon { width: 20px; height: 20px; flex: none; fill: none; stroke: var(--bl-ink); stroke-width: 1.8; stroke-linecap: round; }
+.bl-search-input {
+  flex: 1; min-width: 0; height: 100%;
+  border: 0; outline: 0; background: transparent;
+  padding: 0 12px; font-family: inherit; font-size: 16px; color: var(--bl-ink);
+}
+.bl-page .bl-search-input:focus-visible { outline: none; }
+.bl-search-input::placeholder { color: #8a8a8a; }
+.bl-search-input::-webkit-search-cancel-button { -webkit-appearance: none; appearance: none; }
+.bl-search-clear {
+  width: 36px; height: 36px; flex: none; display: grid; place-items: center;
+  border: 0; background: transparent; border-radius: 8px; color: var(--bl-muted);
+  transition: background .2s, color .2s;
+}
+.bl-search-clear[hidden] { display: none; }
+.bl-search-clear:hover { background: var(--bl-paper-2); color: var(--bl-ink); }
+.bl-search-clear svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; }
+.bl-kbd {
+  flex: none; margin: 0 10px 0 4px; min-width: 24px; height: 24px; display: grid; place-items: center;
+  border: 1px solid var(--bl-line-2); border-radius: 6px; font-family: inherit; font-size: 12px; color: var(--bl-muted);
+}
+.bl-search-clear:not([hidden]) + .bl-kbd { display: none; }
+.bl-search-go {
+  flex: none; height: 48px; padding: 0 22px; border: 0; border-radius: 8px;
+  background: var(--bl-ink); color: #fff; font-size: 14.5px; font-weight: 600;
+  transition: background .2s var(--bl-ease);
+}
+.bl-search-go:hover { background: #262626; }
+.bl-page .bl-search-go:focus-visible { outline-color: var(--bl-ink); outline-offset: 2px; }
+
+.bl-hero-tags { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: 20px; }
+.bl-hero-tags-label { font-size: 12px; letter-spacing: .14em; text-transform: uppercase; color: var(--bl-d-muted-2); margin-right: 6px; }
+.bl-tag {
+  min-height: 36px; padding: 0 14px; border-radius: 8px;
+  background: transparent; color: #d9d9d9; border: 1px solid #2e2e2e;
+  font-size: 13px; font-weight: 500;
+  transition: border-color .2s, color .2s, background .2s;
+}
+.bl-tag:hover { border-color: #fff; color: #fff; }
+
+/* Hero index ("In this issue") */
+.bl-hero-copy, .bl-hero-index { min-width: 0; }
+.bl-hero-index { border-left: 1px solid var(--bl-d-line); padding-left: 40px; }
+.bl-index-head {
+  display: flex; justify-content: space-between; align-items: baseline;
+  padding-bottom: 16px; border-bottom: 1px solid #fff;
+}
+.bl-index-title { margin: 0; font-size: 12px; font-weight: 600; letter-spacing: .22em; text-transform: uppercase; color: #fff; }
+.bl-index-count { font-size: 12px; color: var(--bl-d-muted-2); letter-spacing: .06em; }
+.bl-index-list { margin: 0; padding: 0; list-style: none; counter-reset: none; }
+.bl-index-item {
+  display: grid; grid-template-columns: 34px minmax(0, 1fr) 16px; gap: 12px; align-items: center;
+  padding: 15px 0; border-bottom: 1px solid #1d1d1d; color: #e6e6e6;
+}
+.bl-index-num { font-size: 12px; color: #6e6e6e; font-variant-numeric: tabular-nums; transition: color .25s; }
+.bl-index-text { display: grid; gap: 3px; min-width: 0; }
+.bl-index-cat { font-size: 10.5px; letter-spacing: .16em; text-transform: uppercase; color: var(--bl-d-muted-2); }
+.bl-index-name { font-size: 14.5px; line-height: 1.4; font-weight: 500; transition: color .25s; }
+.bl-index-item .bl-arrow { color: #5a5a5a; transform: translateX(-4px); }
+.bl-index-item:hover .bl-index-name, .bl-index-item:hover .bl-index-num { color: #fff; }
+.bl-index-item:hover .bl-arrow { color: #fff; transform: none; }
+.bl-index-foot { margin: 16px 0 0; font-size: 12px; color: #737373; }
+
+/* ===================================================================
+   TOPICS (sticky)
+   =================================================================== */
+.bl-topics-bar {
+  position: sticky; top: var(--nav-height, 76px); z-index: 50;
+  background: rgba(255, 255, 255, .97);
+  border-bottom: 1px solid var(--bl-line);
+}
+@supports (backdrop-filter: blur(8px)) {
+  .bl-topics-bar { background: rgba(255, 255, 255, .9); backdrop-filter: saturate(1.2) blur(10px); }
+}
+.bl-topics-wrap { position: relative; }
+.bl-topics {
+  position: relative; display: flex; gap: 2px; margin-left: -14px;
+  overflow-x: auto; overflow-y: hidden; scrollbar-width: none; -ms-overflow-style: none;
+  scroll-behavior: smooth;
+}
+.bl-topics::-webkit-scrollbar { display: none; }
+.bl-topic {
+  flex: none; position: relative; display: inline-flex; align-items: center; gap: 7px;
+  height: 58px; padding: 0 14px; border: 0; background: transparent;
+  font-size: 14px; font-weight: 500; color: var(--bl-muted); white-space: nowrap;
+  transition: color .25s var(--bl-ease);
+}
+.bl-topic:hover { color: var(--bl-ink); }
+.bl-topic.is-active { color: var(--bl-ink); }
+.bl-topic-count {
+  font-size: 11px; font-weight: 500; color: var(--bl-muted-2);
+  min-width: 18px; height: 18px; padding: 0 5px; display: inline-grid; place-items: center;
+  border: 1px solid var(--bl-line-2); border-radius: 5px; transition: all .25s var(--bl-ease);
+}
+.bl-topic.is-active .bl-topic-count { background: var(--bl-ink); border-color: var(--bl-ink); color: #fff; }
+.bl-page .bl-topic:focus-visible { outline-offset: -6px; }
+.bl-topic-indicator {
+  position: absolute; left: 0; bottom: 0; height: 2px; width: 0; background: var(--bl-ink);
+  transition: transform .4s var(--bl-ease), width .4s var(--bl-ease);
+  pointer-events: none;
+}
+
+/* ===================================================================
+   SECTIONS
+   =================================================================== */
+.bl-section { padding: 88px 0; }
+.bl-featured-section { padding: 64px 0 0; }
+.bl-featured-section[hidden] { display: none; }
+.bl-section-head {
+  display: flex; justify-content: space-between; align-items: flex-end; gap: 24px;
+  padding-bottom: 22px; margin-bottom: 44px; border-bottom: 1px solid var(--bl-ink);
+}
+.bl-section-kicker {
+  margin: 0 0 10px; font-size: 12px; font-weight: 600; letter-spacing: .22em; text-transform: uppercase; color: var(--bl-muted);
+}
+.bl-section-kicker--light { color: var(--bl-d-muted-2); }
+.bl-section-title { margin: 0; font-size: clamp(28px, 3.2vw, 40px); line-height: 1.1; font-weight: 600; letter-spacing: -.025em; color: var(--bl-ink); }
+.bl-status { margin: 0; font-size: 14px; color: var(--bl-muted); text-align: right; }
+
+/* Stretched-link cards: the title link is the real (keyboard) target */
+.bl-card, .bl-feature { position: relative; cursor: pointer; }
+.bl-card-link, .bl-feature-link {
+  color: inherit;
+  background-image: linear-gradient(currentColor, currentColor);
+  background-size: 0% 1px; background-repeat: no-repeat; background-position: 0 100%;
+  transition: background-size .45s var(--bl-ease);
+}
+.bl-card-link::after, .bl-feature-link::after { content: ''; position: absolute; inset: 0; border-radius: inherit; }
+.bl-card:hover .bl-card-link, .bl-feature:hover .bl-feature-link { background-size: 100% 1px; }
+.bl-page .bl-card-link:focus-visible, .bl-page .bl-feature-link:focus-visible { outline: none; background-size: 100% 1px; }
+.bl-card-link:focus-visible::after, .bl-feature-link:focus-visible::after { outline: 2px solid var(--bl-ink); outline-offset: 6px; border-radius: 8px; }
+
+.bl-read {
+  display: inline-flex; align-items: center; gap: 6px; flex: none;
+  font-size: 12px; font-weight: 600; letter-spacing: .12em; text-transform: uppercase; color: var(--bl-ink);
+}
+.bl-card:hover .bl-arrow { transform: translateX(4px); }
+.bl-card-foot { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-top: 18px; }
+
+/* Covers (line art) */
+.bl-cover {
+  position: relative; overflow: hidden; border-radius: 8px; isolation: isolate;
+  background-color: var(--bl-paper-2);
+  background-image: linear-gradient(rgba(0, 0, 0, .055) 1px, transparent 1px), linear-gradient(90deg, rgba(0, 0, 0, .055) 1px, transparent 1px);
+  background-size: 56px 56px; background-position: center center;
+}
+.bl-cover-art { width: 100%; height: 100%; transition: transform .8s var(--bl-ease); }
+.bl-cover-ring { fill: none; stroke: rgba(0, 0, 0, .08); stroke-width: 1; }
+.bl-cover-motif { fill: none; stroke: var(--bl-ink); stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; transition: transform .8s var(--bl-ease); transform-origin: 200px 155px; }
+.bl-cover-art--thumb .bl-cover-motif { stroke-width: 3.2; }
+.bl-side-thumb, .bl-rel-cover { background-size: 28px 28px; }
+.bl-article-cover .bl-cover-art { padding: 8px 0; }
+.bl-card:hover .bl-cover-art { transform: scale(1.04); }
+.bl-card:hover .bl-cover-motif { transform: translateY(-4px); }
+
+/* ===================================================================
+   FEATURED
+   =================================================================== */
+.bl-feature {
+  display: grid; grid-template-columns: minmax(0, 1.12fr) minmax(0, 1fr);
+  border: 1px solid var(--bl-ink); border-radius: 14px; overflow: hidden; background: var(--bl-paper);
+}
+.bl-feature-art { position: relative; background: var(--bl-ink); min-height: 440px; overflow: hidden; }
+.bl-feature-art svg { position: absolute; inset: 0; width: 100%; height: 100%; transition: transform 1s var(--bl-ease); }
+.bl-fa-grid path { fill: none; stroke: rgba(255, 255, 255, .06); stroke-width: 1; }
+.bl-fa-ring { fill: none; stroke: rgba(255, 255, 255, .14); stroke-width: 1; }
+.bl-fa-ring-2 { stroke-dasharray: 2 6; }
+.bl-fa-doc { transition: transform 1s var(--bl-ease); }
+.bl-fa-doc path { fill: var(--bl-ink); stroke: #fff; stroke-width: 1.6; stroke-linejoin: round; stroke-linecap: round; }
+.bl-fa-doc .bl-fa-lines { fill: none; stroke: rgba(255, 255, 255, .45); }
+.bl-fa-doc .bl-fa-sign { fill: none; stroke: #fff; stroke-width: 1.8; }
+.bl-fa-stamp { transform: rotate(-10deg); transform-origin: 400px 240px; transition: transform 1s var(--bl-ease); }
+.bl-fa-stamp circle { fill: none; stroke: rgba(255, 255, 255, .7); stroke-width: 1.4; }
+.bl-fa-stamp circle + circle { stroke: rgba(255, 255, 255, .35); }
+.bl-fa-stamp path { fill: none; stroke: #fff; stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; }
+.bl-fa-stamp text { fill: rgba(255, 255, 255, .8); font-family: 'Poppins', sans-serif; font-size: 12.5px; font-weight: 600; letter-spacing: 3.4px; }
+.bl-feature:hover .bl-feature-art svg { transform: scale(1.025); }
+.bl-feature:hover .bl-fa-doc { transform: translateY(-6px); }
+.bl-feature:hover .bl-fa-stamp { transform: rotate(-4deg); }
+.bl-feature-badge {
+  position: absolute; left: 24px; top: 24px;
+  padding: 7px 12px; border: 1px solid rgba(255, 255, 255, .5); border-radius: 6px;
+  font-size: 11px; font-weight: 600; letter-spacing: .18em; text-transform: uppercase; color: #fff; background: var(--bl-ink);
+}
+.bl-feature-body { display: flex; flex-direction: column; justify-content: center; padding: 56px 56px 52px; }
+.bl-feature-title { margin: 0; font-size: clamp(28px, 3vw, 42px); line-height: 1.14; font-weight: 600; letter-spacing: -.025em; color: var(--bl-ink); }
+.bl-feature-desc { margin: 20px 0 0; font-size: 16.5px; line-height: 1.7; color: var(--bl-muted); max-width: 34em; }
+.bl-feature-body .bl-meta { margin-top: 22px; }
+.bl-feature-body .bl-btn { align-self: flex-start; margin-top: 32px; }
+
+/* ===================================================================
+   LATEST — editorial layout
+   =================================================================== */
+.bl-latest[hidden] { display: none; }
+.bl-latest-top { display: grid; grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr); gap: 56px; }
+
+.bl-lead-cover { aspect-ratio: 16 / 10; }
+.bl-lead-body { padding-top: 24px; }
+.bl-lead-title { margin: 0 0 12px; font-size: clamp(24px, 2.4vw, 32px); line-height: 1.2; font-weight: 600; letter-spacing: -.02em; color: var(--bl-ink); }
+.bl-lead .bl-desc { font-size: 16px; max-width: 36em; }
+
+.bl-latest-top--solo { grid-template-columns: 1fr; }
+.bl-lead--wide { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); gap: 48px; align-items: center; }
+.bl-lead--wide .bl-lead-body { padding-top: 0; }
+
+.bl-side-list { display: flex; flex-direction: column; border-top: 1px solid var(--bl-line); }
+.bl-side {
+  display: grid; grid-template-columns: minmax(0, 1fr) 120px; gap: 22px; align-items: center;
+  padding: 24px 0; border-bottom: 1px solid var(--bl-line);
+}
+.bl-side:first-child { padding-top: 22px; }
+.bl-side .bl-eyebrow { margin-bottom: 8px; }
+.bl-side-title { margin: 0 0 10px; font-size: 18px; line-height: 1.35; font-weight: 600; letter-spacing: -.01em; color: var(--bl-ink); }
+.bl-side-thumb { aspect-ratio: 4 / 3; }
+
+.bl-more {
+  display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 56px 48px;
+  margin-top: 72px;
+}
+.bl-tile { padding-top: 22px; border-top: 2px solid var(--bl-ink); display: flex; flex-direction: column; }
+.bl-tile-top { display: flex; align-items: baseline; gap: 14px; margin-bottom: 14px; }
+.bl-tile-top .bl-eyebrow { margin: 0; }
+.bl-tile-num { font-size: 13px; font-weight: 600; color: var(--bl-ink); font-variant-numeric: tabular-nums; }
+.bl-tile-title { margin: 0 0 12px; font-size: 21px; line-height: 1.3; font-weight: 600; letter-spacing: -.015em; color: var(--bl-ink); }
+.bl-tile .bl-card-foot { margin-top: auto; padding-top: 18px; }
+
+.bl-swap > * { animation: blSwap .45s var(--bl-ease) both; }
+@keyframes blSwap { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+
+/* Empty state */
+.bl-empty[hidden] { display: none; }
+.bl-empty {
+  text-align: center; padding: 72px 24px 80px;
+  border: 1px dashed var(--bl-line-2); border-radius: 14px; background: var(--bl-paper);
+}
+.bl-empty-icon { width: 56px; height: 56px; margin: 0 auto 20px; fill: none; stroke: var(--bl-ink); stroke-width: 2; stroke-linecap: round; }
+.bl-empty-title { margin: 0 0 10px; font-size: 22px; font-weight: 600; color: var(--bl-ink); }
+.bl-empty-text { margin: 0 auto 28px; max-width: 32em; font-size: 15px; line-height: 1.7; color: var(--bl-muted); }
+.bl-empty-text strong { color: var(--bl-ink); font-weight: 600; word-break: break-word; }
+
+/* ===================================================================
+   POPULAR GUIDES — quick-reference index
+   =================================================================== */
+.bl-guides-section { background: var(--bl-paper-2); border-top: 1px solid var(--bl-line); }
+.bl-guides-grid { display: grid; grid-template-columns: minmax(0, .8fr) minmax(0, 1.2fr); gap: 80px; align-items: start; }
+.bl-guides-intro { position: sticky; top: calc(var(--nav-height, 76px) + 96px); }
+.bl-guides-sub { margin: 18px 0 0; font-size: 16px; line-height: 1.7; color: var(--bl-muted); max-width: 26em; }
+.bl-guide-list { margin: 0; padding: 0; list-style: none; border-top: 1px solid var(--bl-ink); }
+.bl-guide-list li { border-bottom: 1px solid var(--bl-line-2); }
+.bl-guide {
+  position: relative; display: grid; grid-template-columns: 56px minmax(0, 1fr) 44px; gap: 18px; align-items: center;
+  padding: 24px 20px; margin: 0 -20px; border-radius: 10px; color: var(--bl-ink);
+  transition: background .35s var(--bl-ease), color .35s var(--bl-ease);
+}
+.bl-guide-num { font-size: 28px; font-weight: 300; letter-spacing: -.02em; color: var(--bl-muted-2); font-variant-numeric: tabular-nums; transition: color .35s; }
+.bl-guide-text { display: grid; gap: 4px; min-width: 0; }
+.bl-guide-title { font-size: 18px; font-weight: 600; letter-spacing: -.01em; }
+.bl-guide-desc { font-size: 14.5px; color: var(--bl-muted); transition: color .35s; }
+.bl-guide-meta { font-size: 12px; letter-spacing: .06em; color: var(--bl-muted-2); margin-top: 4px; transition: color .35s; }
+.bl-guide-go {
+  width: 44px; height: 44px; display: grid; place-items: center;
+  border: 1px solid var(--bl-line-2); border-radius: 10px; transition: border-color .35s, background .35s;
+}
+.bl-guide:hover, .bl-guide:focus-visible { background: var(--bl-ink); color: #fff; }
+.bl-guide:hover .bl-guide-num, .bl-guide:focus-visible .bl-guide-num { color: #fff; }
+.bl-guide:hover .bl-guide-desc, .bl-guide:focus-visible .bl-guide-desc { color: #cfcfcf; }
+.bl-guide:hover .bl-guide-meta, .bl-guide:focus-visible .bl-guide-meta { color: var(--bl-d-muted); }
+.bl-guide:hover .bl-guide-go, .bl-guide:focus-visible .bl-guide-go { border-color: rgba(255, 255, 255, .4); }
+.bl-guide:hover .bl-arrow, .bl-guide:focus-visible .bl-arrow { transform: translateX(3px); }
+.bl-page .bl-guide:focus-visible { outline-offset: 2px; }
+
+/* ===================================================================
+   TRUST (black band)
+   =================================================================== */
+.bl-trust { background: var(--bl-ink); color: #fff; padding: 120px 0; }
+.bl-trust-title { margin: 0; max-width: 15ch; font-size: clamp(34px, 4.6vw, 60px); line-height: 1.06; font-weight: 600; letter-spacing: -.03em; }
+.bl-trust-text { margin: 28px 0 0; max-width: 38em; font-size: 18px; line-height: 1.7; color: #c4c4c4; }
+.bl-principles { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 40px; margin: 72px 0 0; padding: 0; list-style: none; }
+.bl-principle { border-top: 1px solid #333; padding-top: 26px; }
+.bl-principle svg { width: 26px; height: 26px; fill: none; stroke: #fff; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; margin-bottom: 18px; }
+.bl-principle h3 { margin: 0 0 8px; font-size: 17px; font-weight: 600; }
+.bl-principle p { margin: 0; font-size: 14.5px; line-height: 1.65; color: var(--bl-d-muted); }
+.bl-trust-note {
+  display: flex; gap: 14px; align-items: flex-start;
+  margin-top: 64px; padding: 20px 24px; border: 1px solid #2c2c2c; border-radius: var(--bl-radius);
+}
+.bl-trust-note svg { width: 20px; height: 20px; flex: none; margin-top: 2px; fill: none; stroke: #bdbdbd; stroke-width: 1.6; stroke-linecap: round; }
+.bl-trust-note p { margin: 0; font-size: 14px; line-height: 1.7; color: #bdbdbd; }
+
+/* ===================================================================
+   REVEAL
+   =================================================================== */
+.bl-js-reveal .bl-reveal { opacity: 0; transform: translateY(18px); transition: opacity .7s var(--bl-ease), transform .7s var(--bl-ease); }
+.bl-js-reveal .bl-reveal.is-in { opacity: 1; transform: none; }
+
+/* ===================================================================
+   READER (full-screen editorial overlay)
+   =================================================================== */
+.bl-reader {
+  position: fixed; inset: 0; z-index: 1000;
+  display: flex; flex-direction: column;
+  background: var(--bl-paper); color: var(--bl-text);
+  opacity: 0; transform: translateY(14px);
+  transition: opacity .25s var(--bl-ease), transform .3s var(--bl-ease);
+}
+.bl-reader[hidden] { display: none; }
+.bl-reader.is-open { opacity: 1; transform: none; }
+.bl-reader-bar { flex: none; background: var(--bl-paper); border-bottom: 1px solid transparent; transition: border-color .25s; }
+.bl-reader.is-scrolled .bl-reader-bar { border-bottom-color: var(--bl-line); }
+.bl-reader-bar-inner {
+  max-width: 1200px; margin: 0 auto; height: 68px; padding: 0 32px;
+  display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 16px;
+}
+.bl-reader-back {
+  justify-self: start; display: inline-flex; align-items: center; gap: 10px;
+  min-height: 44px; padding: 0 14px 0 10px; margin-left: -10px; border: 0; border-radius: 8px; background: transparent;
+  font-size: 14px; font-weight: 600; color: var(--bl-ink); transition: background .2s;
+}
+.bl-reader-back:hover { background: var(--bl-paper-2); }
+.bl-reader-back svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; transition: transform .3s var(--bl-ease); }
+.bl-reader-back:hover svg { transform: translateX(-3px); }
+.bl-reader-brand { display: flex; align-items: center; gap: 10px; font-size: 11.5px; font-weight: 600; letter-spacing: .2em; text-transform: uppercase; color: var(--bl-ink); white-space: nowrap; }
+.bl-reader-cat { color: var(--bl-muted); font-weight: 500; }
+.bl-reader-cat:not(:empty)::before { content: ''; display: inline-block; width: 18px; height: 1px; background: var(--bl-line-2); margin-right: 10px; vertical-align: middle; }
+.bl-reader-close {
+  justify-self: end; width: 44px; height: 44px; display: grid; place-items: center;
+  border: 1px solid var(--bl-line-2); border-radius: 10px; background: transparent; color: var(--bl-ink);
+  transition: background .2s, border-color .2s, color .2s;
+}
+.bl-reader-close:hover { background: var(--bl-ink); border-color: var(--bl-ink); color: #fff; }
+.bl-reader-close svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; }
+.bl-progress { height: 2px; background: transparent; }
+.bl-progress span { display: block; height: 100%; background: var(--bl-ink); transform: scaleX(0); transform-origin: 0 50%; }
+.bl-reader-scroll { flex: 1; overflow-y: auto; overscroll-behavior: contain; -webkit-overflow-scrolling: touch; }
+
+.bl-article { max-width: 1200px; margin: 0 auto; padding: 56px 32px 120px; }
+.bl-article-head { max-width: 860px; margin: 0 auto; text-align: center; }
+.bl-article-title { margin: 0; font-size: clamp(32px, 4.6vw, 56px); line-height: 1.1; font-weight: 600; letter-spacing: -.03em; color: var(--bl-ink); outline: none; }
+.bl-article-meta { justify-content: center; margin-top: 22px; font-size: 14px; }
+.bl-article-cover { max-width: 1136px; margin: 44px auto 64px; aspect-ratio: 21 / 8; }
+.bl-cover-art--wide .bl-cover-motif { stroke-width: 1.6; }
+
+.bl-article-layout { display: grid; grid-template-columns: 220px minmax(0, 700px); gap: 72px; justify-content: center; }
+.bl-toc { position: sticky; top: 24px; align-self: start; padding-top: 6px; }
+.bl-toc-label { margin: 0 0 14px; font-size: 11px; font-weight: 600; letter-spacing: .2em; text-transform: uppercase; color: var(--bl-muted); }
+.bl-toc ol { margin: 0; padding: 0; list-style: none; border-left: 1px solid var(--bl-line); counter-reset: toc; }
+.bl-toc li { counter-increment: toc; }
+.bl-toc a {
+  display: block; padding: 8px 0 8px 16px; margin-left: -1px; border-left: 1px solid transparent;
+  font-size: 13.5px; line-height: 1.45; color: var(--bl-muted); transition: color .2s, border-color .2s;
+}
+.bl-toc a::before { content: counter(toc, decimal-leading-zero) '  '; color: var(--bl-muted-2); font-size: 11px; margin-right: 4px; }
+.bl-toc a:hover { color: var(--bl-ink); border-left-color: var(--bl-ink); }
+
+.bl-prose { font-size: 18px; line-height: 1.8; color: var(--bl-text); min-width: 0; }
+.bl-prose p { margin: 0 0 22px; }
+.bl-intro { font-size: 21px !important; line-height: 1.65 !important; color: var(--bl-ink); font-weight: 500; padding-bottom: 32px; margin-bottom: 36px !important; border-bottom: 1px solid var(--bl-line); }
+.bl-prose h2 { margin: 52px 0 16px; font-size: 26px; line-height: 1.25; font-weight: 600; letter-spacing: -.015em; color: var(--bl-ink); scroll-margin-top: 24px; }
+.bl-list { margin: 0 0 26px; padding: 0; list-style: none; }
+.bl-list li { position: relative; padding-left: 28px; margin-bottom: 12px; }
+.bl-list li::before { content: ''; position: absolute; left: 4px; top: .9em; width: 12px; height: 1.5px; background: var(--bl-ink); }
+.bl-steps { margin: 0 0 28px; padding: 0; list-style: none; counter-reset: step; }
+.bl-steps li { position: relative; counter-increment: step; padding: 2px 0 0 54px; margin-bottom: 18px; min-height: 34px; }
+.bl-steps li::before {
+  content: counter(step); position: absolute; left: 0; top: 2px;
+  width: 34px; height: 34px; display: grid; place-items: center;
+  border: 1px solid var(--bl-ink); border-radius: 8px; font-size: 14px; font-weight: 600; line-height: 1; color: var(--bl-ink);
+}
+.bl-note {
+  margin: 32px 0; padding: 22px 26px; background: var(--bl-paper-2);
+  border-left: 3px solid var(--bl-ink); border-radius: 0 10px 10px 0;
+}
+.bl-note-label { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; font-size: 12px; font-weight: 600; letter-spacing: .16em; text-transform: uppercase; color: var(--bl-ink); }
+.bl-note-label svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; }
+.bl-note p { margin: 0 !important; font-size: 16.5px; line-height: 1.7; }
+.bl-takeaways { margin: 56px 0 28px; padding: 36px 40px; background: var(--bl-ink); color: #fff; border-radius: 14px; }
+.bl-prose .bl-takeaways h2 { margin: 0 0 22px; color: #fff; font-size: 13px; letter-spacing: .2em; text-transform: uppercase; }
+.bl-takeaways ol { margin: 0; padding: 0; list-style: none; counter-reset: tk; }
+.bl-takeaways li { counter-increment: tk; display: grid; grid-template-columns: 40px minmax(0, 1fr); padding: 14px 0; border-top: 1px solid #2a2a2a; font-size: 16.5px; line-height: 1.6; color: #ececec; }
+.bl-takeaways li:first-child { border-top: 0; padding-top: 0; }
+.bl-takeaways li::before { content: counter(tk, decimal-leading-zero); font-size: 13px; font-weight: 600; color: #8a8a8a; padding-top: 3px; }
+.bl-disclaimer { padding: 18px 22px; border: 1px solid var(--bl-line-2); border-radius: var(--bl-radius); font-size: 14px; line-height: 1.7; color: var(--bl-muted); }
+.bl-disclaimer strong { color: var(--bl-ink); }
+
+.bl-related { max-width: 1136px; margin: 88px auto 0; padding-top: 44px; border-top: 1px solid var(--bl-ink); }
+.bl-related h2 { margin: 0 0 32px; font-size: 24px; font-weight: 600; letter-spacing: -.015em; color: var(--bl-ink); }
+.bl-related-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 36px; }
+.bl-rel-cover { aspect-ratio: 16 / 10; margin-bottom: 18px; }
+.bl-rel .bl-eyebrow { margin-bottom: 8px; }
+.bl-rel-title { margin: 0 0 10px; font-size: 18px; line-height: 1.35; font-weight: 600; color: var(--bl-ink); }
+
+/* ===================================================================
+   RESPONSIVE
+   =================================================================== */
+@media (max-width: 1180px) {
+  .bl-hero-grid { gap: 56px; }
+  .bl-feature-body { padding: 44px; }
+  .bl-article-layout { grid-template-columns: 190px minmax(0, 680px); gap: 48px; }
+}
+
+@media (max-width: 1024px) {
+  .bl-hero { padding: 72px 0 80px; }
+  .bl-hero-grid { grid-template-columns: minmax(0, 1fr); gap: 56px; align-items: start; }
+  .bl-hero-index { border-left: 0; padding-left: 0; }
+  .bl-index-list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: 40px; }
+  .bl-feature { grid-template-columns: 1fr; }
+  .bl-feature-art { min-height: 0; aspect-ratio: 16 / 8; }
+  .bl-latest-top { grid-template-columns: 1fr; gap: 40px; }
+  .bl-lead-cover { aspect-ratio: 16 / 8; }
+  .bl-more { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .bl-guides-grid { grid-template-columns: 1fr; gap: 40px; }
+  .bl-guides-intro { position: static; }
+  .bl-article-layout { grid-template-columns: minmax(0, 720px); }
+  .bl-toc { display: none; }
+}
+
+@media (max-width: 900px) {
+  .bl-page { --bl-gutter: 24px; }
+}
+
+@media (max-width: 768px) {
+  .bl-section { padding: 64px 0; }
+  .bl-featured-section { padding-top: 40px; }
+  .bl-section-head { flex-direction: column; align-items: flex-start; gap: 8px; margin-bottom: 32px; }
+  .bl-status { text-align: left; }
+  .bl-index-list { grid-template-columns: 1fr; }
+  .bl-index-list li:nth-child(n+5) { display: none; }
+  .bl-lead--wide { grid-template-columns: 1fr; gap: 0; }
+  .bl-lead--wide .bl-lead-body { padding-top: 24px; }
+  .bl-principles { grid-template-columns: 1fr; gap: 0; margin-top: 48px; }
+  .bl-principle { display: grid; grid-template-columns: 44px minmax(0, 1fr); column-gap: 8px; padding: 22px 0; }
+  .bl-principle svg { grid-row: span 2; margin: 2px 0 0; }
+  .bl-trust { padding: 88px 0; }
+  .bl-related-grid { grid-template-columns: 1fr; gap: 0; }
+  .bl-rel { display: grid; grid-template-columns: 112px minmax(0, 1fr); column-gap: 18px; align-items: center; padding: 18px 0; border-bottom: 1px solid var(--bl-line); }
+  .bl-rel-cover { grid-row: span 3; margin: 0; aspect-ratio: 4 / 3; }
+  .bl-rel-title { font-size: 16px; }
+  .bl-article-cover { aspect-ratio: 16 / 7; margin: 36px auto 44px; }
+}
+
+@media (max-width: 600px) {
+  .bl-page { --bl-gutter: 20px; }
+  .bl-hero { padding: 52px 0 60px; }
+  .bl-hero-deco { width: 420px; height: 420px; right: -200px; top: -150px; }
+  .bl-kicker { margin-bottom: 20px; font-size: 11px; }
+  .bl-hero-title { font-size: clamp(36px, 10.6vw, 46px); }
+  .bl-hero-sub { font-size: 16px; margin-top: 20px; }
+  .bl-search { height: 56px; margin-top: 30px; padding: 0 5px 0 14px; }
+  .bl-search-input { font-size: 16px; padding: 0 8px; }
+  .bl-kbd { display: none; }
+  .bl-search-go { height: 46px; padding: 0 16px; }
+  .bl-hero-tags { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; margin-right: calc(var(--bl-gutter) * -1); padding-right: var(--bl-gutter); }
+  .bl-hero-tags::-webkit-scrollbar { display: none; }
+  .bl-tag { flex: none; min-height: 44px; }
+  .bl-hero-tags-label { flex: none; }
+  .bl-hero-grid { gap: 44px; }
+
+  .bl-topics-wrap { padding-right: 0; }
+  .bl-topics {
+    padding-right: 24px;
+    -webkit-mask-image: linear-gradient(to right, #000 0, #000 calc(100% - 36px), transparent 100%);
+            mask-image: linear-gradient(to right, #000 0, #000 calc(100% - 36px), transparent 100%);
+  }
+  .bl-topic { height: 54px; padding: 0 12px; font-size: 13.5px; }
+
+  .bl-feature { border-radius: 12px; }
+  .bl-feature-art { aspect-ratio: 4 / 3; }
+  .bl-feature-badge { left: 16px; top: 16px; }
+  .bl-feature-body { padding: 28px 22px 30px; }
+  .bl-feature-desc { font-size: 15.5px; }
+  .bl-feature-body .bl-btn { align-self: stretch; justify-content: center; }
+
+  .bl-lead-title { font-size: 24px; }
+  .bl-side { grid-template-columns: minmax(0, 1fr) 92px; gap: 16px; padding: 20px 0; }
+  .bl-side-title { font-size: 16px; }
+  .bl-more { grid-template-columns: 1fr; gap: 0; margin-top: 48px; border-top: 2px solid var(--bl-ink); }
+  .bl-tile { border-top: 0; border-bottom: 1px solid var(--bl-line); padding: 24px 0; }
+  .bl-tile-title { font-size: 19px; }
+
+  .bl-guide { grid-template-columns: 40px minmax(0, 1fr) 40px; gap: 12px; padding: 20px 12px; margin: 0 -12px; }
+  .bl-guide-num { font-size: 22px; }
+  .bl-guide-title { font-size: 16px; }
+  .bl-guide-desc { font-size: 14px; }
+  .bl-guide-go { width: 40px; height: 40px; }
+
+  .bl-trust { padding: 72px 0; }
+  .bl-trust-text { font-size: 16px; }
+  .bl-trust-note { padding: 18px; margin-top: 44px; }
+
+  .bl-empty { padding: 52px 20px 56px; }
+
+  .bl-reader-bar-inner { height: 60px; padding: 0 16px; grid-template-columns: 1fr auto; }
+  .bl-reader-brand { display: none; }
+  .bl-article { padding: 32px 20px 96px; }
+  .bl-article-head { text-align: left; }
+  .bl-article-meta { justify-content: flex-start; font-size: 13px; }
+  .bl-article-title { font-size: clamp(28px, 8.4vw, 36px); }
+  .bl-article-cover { aspect-ratio: 16 / 9; margin: 28px 0 36px; border-radius: 10px; }
+  .bl-prose { font-size: 17px; line-height: 1.75; }
+  .bl-intro { font-size: 18.5px !important; padding-bottom: 26px; margin-bottom: 28px !important; }
+  .bl-prose h2 { font-size: 22px; margin-top: 40px; }
+  .bl-steps li { padding-left: 46px; }
+  .bl-steps li::before { width: 30px; height: 30px; font-size: 13px; }
+  .bl-note { padding: 18px 18px 18px 20px; margin: 28px 0; }
+  .bl-takeaways { padding: 26px 22px; margin-top: 44px; border-radius: 12px; }
+  .bl-takeaways li { grid-template-columns: 34px minmax(0, 1fr); font-size: 15.5px; }
+  .bl-related { margin-top: 64px; padding-top: 32px; }
+  .bl-rel { grid-template-columns: 92px minmax(0, 1fr); }
+}
+
+@media (max-width: 380px) {
+  .bl-page { --bl-gutter: 16px; }
+  .bl-search-go span { font-size: 13.5px; }
+  .bl-search-go { padding: 0 12px; }
+  .bl-side { grid-template-columns: minmax(0, 1fr) 76px; }
+}
+
+/* Reduced motion: keep everything, remove movement */
+@media (prefers-reduced-motion: reduce) {
+  .bl-page *, .bl-page *::before, .bl-page *::after,
+  .bl-reader, .bl-reader * {
+    animation-duration: .001ms !important; animation-iteration-count: 1 !important;
+    transition-duration: .001ms !important; scroll-behavior: auto !important;
+  }
+  .bl-js-reveal .bl-reveal { opacity: 1; transform: none; }
+  .bl-card:hover .bl-cover-art, .bl-card:hover .bl-cover-motif,
+  .bl-feature:hover .bl-feature-art svg, .bl-feature:hover .bl-fa-doc { transform: none; }
+}
+</style>
+<body class="bl-page">
+
+<a class="bl-skip" href="#blMain" data-i18n="blogSkip">Skip to articles</a>
+
+<div id="blMainWrap">
+
+<!-- navbar starts here (same markup as the Home page) -->
+<nav class="navbar" aria-label="Primary">
+  <div class="navbar-inner">
+
+    <a href="index.html" class="brand" aria-label="Legal Lens home">
+      <span class="brand-mark">
+        <img src="data:image/png;base64,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" alt="Legal Lens logo" />
+      </span>
+      <span class="brand-name">Legal Lens</span>
+    </a>
+
+    <div class="nav-desktop">
+      <ul class="nav-links">
+        <li><a href="index.html" class="nav-link" data-i18n="home">Home</a></li>
+        <li class="lang" id="langWrap">
+          <button class="lang-trigger" id="langTrigger" aria-haspopup="listbox" aria-expanded="false" aria-label="Language, currently English">
+            <span id="langCurrent" data-i18n="language">Language</span>
+            <svg class="lang-caret" viewBox="0 0 10 6" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M1 1L5 5L9 1" stroke="#D4D4D4" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
+          <ul class="lang-menu" id="langMenu" role="listbox" aria-label="Language options">
+            <li role="option" aria-checked="true"><button class="lang-option" data-lang="en">English <svg class="lang-check" viewBox="0 0 12 12" fill="none"><path d="M2 6L5 9L10 3" stroke="#FFFFFF" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button></li>
+            <li role="option" aria-checked="false"><button class="lang-option" data-lang="hi">हिंदी <svg class="lang-check" viewBox="0 0 12 12" fill="none"><path d="M2 6L5 9L10 3" stroke="#FFFFFF" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button></li>
+            <li role="option" aria-checked="false"><button class="lang-option" data-lang="mr">मराठी <svg class="lang-check" viewBox="0 0 12 12" fill="none"><path d="M2 6L5 9L10 3" stroke="#FFFFFF" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button></li>
+            <li role="option" aria-checked="false"><button class="lang-option" data-lang="ta">தமிழ் <svg class="lang-check" viewBox="0 0 12 12" fill="none"><path d="M2 6L5 9L10 3" stroke="#FFFFFF" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button></li>
+          </ul>
+        </li>
+        <li><a href="about.html" class="nav-link" data-i18n="about">About Us</a></li>
+        <li><a href="contact.html" class="nav-link" data-i18n="contact">Contact Us</a></li>
+      </ul>
+      <div class="nav-actions"></div>
     </div>
-  </section>
 
-  <!-- CATEGORY NAV -->
-  <nav class="category-nav" id="categoryNav" aria-label="Article categories">
-    <button class="cat-btn active" data-category="all">All</button>
-    <button class="cat-btn" data-category="legal-basics">Legal Basics</button>
-    <button class="cat-btn" data-category="documents">Documents</button>
-    <button class="cat-btn" data-category="courts">Court & e-Courts</button>
-    <button class="cat-btn" data-category="property">Property</button>
-    <button class="cat-btn" data-category="tenancy">Tenancy</button>
-    <button class="cat-btn" data-category="consumer">Consumer Rights</button>
-    <button class="cat-btn" data-category="cyber">Cyber Law</button>
-    <button class="cat-btn" data-category="schemes">Government Schemes</button>
-    <button class="cat-btn" data-category="awareness">Legal Awareness</button>
-  </nav>
-
-  <!-- FEATURED ARTICLE -->
-  <section class="featured-section reveal" id="featuredSection">
-    <div class="featured-article" id="featuredArticle" data-id="fir-guide" tabindex="0" role="button" aria-label="Read featured article">
-      <div class="featured-visual">
-        <svg viewBox="0 0 24 24" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="8" y1="13" x2="16" y2="13"></line><line x1="8" y1="17" x2="16" y2="17"></line></svg>
-      </div>
-      <div class="featured-body">
-        <span class="badge">LEGAL BASICS</span>
-        <h3>Filing an FIR: What Every Citizen Should Know</h3>
-        <p class="desc">A clear, practical walkthrough of what an FIR is, when you should file one, what to expect from the police, and your rights during the process.</p>
-        <div class="meta-row"><span>Sept 2, 2026</span><span class="dot"></span><span>7 min read</span></div>
-        <button class="read-link">Read Article <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg></button>
-      </div>
-    </div>
-  </section>
-
-  <!-- ARTICLE GRID -->
-  <section class="articles-section">
-    <div class="section-head reveal">
-      <div>
-        <h2>Latest Articles</h2>
-        <p>Practical, plain-language explainers on everyday legal topics.</p>
-      </div>
-    </div>
-    <div class="article-grid" id="articleGrid"></div>
-    <div class="no-results" id="noResults">No matching articles found.</div>
-  </section>
-
-  <!-- POPULAR GUIDES -->
-  <section class="guides-section reveal">
-    <div class="section-head">
-      <div>
-        <h2>Popular Legal Guides</h2>
-        <p>Step-by-step reference guides for common legal situations.</p>
-      </div>
-    </div>
-    <div class="guides-grid" id="guidesGrid"></div>
-  </section>
-
-  <!-- EDITORIAL / TRUST -->
-  <section class="editorial-wrap reveal">
-    <div class="editorial-section">
-      <h2>"Legal information shouldn't feel complicated."</h2>
-      <p>Legal Lens helps you understand legal documents and everyday legal situations in simpler language. For matters specific to your situation, we always encourage verifying details through official sources or a qualified legal professional.</p>
-    </div>
-  </section>
-
-  <p class="page-disclaimer">Legal Lens provides general legal information for educational purposes only. It does not constitute legal advice. For matters specific to your situation, consult a qualified legal professional.</p>
-
-</div>
-
-<!-- ARTICLE MODAL -->
-<div class="modal-overlay" id="modalOverlay">
-  <div class="article-modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
-    <button class="modal-close" id="modalCloseBtn" aria-label="Close article">
-      <svg viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round"><line x1="4" y1="4" x2="16" y2="16"></line><line x1="16" y1="4" x2="4" y2="16"></line></svg>
+    <button class="hamburger" id="hamburgerBtn" aria-label="Open menu" aria-expanded="false" aria-controls="mobileMenu">
+      <span></span>
+      <span></span>
+      <span></span>
     </button>
-    <div class="modal-hero-visual">
-      <svg viewBox="0 0 24 24" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
-    </div>
-    <div class="article-reader">
-      <button class="back-to-blog" id="backToBlogBtn">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
-        Back to Blog
-      </button>
-      <span class="badge" id="modalBadge">CATEGORY</span>
-      <h1 id="modalTitle">Article Title</h1>
-      <div class="meta-row"><span id="modalDate">Date</span><span class="dot"></span><span id="modalReadTime">Read time</span></div>
-      <div class="article-body" id="modalBody"></div>
-      <div class="related-section">
-        <h3>Related Articles</h3>
-        <div class="related-list" id="relatedList"></div>
+  </div>
+
+  <div class="mobile-menu" id="mobileMenu">
+    <div class="mobile-menu-inner">
+      <a href="index.html" class="mobile-link" data-i18n="home">Home</a>
+      <div class="mobile-lang-block">
+        <div class="mobile-lang-label" data-i18n="language">Language</div>
+        <div class="mobile-lang-options" role="listbox" aria-label="Language options">
+          <button class="mobile-lang-option" data-lang="en" aria-checked="true">English</button>
+          <button class="mobile-lang-option" data-lang="hi" aria-checked="false">हिंदी</button>
+          <button class="mobile-lang-option" data-lang="mr" aria-checked="false">मराठी</button>
+          <button class="mobile-lang-option" data-lang="ta" aria-checked="false">தமிழ்</button>
+        </div>
       </div>
-      <p class="modal-disclaimer">Legal Lens provides general legal information for educational purposes only. It does not constitute legal advice. For matters specific to your situation, consult a qualified legal professional.</p>
+      <a href="about.html" class="mobile-link" data-i18n="about">About Us</a>
+      <a href="contact.html" class="mobile-link" style="border-bottom:1px solid var(--border);" data-i18n="contact">Contact Us</a>
+      <div class="mobile-actions"></div>
     </div>
   </div>
+</nav>
+<!-- navbar ends here -->
+
+<main id="blMain" class="bl-main" tabindex="-1">
+
+  <!-- ===== HERO ===== -->
+  <section class="bl-hero" aria-labelledby="blHeroTitle">
+    <div class="bl-hero-deco" aria-hidden="true">
+      <svg viewBox="0 0 600 600" focusable="false">
+        <circle cx="300" cy="300" r="290"/>
+        <circle cx="300" cy="300" r="210"/>
+        <circle cx="300" cy="300" r="130"/>
+        <path d="M300 0v600M0 300h600"/>
+      </svg>
+    </div>
+    <div class="bl-wrap bl-hero-grid">
+      <div class="bl-hero-copy">
+        <p class="bl-kicker"><span class="bl-kicker-rule" aria-hidden="true"></span><span data-i18n="blogKicker">Legal Lens Journal</span></p>
+        <h1 class="bl-hero-title" id="blHeroTitle">
+          <span class="bl-hero-line" data-i18n="blogHeroLine1">Understand the Law.</span>
+          <span class="bl-hero-line bl-hero-line--muted" data-i18n="blogHeroLine2">Know Your Rights.</span>
+        </h1>
+        <p class="bl-hero-sub" data-i18n="blogHeroSub">Clear, practical legal knowledge for everyday situations — explained without unnecessary legal jargon.</p>
+
+        <form class="bl-search" id="blSearchForm" role="search" autocomplete="off">
+          <label class="bl-sr" for="blSearch" data-i18n="blogSearchLabel">Search articles</label>
+          <svg class="bl-search-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.6-3.6"/></svg>
+          <!-- placeholder text: blogSearchPlaceholder -->
+          <input class="bl-search-input" id="blSearch" type="search" placeholder="Search FIR, rent, e-Courts…" aria-describedby="blSearchHint" enterkeyhint="search" spellcheck="false">
+          <button type="button" class="bl-search-clear" id="blSearchClear" aria-label="Clear search" hidden>
+            <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M6 6l12 12M18 6L6 18"/></svg>
+          </button>
+          <kbd class="bl-kbd" aria-hidden="true">/</kbd>
+          <button type="submit" class="bl-search-go">
+            <span data-i18n="blogSearchButton">Search</span>
+          </button>
+        </form>
+        <p class="bl-sr" id="blSearchHint" data-i18n="blogSearchHint">Searches article titles, descriptions and topics. Results update as you type.</p>
+
+        <div class="bl-hero-tags">
+          <span class="bl-hero-tags-label" data-i18n="blogPopularLabel">Popular</span>
+          <button type="button" class="bl-tag" data-q="FIR" data-i18n="blogTagFir">FIR</button>
+          <button type="button" class="bl-tag" data-q="legal notice" data-i18n="blogTagNotice">Legal notice</button>
+          <button type="button" class="bl-tag" data-q="tenant" data-i18n="blogTagTenant">Tenant</button>
+          <button type="button" class="bl-tag" data-q="cybercrime" data-i18n="blogTagCyber">Cybercrime</button>
+        </div>
+      </div>
+
+      <aside class="bl-hero-index" aria-labelledby="blIndexTitle">
+        <div class="bl-index-head">
+          <h2 class="bl-index-title" id="blIndexTitle" data-i18n="blogInThisIssue">In this issue</h2>
+          <span class="bl-index-count" id="blIssueCount"></span>
+        </div>
+        <ol class="bl-index-list" id="blHeroIndex"></ol>
+        <p class="bl-index-foot" data-i18n="blogIndexFoot">Plain-language guides · General information, not legal advice</p>
+      </aside>
+    </div>
+  </section>
+
+  <!-- ===== TOPICS ===== -->
+  <nav class="bl-topics-bar" aria-label="Article topics">
+    <div class="bl-wrap bl-topics-wrap">
+      <div class="bl-topics" id="blTopics">
+        <button type="button" class="bl-topic is-active" data-cat="all" aria-pressed="true"><span data-i18n="blogCatAll">All</span><span class="bl-topic-count"></span></button>
+        <button type="button" class="bl-topic" data-cat="legal-basics" aria-pressed="false"><span data-i18n="blogCatBasics">Legal Basics</span><span class="bl-topic-count"></span></button>
+        <button type="button" class="bl-topic" data-cat="legal-documents" aria-pressed="false"><span data-i18n="blogCatDocuments">Legal Documents</span><span class="bl-topic-count"></span></button>
+        <button type="button" class="bl-topic" data-cat="courts" aria-pressed="false"><span data-i18n="blogCatCourts">Court &amp; e-Courts</span><span class="bl-topic-count"></span></button>
+        <button type="button" class="bl-topic" data-cat="property" aria-pressed="false"><span data-i18n="blogCatProperty">Property</span><span class="bl-topic-count"></span></button>
+        <button type="button" class="bl-topic" data-cat="tenant-rights" aria-pressed="false"><span data-i18n="blogCatTenant">Tenant Rights</span><span class="bl-topic-count"></span></button>
+        <button type="button" class="bl-topic" data-cat="consumer-rights" aria-pressed="false"><span data-i18n="blogCatConsumer">Consumer Rights</span><span class="bl-topic-count"></span></button>
+        <button type="button" class="bl-topic" data-cat="cyber-law" aria-pressed="false"><span data-i18n="blogCatCyber">Cyber Law</span><span class="bl-topic-count"></span></button>
+        <button type="button" class="bl-topic" data-cat="government-schemes" aria-pressed="false"><span data-i18n="blogCatSchemes">Government Schemes</span><span class="bl-topic-count"></span></button>
+        <button type="button" class="bl-topic" data-cat="legal-awareness" aria-pressed="false"><span data-i18n="blogCatAwareness">Legal Awareness</span><span class="bl-topic-count"></span></button>
+        <span class="bl-topic-indicator" id="blTopicIndicator" aria-hidden="true"></span>
+      </div>
+    </div>
+  </nav>
+
+  <!-- ===== FEATURED ===== -->
+  <section class="bl-section bl-featured-section bl-reveal" id="blFeaturedSection" aria-label="Featured story">
+    <div class="bl-wrap" id="blFeatured"></div>
+  </section>
+
+  <!-- ===== LATEST / RESULTS ===== -->
+  <section class="bl-section bl-latest-section" id="blLatestSection" aria-labelledby="blLatestTitle">
+    <div class="bl-wrap">
+      <div class="bl-section-head">
+        <div>
+          <p class="bl-section-kicker" data-i18n="blogLatestKicker">The Journal</p>
+          <h2 class="bl-section-title" id="blLatestTitle">Latest Articles</h2>
+        </div>
+        <p class="bl-status" id="blStatus" role="status" aria-live="polite"></p>
+      </div>
+
+      <div class="bl-latest" id="blLatest"></div>
+
+      <div class="bl-empty" id="blEmpty" hidden>
+        <svg class="bl-empty-icon" viewBox="0 0 64 64" aria-hidden="true" focusable="false"><circle cx="28" cy="28" r="16"/><path d="M40 40l12 12M22 28h12"/></svg>
+        <h3 class="bl-empty-title" data-i18n="blogEmptyTitle">No articles match your search</h3>
+        <p class="bl-empty-text"><span data-i18n="blogEmptyText">We couldn’t find anything for</span> <strong id="blEmptyQuery"></strong>. <span data-i18n="blogEmptyHint">Try a shorter word, check the spelling, or browse all topics.</span></p>
+        <button type="button" class="bl-btn bl-btn--outline" id="blEmptyReset"><span data-i18n="blogEmptyReset">Clear search &amp; show all</span></button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== POPULAR GUIDES ===== -->
+  <section class="bl-section bl-guides-section bl-reveal" aria-labelledby="blGuidesTitle">
+    <div class="bl-wrap bl-guides-grid">
+      <div class="bl-guides-intro">
+        <p class="bl-section-kicker" data-i18n="blogGuidesKicker">Quick reference</p>
+        <h2 class="bl-section-title" id="blGuidesTitle" data-i18n="blogGuidesTitle">Popular Legal Guides</h2>
+        <p class="bl-guides-sub" data-i18n="blogGuidesSub">Short, step-by-step explainers for situations people ask about most. Open one, follow the steps, and know what to check next.</p>
+      </div>
+      <ol class="bl-guide-list" id="blGuides"></ol>
+    </div>
+  </section>
+
+  <!-- ===== TRUST ===== -->
+  <section class="bl-trust bl-reveal" aria-labelledby="blTrustTitle">
+    <div class="bl-wrap">
+      <p class="bl-section-kicker bl-section-kicker--light" data-i18n="blogTrustKicker">Why Legal Lens Journal</p>
+      <h2 class="bl-trust-title" id="blTrustTitle" data-i18n="blogTrustTitle">Legal knowledge shouldn’t feel complicated.</h2>
+      <p class="bl-trust-text" data-i18n="blogTrustText">Legal Lens turns complex legal information into clear, practical explanations so people can better understand their rights, documents and next steps.</p>
+
+      <ul class="bl-principles">
+        <li class="bl-principle">
+          <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 6h16M4 12h10M4 18h13"/></svg>
+          <h3 data-i18n="blogPrinciple1Title">Plain language</h3>
+          <p data-i18n="blogPrinciple1Text">Everyday words first, legal terms explained when they matter.</p>
+        </li>
+        <li class="bl-principle">
+          <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.6-3.6M8 11l2 2 4-4"/></svg>
+          <h3 data-i18n="blogPrinciple2Title">Careful wording</h3>
+          <p data-i18n="blogPrinciple2Text">We say “generally” when rules vary, and point you to official sources to verify.</p>
+        </li>
+        <li class="bl-principle">
+          <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg>
+          <h3 data-i18n="blogPrinciple3Title">Know when to get help</h3>
+          <p data-i18n="blogPrinciple3Text">Every guide flags when a situation needs a qualified legal professional.</p>
+        </li>
+      </ul>
+
+      <div class="bl-trust-note" role="note">
+        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7.5v.5"/></svg>
+        <p data-i18n="blogTrustDisclaimer">Legal Lens provides general legal information for educational purposes only. It is not a law firm, a government or court service, or a substitute for advice from a qualified legal professional. Laws and procedures may change — verify important information through official sources.</p>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="ll-footer">
+  <div class="ll-footer-container">
+    <div class="ll-footer-col">
+      <h3 class="ll-footer-title">LEGAL LENS</h3>
+      <p class="ll-footer-desc" data-i18n="footerTagline">AI-powered legal document analysis, made simple.</p>
+    </div>
+    <div class="ll-footer-col">
+      <h4 class="ll-footer-heading" data-i18n="footerProduct">PRODUCT</h4>
+      <ul class="ll-footer-links">
+        <li><a href="index.html#features" data-i18n="footerFeaturesLink">Features</a></li>
+        <li><a href="index.html#how-it-works" data-i18n="footerHowItWorksLink">How It Works</a></li>
+      </ul>
+    </div>
+    <div class="ll-footer-col">
+      <h4 class="ll-footer-heading" data-i18n="footerResources">RESOURCES</h4>
+      <ul class="ll-footer-links">
+        <li><a href="Blog.html" data-i18n="footerBlogLink">Blog</a></li>
+        <li><a href="FAQs.html" data-i18n="footerFaqsLink">FAQs</a></li>
+        <li><a href="Support.html" data-i18n="footerSupportLink">Support</a></li>
+      </ul>
+    </div>
+    <div class="ll-footer-col">
+      <h4 class="ll-footer-heading" data-i18n="footerCompany">COMPANY</h4>
+      <ul class="ll-footer-links">
+        <li><a href="about.html" data-i18n="about">About Us</a></li>
+        <li><a href="contact.html" data-i18n="contact">Contact</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="ll-footer-bottom">
+    <p data-i18n="footerCopyright">&copy; 2026 Legal Lens. All rights reserved.</p>
+  </div>
+</footer>
+<!-- footer ends here -->
+
 </div>
 
+<!-- ===== ARTICLE READER (full-screen editorial reader) ===== -->
+<div class="bl-reader" id="blReader" role="dialog" aria-modal="true" aria-labelledby="blReaderTitle" hidden>
+  <div class="bl-reader-bar">
+    <div class="bl-reader-bar-inner">
+      <button type="button" class="bl-reader-back" id="blReaderBack">
+        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>
+        <span data-i18n="blogBack">Back to Blog</span>
+      </button>
+      <span class="bl-reader-brand"><span data-i18n="blogKicker">Legal Lens Journal</span><span class="bl-reader-cat" id="blReaderCat"></span></span>
+      <button type="button" class="bl-reader-close" id="blReaderClose" aria-label="Close article">
+        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M6 6l12 12M18 6L6 18"/></svg>
+      </button>
+    </div>
+    <div class="bl-progress" aria-hidden="true"><span id="blProgress"></span></div>
+  </div>
+  <div class="bl-reader-scroll" id="blReaderScroll">
+    <article class="bl-article" id="blArticle"></article>
+  </div>
+</div>
 <script>
+  /* =====================================================================
+   Legal Lens — Blog (frontend only)
+   ---------------------------------------------------------------------
+   - Articles below are static, general legal-information content.
+     No backend, no API calls, no storage.
+   - All visible UI strings used by this script live in UI_TEXT so they
+     can later be connected to the site-wide translation system
+     (translations.js / language.js). Static HTML text carries
+     data-i18n keys prefixed "blog".
+   - Article reader uses the URL hash (#article=<id>) so the browser
+     Back button closes it and articles can be linked directly.
+   ===================================================================== */
 (function () {
+  'use strict';
 
-  /* =========================================================
-     ARTICLE DATA
-     ========================================================= */
-  const articles = [
+  /* ------------------------------------------------------------------
+     UI TEXT (translation-ready)
+     ------------------------------------------------------------------ */
+  var UI_TEXT = {
+    readArticle: 'Read article',
+    read: 'Read',
+    minRead: 'min read',
+    featured: 'Featured story',
+    latestTitle: 'Latest Articles',
+    resultsTitle: 'Search Results',
+    countAll: function (n) { return n + (n === 1 ? ' article' : ' articles'); },
+    countIn: function (n, cat) { return n + (n === 1 ? ' article' : ' articles') + ' in ' + cat; },
+    countFor: function (n, q) { return n + (n === 1 ? ' result' : ' results') + ' for “' + q + '”'; },
+    countForIn: function (n, q, cat) { return n + (n === 1 ? ' result' : ' results') + ' for “' + q + '” in ' + cat; },
+    issueCount: function (n) { return (n < 10 ? '0' : '') + n + ' articles'; },
+    guideSteps: function (n) { return 'Quick guide · ' + n + ' key steps'; },
+    legalNote: 'Legal note',
+    important: 'Important',
+    keyTakeaways: 'Key takeaways',
+    related: 'Related reading',
+    disclaimerLabel: 'Disclaimer',
+    disclaimer: 'Legal Lens provides general legal information for educational purposes only and does not constitute legal advice. Laws and procedures may change. Verify important information through official sources or a qualified legal professional.',
+    lastReviewed: 'Last reviewed',
+    inThisArticle: 'In this article',
+    backToBlog: 'Back to Blog',
+    alsoIn: 'Also in'
+  };
+
+  /* ------------------------------------------------------------------
+     CATEGORIES  (ids must match data-cat in Blog.html)
+     ------------------------------------------------------------------ */
+  var CATEGORIES = {
+    'legal-basics': 'Legal Basics',
+    'legal-documents': 'Legal Documents',
+    'courts': 'Court & e-Courts',
+    'property': 'Property',
+    'tenant-rights': 'Tenant Rights',
+    'consumer-rights': 'Consumer Rights',
+    'cyber-law': 'Cyber Law',
+    'government-schemes': 'Government Schemes',
+    'legal-awareness': 'Legal Awareness'
+  };
+
+  /* ------------------------------------------------------------------
+     ARTICLES
+     body blocks: { t:'h', x } heading | { t:'p', x } paragraph
+                  { t:'ul', items } | { t:'ol', items }
+                  { t:'note', label:'legalNote'|'important', x }
+     Language is deliberately careful: general information, "generally",
+     "may", and pointers to official sources. No case citations.
+     ------------------------------------------------------------------ */
+  var ARTICLES = [
     {
       id: 'fir-guide',
-      category: 'legal-basics',
-      categoryLabel: 'Legal Basics',
+      cat: 'legal-basics',
+      also: ['legal-awareness'],
+      featured: true,
+      date: '2026-09-24',
       title: 'Filing an FIR: What Every Citizen Should Know',
-      desc: 'A clear, practical walkthrough of what an FIR is, when you should file one, what to expect from the police, and your rights during the process.',
-      date: 'Sept 2, 2026',
-      readTime: '7 min read',
+      desc: 'What an FIR is, when and where you can file one, what to check before you sign, and what you can generally do if the police refuse to register it.',
+      intro: 'A First Information Report (FIR) is the written record the police prepare when they receive information about a cognizable offence — broadly, a serious offence that the police can begin investigating without first getting a court’s permission. For most people, it is the first formal step in the criminal justice process, so it helps to know how it works before you need it.',
       body: [
-        { type: 'p', text: 'An FIR, or First Information Report, is the document police prepare when they receive information about a cognizable offence. It is usually the first formal step in the criminal justice process.' },
-        { type: 'h3', text: 'When should you file an FIR?' },
-        { type: 'p', text: 'You should consider filing an FIR as soon as possible after a cognizable offence occurs, such as theft, assault, or fraud. Prompt reporting helps preserve evidence and strengthens the case.' },
-        { type: 'ul', items: ['Visit the nearest police station with jurisdiction over the incident.', 'Provide a clear, factual account of what happened.', 'Ask for a free copy of the FIR once it is registered.'] },
-        { type: 'legal-note', text: 'Police are generally required to register an FIR for cognizable offences. If they refuse, citizens can escalate the matter to a senior officer or approach the relevant magistrate.' },
-        { type: 'h3', text: 'What happens after filing?' },
-        { type: 'p', text: 'Once registered, the FIR triggers an investigation. You may be asked for further statements or evidence. Keeping your copy of the FIR and any acknowledgment is important for future reference.' }
+        { t: 'h', x: 'Cognizable and non-cognizable offences' },
+        { t: 'p', x: 'Offences are broadly grouped as cognizable or non-cognizable. Theft, robbery and serious assault are common examples usually treated as cognizable. For non-cognizable offences, the police generally record the information separately, and investigation may need a magistrate’s order. Whether a particular incident is cognizable depends on the specific law that applies to it.' },
+        { t: 'h', x: 'How to file an FIR' },
+        { t: 'ol', items: [
+          'Go to a police station. Usually this is the station covering the place where the incident happened, but under the “Zero FIR” practice you can generally report at any police station, which should then transfer the FIR to the right one.',
+          'Give a clear, factual account: date, time and place, the people involved, what happened, and any witnesses or evidence.',
+          'Read the written record (or have it read out to you) before signing, and ask for corrections if anything is wrong or missing.',
+          'Ask for your copy. The person giving the information is generally entitled to a free copy of the registered FIR.'
+        ] },
+        { t: 'note', label: 'legalNote', x: 'In India, the Bharatiya Nagarik Suraksha Sanhita, 2023 (BNSS) replaced the Code of Criminal Procedure from 1 July 2024. It recognises Zero FIRs and allows information to be given electronically in certain cases, with formalities completed afterwards. What is available online differs by state, so check your state police’s official website.' },
+        { t: 'h', x: 'If the police refuse to register an FIR' },
+        { t: 'p', x: 'If the police refuse to register an FIR for what appears to be a cognizable offence, you can generally send the information in writing to the Superintendent of Police or another senior officer. You may also approach the local magistrate. Keep copies of everything you submit and proof that it was received.' },
+        { t: 'h', x: 'What happens after the FIR' },
+        { t: 'p', x: 'Once registered, the FIR usually leads to an investigation. You may be asked for further statements or documents. Note the FIR number and police station, keep your copy safe, and keep a simple record of every later interaction — dates, names and what was discussed.' }
       ],
-      takeaways: ['An FIR is the formal starting point for a police investigation.', 'You are entitled to a free copy of a registered FIR.', 'Refusal to register a valid FIR can be escalated to higher authorities.']
+      takeaways: [
+        'An FIR records information about a cognizable offence and generally starts a police investigation.',
+        'Under the Zero FIR practice you can usually report at any police station.',
+        'The informant is generally entitled to a free copy — check it before you sign and keep it safe.',
+        'If registration is refused, written complaints to senior officers or a magistrate are possible routes.'
+      ]
     },
     {
       id: 'legal-notice',
-      category: 'documents',
-      categoryLabel: 'Documents',
+      cat: 'legal-documents',
+      also: [],
+      date: '2026-09-18',
       title: 'How to Read and Respond to a Legal Notice',
-      desc: 'Understand the structure of a legal notice, what it typically demands, and the general steps to consider before responding.',
-      date: 'Aug 28, 2026',
-      readTime: '6 min read',
+      desc: 'Understand what a legal notice is, how to read its key parts calmly, and the general steps to consider before you reply.',
+      intro: 'A legal notice is a formal written communication — often sent through a lawyer — that sets out a grievance and asks the receiver to do something within a stated time. Receiving one can feel alarming, but reading it carefully and responding thoughtfully usually matters more than responding quickly.',
       body: [
-        { type: 'p', text: 'A legal notice is a formal communication, often sent through a lawyer, informing you of a grievance and typically requesting specific action within a stated timeframe.' },
-        { type: 'h3', text: 'Key parts of a legal notice' },
-        { type: 'ul', items: ['Sender and recipient details', 'A statement of facts and grievance', 'The specific relief or action being demanded', 'A deadline for response'] },
-        { type: 'legal-note', text: 'Ignoring a legal notice does not make the underlying issue disappear. It is generally advisable to review it carefully and respond within the given timeframe.' },
-        { type: 'p', text: 'Before responding, it helps to gather any related documents, timelines, or correspondence relevant to the matter, and to consider consulting a qualified professional for anything with significant consequences.' }
+        { t: 'h', x: 'What a legal notice usually contains' },
+        { t: 'ul', items: [
+          'Names and addresses of the sender and the receiver',
+          'A statement of facts, as the sender sees them',
+          'The specific demand — payment, action, or stopping an action',
+          'A deadline to comply or reply',
+          'What the sender may do next if the demand is not met'
+        ] },
+        { t: 'h', x: 'How to read it' },
+        { t: 'ol', items: [
+          'Find the deadline first and note it somewhere you will see it.',
+          'Identify exactly what is being demanded and on what basis.',
+          'Compare the stated facts with your own records — contracts, receipts, messages, emails.',
+          'List the documents the notice refers to and collect your copies.'
+        ] },
+        { t: 'note', label: 'important', x: 'A reply is not always legally required, but ignoring a notice can weaken your position if the matter later reaches court. Some notices have strict timelines of their own — for example, notices about dishonoured cheques — so check what applies to your situation.' },
+        { t: 'h', x: 'Replying to a notice' },
+        { t: 'p', x: 'If you decide to reply, keep it factual and in writing. Respond to each important point, avoid admitting things you do not agree with, and keep the tone professional. Send it in a way that gives you proof of dispatch and delivery, and keep a copy of everything.' },
+        { t: 'p', x: 'For notices involving large amounts, property, employment or possible criminal allegations, it is usually worth having a qualified lawyer review the notice and your reply.' }
       ],
-      takeaways: ['A legal notice usually includes a stated deadline for response.', 'Gathering supporting documents early makes responding easier.', 'Significant or unclear notices are worth professional review.']
+      takeaways: [
+        'Start with the deadline and the exact demand.',
+        'Check every stated fact against your own records.',
+        'If you reply, keep it factual, written, and with proof of delivery.',
+        'Serious or unclear notices are worth a professional review.'
+      ]
     },
     {
       id: 'property-documents',
-      category: 'property',
-      categoryLabel: 'Property',
+      cat: 'property',
+      also: ['legal-documents'],
+      date: '2026-09-11',
       title: 'Understanding Property Documents Before You Buy',
-      desc: 'A plain-language look at the key documents involved in property transactions and why each one matters.',
-      date: 'Aug 21, 2026',
-      readTime: '8 min read',
+      desc: 'A plain-language guide to the key property papers, what each one tells you, and the checks buyers commonly make before paying.',
+      intro: 'Buying property is usually one of the largest financial decisions a person makes. The documents involved tell you who owns the property, whether anyone else has a claim on it, and whether it was built and sold according to the rules. Understanding them before you pay can prevent long disputes later.',
       body: [
-        { type: 'p', text: 'Property transactions typically involve several documents that establish ownership history, legal status, and any existing encumbrances on the property.' },
-        { type: 'h3', text: 'Common documents to review' },
-        { type: 'ul', items: ['Title deed, confirming ownership', 'Encumbrance certificate, showing any existing loans or claims', 'Property tax receipts', 'Approved building plan, where applicable'] },
-        { type: 'legal-note', text: 'Verifying documents through official land records or government portals is an important step before finalizing any property transaction.' },
-        { type: 'p', text: 'Because property transactions often involve significant value and long-term consequences, many buyers choose to have documents reviewed by a qualified legal professional.' }
+        { t: 'h', x: 'Documents buyers commonly review' },
+        { t: 'ul', items: [
+          'Sale deed or title deed — shows the current owner’s ownership',
+          'Earlier title documents (the “chain of title”) — show how ownership passed over the years',
+          'Encumbrance certificate — shows registered transactions such as mortgages on the property',
+          'Mutation / revenue records and property tax receipts — show the owner in local records and whether dues are paid',
+          'Approved building plan and completion or occupancy certificate — for constructed property',
+          'RERA registration details — for new projects covered by real-estate regulation'
+        ] },
+        { t: 'h', x: 'Checks worth making' },
+        { t: 'ol', items: [
+          'Confirm the seller’s name and identity match the ownership documents.',
+          'Check the chain of title for gaps or unexplained transfers.',
+          'Look for loans, mortgages or court cases connected to the property.',
+          'Verify records on your state’s official land-records and registration portals.'
+        ] },
+        { t: 'note', label: 'legalNote', x: 'Sale deeds are generally registered at the sub-registrar’s office, and stamp duty and registration charges vary from state to state. Document names and portals also differ by state, so confirm the requirements that apply where the property is located.' },
+        { t: 'h', x: 'When to get professional help' },
+        { t: 'p', x: 'Because the amounts and consequences are significant, many buyers have a lawyer carry out a title search and review the agreement before signing. A bank processing a home loan may also carry out its own legal checks, but these are not a substitute for your own.' }
       ],
-      takeaways: ['A clear title deed is central to establishing ownership.', 'An encumbrance certificate reveals existing claims on a property.', 'Official verification reduces the risk of later disputes.']
+      takeaways: [
+        'Ownership is shown by the title documents and their history, not by possession alone.',
+        'An encumbrance certificate helps reveal existing registered claims.',
+        'Verify records through official state portals before paying.',
+        'A professional title check is often worth the cost.'
+      ]
     },
     {
       id: 'tenant-rights',
-      category: 'tenancy',
-      categoryLabel: 'Tenancy',
+      cat: 'tenant-rights',
+      also: ['property'],
+      date: '2026-09-04',
       title: 'Tenant Rights: What Renters Should Know',
-      desc: 'An overview of common tenant protections, security deposit practices, and what a rental agreement should typically cover.',
-      date: 'Aug 15, 2026',
-      readTime: '6 min read',
+      desc: 'What a rental agreement should cover, how security deposits generally work, and simple habits that help renters avoid disputes.',
+      intro: 'Renting a home is a legal relationship between a tenant and a landlord, and most of its terms come from the rental agreement and the rent law of your state. Knowing the basics helps you ask the right questions before you sign and protects you when something goes wrong.',
       body: [
-        { type: 'p', text: 'Rental agreements set out the terms of the relationship between landlord and tenant, including rent, duration, and responsibilities of each party.' },
-        { type: 'h3', text: 'What a rental agreement should cover' },
-        { type: 'ul', items: ['Monthly rent and payment terms', 'Security deposit amount and refund conditions', 'Notice period for termination', 'Maintenance responsibilities'] },
-        { type: 'legal-note', text: 'Tenancy laws vary by state, so it is worth checking locally applicable rules regarding notice periods and deposit limits.' },
-        { type: 'p', text: 'Keeping a signed copy of the agreement and documenting the property condition at move-in can help prevent disputes later.' }
+        { t: 'h', x: 'What a rental agreement should cover' },
+        { t: 'ul', items: [
+          'Rent amount, due date and how it is paid',
+          'Security deposit amount and when and how it will be returned',
+          'Duration of the tenancy and the notice period for leaving',
+          'Who pays for maintenance, repairs, utilities and society charges',
+          'Rules about rent increases, guests, pets or subletting'
+        ] },
+        { t: 'note', label: 'legalNote', x: 'Rental agreements for more than one year generally need to be registered. The Model Tenancy Act, 2021 is a template that states may choose to adopt, so rules on deposits, notice periods and disputes depend on the law in your state.' },
+        { t: 'h', x: 'Protections tenants commonly have' },
+        { t: 'ul', items: [
+          'Receipts or a written record for rent paid',
+          'Reasonable notice before the landlord visits, as per the agreement or local law',
+          'Eviction generally only through the procedure set out in the applicable law — not by cutting off essential services or changing locks'
+        ] },
+        { t: 'h', x: 'Habits that prevent disputes' },
+        { t: 'ol', items: [
+          'Keep a signed copy of the agreement.',
+          'Photograph the property’s condition when you move in and when you move out.',
+          'Pay rent in a traceable way and keep the records.',
+          'Give notice in writing and get an acknowledgment when you return the keys.'
+        ] }
       ],
-      takeaways: ['A written rental agreement protects both landlord and tenant.', 'Security deposit terms should be clearly stated upfront.', 'Documenting property condition at move-in helps avoid disputes.']
+      takeaways: [
+        'A clear written agreement protects both tenant and landlord.',
+        'Deposit and notice rules depend on your agreement and your state’s law.',
+        'Eviction generally has to follow the legal process.',
+        'Photos and payment records make disputes far easier to resolve.'
+      ]
     },
     {
       id: 'e-courts-guide',
-      category: 'courts',
-      categoryLabel: 'Court & e-Courts',
-      title: 'How e-Courts Work: A Citizen\u2019s Guide',
-      desc: 'Learn how India\u2019s e-Courts services let citizens track case status, view orders, and access court information online.',
-      date: 'Aug 9, 2026',
-      readTime: '5 min read',
+      cat: 'courts',
+      also: [],
+      date: '2026-08-28',
+      title: 'How e-Courts Work: A Citizen’s Guide',
+      desc: 'How the official eCourts services let you check case status, hearing dates and orders online — and what you need to search for a case.',
+      intro: 'Under India’s e-Courts project, many court services are available online through the official eCourts Services portal and mobile app. For citizens, this means you can often follow a case without travelling to the court just to check a date.',
       body: [
-        { type: 'p', text: 'e-Courts services allow citizens to check case status, view cause lists, and access certain court orders through official online portals.' },
-        { type: 'h3', text: 'What you can typically do online' },
-        { type: 'ul', items: ['Search for a case using the case number or party name', 'View the current stage of proceedings', 'Check upcoming hearing dates', 'Download available orders and judgments'] },
-        { type: 'legal-note', text: 'Official e-Courts portals should be treated as the authoritative source for case status information.' }
+        { t: 'h', x: 'What you can usually do online' },
+        { t: 'ul', items: [
+          'Check the status and stage of a case',
+          'See the next hearing date and the cause list (the list of cases to be heard)',
+          'View or download orders and judgments that have been uploaded',
+          'In many courts, use e-filing or join virtual hearings where permitted'
+        ] },
+        { t: 'h', x: 'How to find a case' },
+        { t: 'ol', items: [
+          'Use the CNR number if you have it — a unique 16-character number assigned to each case.',
+          'Otherwise, search by case number and year, party name, advocate name or FIR number.',
+          'Select the correct state, district and court complex before searching.',
+          'Note the next date and stage, and check again closer to the hearing.'
+        ] },
+        { t: 'note', label: 'important', x: 'Online case information is helpful, but it is not a certified copy. If you need an order for official purposes, you may need to apply for a certified copy through the court’s process.' },
+        { t: 'h', x: 'Reading a cause list' },
+        { t: 'p', x: 'A cause list shows which cases a court will take up on a given day, usually with the case number, party names and courtroom. Being listed does not always mean the case will be heard that day, so it helps to stay in touch with your lawyer about what to expect.' }
       ],
-      takeaways: ['e-Courts portals let you track case status without visiting the court in person.', 'Cause lists show upcoming hearing schedules.', 'Always verify critical case details on the official portal.']
+      takeaways: [
+        'The official eCourts portal and app show case status, dates and uploaded orders.',
+        'The CNR number is the quickest way to find a case.',
+        'Cause lists show what is listed for a day, not a guarantee of a hearing.',
+        'For official use, you may need a certified copy rather than a download.'
+      ]
     },
     {
       id: 'consumer-complaint',
-      category: 'consumer',
-      categoryLabel: 'Consumer Rights',
+      cat: 'consumer-rights',
+      also: [],
+      date: '2026-08-21',
       title: 'Filing a Consumer Complaint: Step-by-Step',
-      desc: 'A practical overview of how consumer complaints are typically filed and what information you should prepare in advance.',
-      date: 'Aug 3, 2026',
-      readTime: '6 min read',
+      desc: 'How consumer complaints generally work in India, what to prepare before filing, and the official channels you can use.',
+      intro: 'If a product is defective or a service falls short of what was promised, consumer protection law gives you ways to seek a remedy. The Consumer Protection Act, 2019 sets up consumer commissions and a process that is designed to be usable without a lawyer.',
       body: [
-        { type: 'p', text: 'Consumer protection frameworks exist to help resolve disputes between consumers and businesses over defective goods, deficient services, or unfair trade practices.' },
-        { type: 'h3', text: 'Before filing a complaint' },
-        { type: 'ul', items: ['Gather receipts, invoices, and communication records', 'Attempt to resolve the issue directly with the seller first', 'Note the specific relief you are seeking'] },
-        { type: 'legal-note', text: 'Consumer complaints can often be filed through official consumer helpline platforms or consumer forums, depending on the nature and value of the dispute.' }
+        { t: 'h', x: 'Before you file' },
+        { t: 'ul', items: [
+          'Keep the bill, invoice, warranty card and order details',
+          'Save emails, chats, call records and complaint numbers',
+          'Write to the seller or service provider first and give them a fair chance to fix the problem',
+          'Decide what you are asking for — replacement, repair, refund or compensation'
+        ] },
+        { t: 'h', x: 'Steps to file' },
+        { t: 'ol', items: [
+          'Try resolving the issue through the National Consumer Helpline (1915), which can help with pre-litigation grievance redressal.',
+          'If it is not resolved, prepare a complaint with the facts, documents and the relief you want.',
+          'File it with the appropriate Consumer Commission — district, state or national, depending on the value involved. Online filing is available through the official e-Daakhil portal.',
+          'Attend hearings or follow the commission’s directions, and keep copies of everything filed.'
+        ] },
+        { t: 'note', label: 'legalNote', x: 'A consumer complaint generally has to be filed within two years from when the problem arose, unless the commission accepts a reason for delay. The value limits for each level of commission have been revised in the past, so check the current limits on official sources.' },
+        { t: 'h', x: 'Who counts as a consumer' },
+        { t: 'p', x: 'Generally, a consumer is someone who buys goods or uses services for payment for their own use. Purchases made for commercial resale are usually treated differently, so the purpose of the purchase can matter.' }
       ],
-      takeaways: ['Keep all receipts and communication as evidence.', 'Attempting direct resolution first is often a useful step.', 'Complaints are generally filed based on the value and nature of the dispute.']
+      takeaways: [
+        'Keep bills and communication — they are your evidence.',
+        'The National Consumer Helpline (1915) is a useful first step.',
+        'Complaints are filed with district, state or national commissions based on value.',
+        'There is generally a two-year time limit, so do not wait too long.'
+      ]
     },
     {
       id: 'cybercrime-report',
-      category: 'cyber',
-      categoryLabel: 'Cyber Law',
+      cat: 'cyber-law',
+      also: [],
+      date: '2026-08-14',
       title: 'Reporting Cybercrime: What to Do First',
-      desc: 'Practical first steps if you experience online fraud, hacking, or harassment, and how official cybercrime reporting works.',
-      date: 'Jul 27, 2026',
-      readTime: '6 min read',
+      desc: 'The first steps to take after online fraud, account hacking or harassment, and how the official reporting channels work.',
+      intro: 'Cybercrime can range from UPI or card fraud to hacked accounts and online harassment. In financial fraud especially, acting quickly matters: the sooner a transaction is reported, the better the chance that funds can be traced or frozen.',
       body: [
-        { type: 'p', text: 'Cybercrime can range from financial fraud to online harassment. Acting quickly and documenting evidence improves the chances of a successful resolution.' },
-        { type: 'h3', text: 'Immediate steps to consider' },
-        { type: 'ul', items: ['Take screenshots of relevant messages, transactions, or content', 'Note dates, times, and any account or transaction IDs', 'Report the incident through the official cybercrime reporting portal'] },
-        { type: 'legal-note', text: 'For financial fraud, contacting your bank promptly may help in attempting to halt or trace unauthorized transactions.' }
+        { t: 'h', x: 'If money was taken' },
+        { t: 'ol', items: [
+          'Call the national cybercrime helpline 1930 as soon as possible.',
+          'Inform your bank or payment app and ask them to block cards, UPI or accounts as needed.',
+          'File a complaint on the official National Cyber Crime Reporting Portal and note the acknowledgment number.',
+          'Change passwords and enable two-factor authentication on affected accounts.'
+        ] },
+        { t: 'h', x: 'Preserve the evidence' },
+        { t: 'ul', items: [
+          'Screenshots of messages, profiles, websites and payment screens',
+          'Transaction IDs, dates, times and amounts',
+          'Phone numbers, email addresses, UPI IDs or links used by the fraudster',
+          'Do not delete chats or emails, even if they are upsetting'
+        ] },
+        { t: 'note', label: 'important', x: 'Be careful of people who contact you claiming they can “recover” your money for a fee. This is a common follow-up scam. Use only official helplines, your bank, and the police.' },
+        { t: 'h', x: 'Harassment and other cyber offences' },
+        { t: 'p', x: 'For online harassment, threats, impersonation or misuse of images, you can report through the national portal or approach your local police station or cyber cell. Most platforms also have reporting tools — using them alongside an official complaint can help get harmful content taken down faster.' }
       ],
-      takeaways: ['Document evidence immediately with screenshots and timestamps.', 'Official cybercrime portals are the primary reporting channel.', 'For financial fraud, contact your bank as soon as possible.']
+      takeaways: [
+        'For financial fraud, call 1930 and your bank immediately.',
+        'Report on the official National Cyber Crime Reporting Portal and keep the acknowledgment.',
+        'Preserve screenshots, IDs and timestamps before anything else.',
+        'Ignore anyone offering paid “recovery” services.'
+      ]
     },
     {
-      id: 'gov-schemes',
-      category: 'schemes',
-      categoryLabel: 'Government Schemes',
+      id: 'legal-aid-schemes',
+      cat: 'government-schemes',
+      also: ['legal-basics'],
+      date: '2026-08-07',
       title: 'Legal Aid Schemes You May Not Know About',
-      desc: 'An overview of government-backed legal aid services designed to make legal assistance more accessible.',
-      date: 'Jul 20, 2026',
-      readTime: '5 min read',
+      desc: 'Free legal services in India: who may be eligible, what legal aid can include, and how to approach a legal services authority.',
+      intro: 'The Constitution directs the State to make sure that justice is not denied to anyone because of financial or other disabilities. To put this into practice, the Legal Services Authorities Act, 1987 set up a network of legal services authorities that provide free legal help to eligible people.',
       body: [
-        { type: 'p', text: 'Several government-backed schemes exist to provide free or subsidized legal assistance to citizens who qualify, particularly for those facing financial hardship.' },
-        { type: 'h3', text: 'What legal aid can include' },
-        { type: 'ul', items: ['Free legal representation in eligible cases', 'Legal advice and consultation services', 'Assistance with drafting basic legal documents'] },
-        { type: 'legal-note', text: 'Eligibility criteria and available services vary, so checking with your local legal services authority is the best way to confirm what applies to your situation.' }
+        { t: 'h', x: 'Who provides legal aid' },
+        { t: 'p', x: 'The National Legal Services Authority (NALSA) works at the national level, with State Legal Services Authorities, District Legal Services Authorities (DLSAs) and Taluk Legal Services Committees closer to where people live. DLSAs usually have an office at the district court complex.' },
+        { t: 'h', x: 'Who may be eligible' },
+        { t: 'ul', items: [
+          'Women and children',
+          'Members of Scheduled Castes and Scheduled Tribes',
+          'Persons with disabilities',
+          'Victims of trafficking, mass disasters, ethnic or caste violence, and similar hardship',
+          'Industrial workers and persons in custody',
+          'People whose annual income is below the limit set by the government (the limit varies by state)'
+        ] },
+        { t: 'h', x: 'What legal aid can include' },
+        { t: 'ul', items: [
+          'A lawyer to represent you in eligible cases, free of charge',
+          'Payment of court fees and other case expenses',
+          'Legal advice and help with drafting documents',
+          'Settlement of disputes through Lok Adalats'
+        ] },
+        { t: 'note', label: 'legalNote', x: 'A Lok Adalat settlement is generally final and binding on the parties, and no appeal usually lies against it. It works best when both sides genuinely agree to settle.' },
+        { t: 'h', x: 'How to apply' },
+        { t: 'p', x: 'You can generally apply in writing or in person at the front office of your District Legal Services Authority, and many authorities also accept applications through their official websites. Carry identity proof and any documents related to your case.' }
       ],
-      takeaways: ['Legal aid schemes can provide free or subsidized legal help.', 'Eligibility is typically based on income and case type.', 'Local legal services authorities can confirm what is available to you.']
+      takeaways: [
+        'Free legal aid is a legal entitlement for eligible people, not charity.',
+        'DLSAs at district courts are the most common starting point.',
+        'Legal aid can cover a lawyer, court fees and drafting help.',
+        'Eligibility and income limits vary, so confirm with your local authority.'
+      ]
     },
     {
-      id: 'know-your-rights',
-      category: 'awareness',
-      categoryLabel: 'Legal Awareness',
+      id: 'everyday-rights',
+      cat: 'legal-awareness',
+      also: ['legal-basics'],
+      date: '2026-07-31',
       title: 'Everyday Rights Every Citizen Should Understand',
-      desc: 'A general overview of fundamental rights and protections that apply to citizens in common everyday situations.',
-      date: 'Jul 12, 2026',
-      readTime: '7 min read',
+      desc: 'A short overview of fundamental rights and everyday protections that help you respond confidently in common situations.',
+      intro: 'The Constitution of India guarantees fundamental rights, and other laws build practical protections on top of them. You do not need to memorise legal provisions, but knowing the broad shape of your rights helps you recognise when something is wrong and ask the right questions.',
       body: [
-        { type: 'p', text: 'Understanding your basic rights helps you navigate everyday interactions with authorities, employers, and institutions with more confidence.' },
-        { type: 'h3', text: 'Areas worth understanding' },
-        { type: 'ul', items: ['Rights during police interactions', 'Basic workplace protections', 'Rights as a consumer', 'Right to access information through official channels'] },
-        { type: 'legal-note', text: 'Specific rights and procedures can vary by situation and jurisdiction, so official sources should always be the final reference point.' }
+        { t: 'h', x: 'Rights worth knowing' },
+        { t: 'ul', items: [
+          'Equality before the law and equal protection of the laws',
+          'Freedom of speech and expression, subject to reasonable restrictions set by law',
+          'Protection of life and personal liberty, except according to procedure established by law',
+          'The right to seek information from public authorities under the Right to Information Act, 2005'
+        ] },
+        { t: 'h', x: 'If someone is arrested' },
+        { t: 'ul', items: [
+          'They should be informed of the grounds of arrest',
+          'They have the right to consult and be defended by a lawyer of their choice',
+          'They should generally be produced before a magistrate within 24 hours, excluding travel time',
+          'If they cannot afford a lawyer, they may be eligible for free legal aid'
+        ] },
+        { t: 'note', label: 'important', x: 'Rights come with limits and procedures, and how they apply depends on the facts. If you believe your rights have been violated, record what happened and seek advice from a qualified lawyer or your District Legal Services Authority.' },
+        { t: 'h', x: 'Using your rights calmly' },
+        { t: 'p', x: 'In most everyday situations — at a police station, a government office or with a service provider — staying calm, asking for things in writing, and keeping copies of what you submit will protect you better than arguing on the spot.' }
       ],
-      takeaways: ['Basic rights apply across many everyday situations.', 'Understanding these rights helps you respond confidently.', 'Always confirm specifics through official sources when it matters.']
+      takeaways: [
+        'Fundamental rights are guaranteed by the Constitution, with reasonable limits.',
+        'A person who is arrested has specific protections, including access to a lawyer.',
+        'RTI lets you seek information from public authorities.',
+        'Written records are one of your strongest everyday protections.'
+      ]
     }
   ];
 
-  const guides = [
-    { title: 'How to Read a Legal Notice', desc: 'Understand structure, tone, and required action.', id: 'legal-notice', icon: 'doc' },
-    { title: 'Understanding an FIR', desc: 'What it is and how the process works.', id: 'fir-guide', icon: 'shield' },
-    { title: 'Tenant Rights in India', desc: 'Know what your rental agreement should cover.', id: 'tenant-rights', icon: 'home' },
-    { title: 'How e-Courts Works', desc: 'Track your case status online.', id: 'e-courts-guide', icon: 'scale' },
-    { title: 'Understanding Property Documents', desc: 'Key papers to verify before buying.', id: 'property-documents', icon: 'doc' },
-    { title: 'Consumer Complaint Guide', desc: 'Steps to file a complaint effectively.', id: 'consumer-complaint', icon: 'shield' }
+  /* Popular guides: quick-reference entries that open existing articles */
+  var GUIDES = [
+    { id: 'legal-notice', title: 'How to Read a Legal Notice', desc: 'Deadline, demand, facts — what to check first.' },
+    { id: 'fir-guide', title: 'Understanding an FIR', desc: 'Where to file, what to check, what if refused.' },
+    { id: 'tenant-rights', title: 'Tenant Rights in India', desc: 'Agreements, deposits and eviction basics.' },
+    { id: 'e-courts-guide', title: 'How e-Courts Work', desc: 'Track case status and hearing dates online.' },
+    { id: 'property-documents', title: 'Understanding Property Documents', desc: 'Key papers to verify before you pay.' },
+    { id: 'consumer-complaint', title: 'Consumer Complaint Guide', desc: 'From helpline to consumer commission.' }
   ];
 
-  const guideIcons = {
-    doc: '<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline>',
-    shield: '<path d="M12 2 4 5v6c0 5.25 3.4 9.74 8 11 4.6-1.26 8-5.75 8-11V5z"></path>',
-    home: '<path d="M3 11 12 3l9 8"></path><path d="M5 10v10h14V10"></path>',
-    scale: '<path d="M12 3v18M5 8l-3 6a4 4 0 0 0 6 0zM19 8l-3 6a4 4 0 0 0 6 0zM5 8h14M8 3h8"></path>'
+  /* ------------------------------------------------------------------
+     HELPERS
+     ------------------------------------------------------------------ */
+  function $(id) { return document.getElementById(id); }
+  function esc(s) {
+    return String(s).replace(/[&<>"']/g, function (c) {
+      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+    });
+  }
+  var byId = {};
+  ARTICLES.forEach(function (a) { byId[a.id] = a; });
+
+  var MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+  function fmtDate(iso) {
+    var p = iso.split('-');
+    return parseInt(p[2], 10) + ' ' + MONTHS[parseInt(p[1], 10) - 1] + ' ' + p[0];
+  }
+
+  // Reading time from the article's actual word count (~200 words/min).
+  function readMins(a) {
+    var text = [a.intro].concat(a.body.map(function (b) { return b.x || (b.items || []).join(' '); }), a.takeaways).join(' ');
+    var words = text.split(/\s+/).filter(Boolean).length;
+    return Math.max(2, Math.ceil(words / 200));
+  }
+  ARTICLES.forEach(function (a) { a.mins = readMins(a); });
+
+  function steps(a) {
+    for (var i = 0; i < a.body.length; i++) if (a.body[i].t === 'ol') return a.body[i].items.length;
+    return 0;
+  }
+
+  function catLabel(id) { return CATEGORIES[id] || ''; }
+  function inCat(a, cat) { return cat === 'all' || a.cat === cat || a.also.indexOf(cat) >= 0; }
+
+  var ICON_ARROW = '<svg class="bl-arrow" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 12h14M13 6l6 6-6 6"/></svg>';
+
+  /* Monochrome line-art covers, one motif per category (pure SVG, no images) */
+  var MOTIFS = {
+    'legal-basics': '<path d="M200 70 145 92v52c0 40 24 72 55 84 31-12 55-44 55-84V92z"/><path d="M178 150l16 16 30-34"/>',
+    'legal-documents': '<path d="M150 60h76l34 34v136H150z"/><path d="M226 60v34h34"/><path d="M168 120h70M168 142h70M168 164h70M168 186h44"/><path d="M128 84v164h108" opacity=".45"/>',
+    'courts': '<path d="M130 112 200 70l70 42z"/><path d="M140 124h120M140 236h120M128 250h144"/><path d="M152 132v96M182 132v96M218 132v96M248 132v96"/>',
+    'property': '<path d="M126 150 200 90l74 60"/><path d="M144 136v100h112V136"/><path d="M186 236v-52h28v52"/><path d="M90 252h220" opacity=".45"/><path d="M110 266h180" opacity=".25"/>',
+    'tenant-rights': '<circle cx="170" cy="150" r="34"/><circle cx="170" cy="150" r="12"/><path d="M204 150h92M262 150v24M282 150v18"/><path d="M110 236h180" opacity=".45"/>',
+    'consumer-rights': '<path d="M156 66h88v172l-11-9-11 9-11-9-11 9-11-9-11 9-11-9-11 9z"/><path d="M174 106h52M174 128h52M174 150h30"/><path d="M180 188l12 12 24-26"/>',
+    'cyber-law': '<rect x="170" y="140" width="60" height="50" rx="4"/><path d="M182 140v-16a18 18 0 0 1 36 0v16"/><circle cx="110" cy="96" r="7"/><circle cx="292" cy="92" r="7"/><circle cx="96" cy="214" r="7"/><circle cx="304" cy="220" r="7"/><path d="M116 100l54 46M286 98l-56 48M102 210l68-28M298 216l-68-30" opacity=".45"/>',
+    'government-schemes': '<path d="M120 150a80 80 0 0 1 160 0z"/><path d="M200 150v90"/><circle cx="160" cy="202" r="12"/><circle cx="240" cy="202" r="12"/><path d="M140 244a20 20 0 0 1 40 0M220 244a20 20 0 0 1 40 0"/>',
+    'legal-awareness': '<path d="M100 160c34-46 166-46 200 0-34 46-166 46-200 0z"/><circle cx="200" cy="160" r="30"/><circle cx="200" cy="160" r="10"/><path d="M200 84V64M146 96l-12-16M254 96l12-16" opacity=".45"/>'
   };
-
-  /* =========================================================
-     HERO BACKGROUND (subtle animated lines, grayscale SVG)
-     ========================================================= */
-  const heroCanvas = document.getElementById('heroCanvas');
-  const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  const lineCount = 6;
-  for (let i = 0; i < lineCount; i++) {
-    const y = 40 + i * 65;
-    const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-    line.setAttribute('x1', '0');
-    line.setAttribute('y1', y);
-    line.setAttribute('x2', '1000');
-    line.setAttribute('y2', y);
-    line.setAttribute('stroke', 'rgba(10,10,10,0.045)');
-    line.setAttribute('stroke-width', '1');
-    if (!prefersReducedMotion) {
-      line.style.animation = `driftLine ${14 + i * 2}s linear infinite`;
-      line.style.animationDelay = `${i * -2}s`;
-    }
-    heroCanvas.appendChild(line);
-  }
-  const styleTag = document.createElement('style');
-  styleTag.textContent = `
-    @keyframes driftLine {
-      0% { transform: translateX(-30px); }
-      50% { transform: translateX(30px); }
-      100% { transform: translateX(-30px); }
-    }
-  `;
-  document.head.appendChild(styleTag);
-
-  /* =========================================================
-     RENDER ARTICLE GRID (excluding featured)
-     ========================================================= */
-  const grid = document.getElementById('articleGrid');
-  const noResults = document.getElementById('noResults');
-  const gridArticles = articles.filter(a => a.id !== 'fir-guide');
-
-  function cardIcon() {
-    return '<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="8" y1="13" x2="16" y2="13"></line><line x1="8" y1="17" x2="16" y2="17"></line>';
+  function cover(cat, extraClass) {
+    return '<svg class="bl-cover-art ' + (extraClass || '') + '" viewBox="0 0 400 300" preserveAspectRatio="xMidYMid meet" aria-hidden="true" focusable="false">' +
+      '<circle class="bl-cover-ring" cx="200" cy="155" r="118"/>' +
+      '<g class="bl-cover-motif">' + (MOTIFS[cat] || '') + '</g>' +
+    '</svg>';
   }
 
-  function renderGrid(list) {
-    grid.innerHTML = '';
-    if (list.length === 0) {
-      noResults.classList.add('visible');
-      return;
-    }
-    noResults.classList.remove('visible');
+  function metaHTML(a) {
+    return '<span>' + esc(fmtDate(a.date)) + '</span><span class="bl-dot" aria-hidden="true"></span><span>' + a.mins + ' ' + esc(UI_TEXT.minRead) + '</span>';
+  }
 
-    list.forEach((a, i) => {
-      const card = document.createElement('div');
-      card.className = 'article-card';
-      card.tabIndex = 0;
-      card.setAttribute('role', 'button');
-      card.setAttribute('aria-label', 'Read article: ' + a.title);
-      card.dataset.id = a.id;
-      card.innerHTML = `
-        <div class="card-visual"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">${cardIcon()}</svg></div>
-        <div class="card-body">
-          <div class="card-badge">${a.categoryLabel.toUpperCase()}</div>
-          <h3>${a.title}</h3>
-          <p class="desc">${a.desc}</p>
-          <div class="card-meta">
-            <span>${a.date} · ${a.readTime}</span>
-            <button class="read-link" tabindex="-1">Read <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg></button>
-          </div>
-        </div>
-      `;
-      card.addEventListener('click', () => openArticle(a.id));
-      card.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openArticle(a.id); }
-      });
-      grid.appendChild(card);
+  function link(a, cls, inner) {
+    return '<a class="' + cls + '" href="#article=' + a.id + '" data-article="' + a.id + '">' + inner + '</a>';
+  }
 
-      setTimeout(() => card.classList.add('card-in'), 40 * i);
+  /* ------------------------------------------------------------------
+     RENDER: hero index, counts, featured, latest, guides
+     ------------------------------------------------------------------ */
+  var sorted = ARTICLES.slice().sort(function (a, b) { return a.date < b.date ? 1 : -1; });
+  var featuredArticle = ARTICLES.filter(function (a) { return a.featured; })[0] || sorted[0];
+
+  function renderHeroIndex() {
+    var list = sorted.filter(function (a) { return a !== featuredArticle; }).slice(0, 5);
+    list.unshift(featuredArticle);
+    $('blHeroIndex').innerHTML = list.map(function (a, i) {
+      return '<li>' + link(a, 'bl-index-item',
+        '<span class="bl-index-num">' + (i < 9 ? '0' : '') + (i + 1) + '</span>' +
+        '<span class="bl-index-text"><span class="bl-index-cat">' + esc(catLabel(a.cat)) + '</span>' +
+        '<span class="bl-index-name">' + esc(a.title) + '</span></span>' + ICON_ARROW) + '</li>';
+    }).join('');
+    $('blIssueCount').textContent = UI_TEXT.issueCount(ARTICLES.length);
+  }
+
+  function renderCounts() {
+    Array.prototype.forEach.call(document.querySelectorAll('.bl-topic'), function (btn) {
+      var cat = btn.getAttribute('data-cat');
+      var n = ARTICLES.filter(function (a) { return inCat(a, cat); }).length;
+      var c = btn.querySelector('.bl-topic-count');
+      if (c) c.textContent = n;
     });
   }
 
-  renderGrid(gridArticles);
-
-  /* =========================================================
-     RENDER GUIDES
-     ========================================================= */
-  const guidesGrid = document.getElementById('guidesGrid');
-  guides.forEach(g => {
-    const el = document.createElement('div');
-    el.className = 'guide-card';
-    el.tabIndex = 0;
-    el.setAttribute('role', 'button');
-    el.setAttribute('aria-label', 'Read guide: ' + g.title);
-    el.innerHTML = `
-      <div class="guide-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">${guideIcons[g.icon]}</svg></div>
-      <div class="guide-text"><h4>${g.title}</h4><p>${g.desc}</p></div>
-      <svg class="guide-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
-    `;
-    el.addEventListener('click', () => openArticle(g.id));
-    el.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openArticle(g.id); }
-    });
-    guidesGrid.appendChild(el);
-  });
-
-  /* =========================================================
-     CATEGORY FILTERING
-     ========================================================= */
-  const categoryButtons = document.querySelectorAll('.cat-btn');
-  const searchInput = document.getElementById('blogSearchInput');
-  const searchClearBtn = document.getElementById('searchClearBtn');
-  let activeCategory = 'all';
-
-  function applyFilters() {
-    const query = searchInput.value.trim().toLowerCase();
-    let list = gridArticles;
-
-    if (activeCategory !== 'all') {
-      list = list.filter(a => a.category === activeCategory);
-    }
-
-    if (query !== '') {
-      list = list.filter(a =>
-        a.title.toLowerCase().includes(query) ||
-        a.desc.toLowerCase().includes(query) ||
-        a.categoryLabel.toLowerCase().includes(query)
-      );
-    }
-
-    renderGrid(list);
+  function renderFeatured() {
+    var a = featuredArticle;
+    $('blFeatured').innerHTML =
+      '<article class="bl-feature" aria-labelledby="blFeatureTitle">' +
+        '<div class="bl-feature-art" aria-hidden="true">' +
+          '<svg viewBox="0 0 560 460" preserveAspectRatio="xMidYMid slice" focusable="false">' +
+            '<defs><path id="blStampPath" d="M400 240m-92 0a92 92 0 1 1 184 0a92 92 0 1 1 -184 0"/></defs>' +
+            '<g class="bl-fa-grid"><path d="M0 46h560M0 92h560M0 138h560M0 184h560M0 230h560M0 276h560M0 322h560M0 368h560M0 414h560M56 0v460M112 0v460M168 0v460M224 0v460M280 0v460M336 0v460M392 0v460M448 0v460M504 0v460"/></g>' +
+            '<circle class="bl-fa-ring" cx="230" cy="230" r="170"/><circle class="bl-fa-ring bl-fa-ring-2" cx="230" cy="230" r="120"/>' +
+            '<g class="bl-fa-doc"><path d="M140 96h150l50 50v228H140z"/><path d="M290 96v50h50"/>' +
+              '<path class="bl-fa-lines" d="M168 178h140M168 204h140M168 230h140M168 256h96M168 300h56"/>' +
+              '<path class="bl-fa-sign" d="M168 336c14-14 26 8 40-6s22 10 40-4"/></g>' +
+            '<g class="bl-fa-stamp"><circle cx="400" cy="240" r="108"/><circle cx="400" cy="240" r="76"/>' +
+              '<text><textPath href="#blStampPath">FIRST INFORMATION REPORT · KNOW YOUR RIGHTS ·</textPath></text>' +
+              '<path d="M372 240l20 20 38-42"/></g>' +
+          '</svg>' +
+          '<span class="bl-feature-badge">' + esc(UI_TEXT.featured) + '</span>' +
+        '</div>' +
+        '<div class="bl-feature-body">' +
+          '<p class="bl-eyebrow">' + esc(catLabel(a.cat)) + '</p>' +
+          '<h2 class="bl-feature-title" id="blFeatureTitle">' + link(a, 'bl-feature-link', esc(a.title)) + '</h2>' +
+          '<p class="bl-feature-desc">' + esc(a.desc) + '</p>' +
+          '<div class="bl-meta">' + metaHTML(a) + '</div>' +
+          '<span class="bl-btn" aria-hidden="true">' + esc(UI_TEXT.readArticle) + ICON_ARROW + '</span>' +
+        '</div>' +
+      '</article>';
   }
 
-  categoryButtons.forEach(btn => {
-    btn.addEventListener('click', () => {
-      categoryButtons.forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
-      activeCategory = btn.dataset.category;
-      applyFilters();
+  function leadHTML(a, wide) {
+    return '<article class="bl-lead' + (wide ? ' bl-lead--wide' : '') + ' bl-card">' +
+      '<div class="bl-lead-cover bl-cover">' + cover(a.cat) + '</div>' +
+      '<div class="bl-lead-body">' +
+        '<p class="bl-eyebrow">' + esc(catLabel(a.cat)) + '</p>' +
+        '<h3 class="bl-lead-title">' + link(a, 'bl-card-link', esc(a.title)) + '</h3>' +
+        '<p class="bl-desc">' + esc(a.desc) + '</p>' +
+        '<div class="bl-card-foot"><div class="bl-meta">' + metaHTML(a) + '</div><span class="bl-read" aria-hidden="true">' + esc(UI_TEXT.read) + ICON_ARROW + '</span></div>' +
+      '</div>' +
+    '</article>';
+  }
+  function sideHTML(a) {
+    return '<article class="bl-side bl-card">' +
+      '<div class="bl-side-body">' +
+        '<p class="bl-eyebrow">' + esc(catLabel(a.cat)) + '</p>' +
+        '<h3 class="bl-side-title">' + link(a, 'bl-card-link', esc(a.title)) + '</h3>' +
+        '<div class="bl-meta">' + metaHTML(a) + '</div>' +
+      '</div>' +
+      '<div class="bl-side-thumb bl-cover">' + cover(a.cat, 'bl-cover-art--thumb') + '</div>' +
+    '</article>';
+  }
+  function tileHTML(a, n) {
+    return '<article class="bl-tile bl-card">' +
+      '<div class="bl-tile-top"><span class="bl-tile-num">' + (n < 10 ? '0' : '') + n + '</span><span class="bl-eyebrow">' + esc(catLabel(a.cat)) + '</span></div>' +
+      '<h3 class="bl-tile-title">' + link(a, 'bl-card-link', esc(a.title)) + '</h3>' +
+      '<p class="bl-desc">' + esc(a.desc) + '</p>' +
+      '<div class="bl-card-foot"><div class="bl-meta">' + metaHTML(a) + '</div><span class="bl-read" aria-hidden="true">' + esc(UI_TEXT.read) + ICON_ARROW + '</span></div>' +
+    '</article>';
+  }
+
+  var state = { cat: 'all', q: '' };
+
+  function tokens(q) { return q.toLowerCase().split(/\s+/).filter(Boolean); }
+  function haystack(a) {
+    return [a.title, a.desc, catLabel(a.cat)].concat(a.also.map(catLabel)).join(' ').toLowerCase();
+  }
+  function filtered() {
+    var tk = tokens(state.q);
+    return sorted.filter(function (a) {
+      if (!inCat(a, state.cat)) return false;
+      if (!tk.length) return true;
+      var h = haystack(a);
+      return tk.every(function (t) { return h.indexOf(t) >= 0; });
     });
-  });
+  }
 
-  searchInput.addEventListener('input', () => {
-    searchClearBtn.classList.toggle('visible', searchInput.value.length > 0);
-    applyFilters();
-  });
+  function renderLatest() {
+    var isDefault = state.cat === 'all' && !state.q.trim();
+    var list = filtered();
+    if (isDefault) list = list.filter(function (a) { return a !== featuredArticle; });
 
-  searchClearBtn.addEventListener('click', () => {
-    searchInput.value = '';
-    searchClearBtn.classList.remove('visible');
-    applyFilters();
-    searchInput.focus();
-  });
+    $('blFeaturedSection').hidden = !isDefault;
+    $('blLatestTitle').textContent = isDefault ? UI_TEXT.latestTitle : UI_TEXT.resultsTitle;
 
-  /* =========================================================
-     FEATURED ARTICLE CLICK
-     ========================================================= */
-  const featuredArticle = document.getElementById('featuredArticle');
-  featuredArticle.addEventListener('click', () => openArticle('fir-guide'));
-  featuredArticle.addEventListener('keydown', (e) => {
-    if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openArticle('fir-guide'); }
-  });
+    var q = state.q.trim(), cl = catLabel(state.cat), n = list.length;
+    var status;
+    if (isDefault) status = UI_TEXT.countAll(n);
+    else if (q && state.cat !== 'all') status = UI_TEXT.countForIn(n, q, cl);
+    else if (q) status = UI_TEXT.countFor(n, q);
+    else status = UI_TEXT.countIn(n, cl);
+    $('blStatus').textContent = status;
 
-  /* =========================================================
-     ARTICLE MODAL
-     ========================================================= */
-  const modalOverlay = document.getElementById('modalOverlay');
-  const modalBadge = document.getElementById('modalBadge');
-  const modalTitle = document.getElementById('modalTitle');
-  const modalDate = document.getElementById('modalDate');
-  const modalReadTime = document.getElementById('modalReadTime');
-  const modalBody = document.getElementById('modalBody');
-  const relatedList = document.getElementById('relatedList');
-  const modalCloseBtn = document.getElementById('modalCloseBtn');
-  const backToBlogBtn = document.getElementById('backToBlogBtn');
-  let lastFocusedElement = null;
+    var out = '';
+    if (n) {
+      var side = list.slice(1, 4);
+      out += '<div class="bl-latest-top' + (side.length ? '' : ' bl-latest-top--solo') + '">' + leadHTML(list[0], !side.length);
+      if (side.length) out += '<div class="bl-side-list">' + side.map(sideHTML).join('') + '</div>';
+      out += '</div>';
+      var rest = list.slice(4);
+      if (rest.length) out += '<div class="bl-more">' + rest.map(function (a, i) { return tileHTML(a, i + 5); }).join('') + '</div>';
+    }
+    var grid = $('blLatest');
+    grid.innerHTML = out;
+    grid.hidden = !n;
+    $('blEmpty').hidden = !!n;
+    if (!n) {
+      $('blEmptyQuery').textContent = q ? '“' + q + '”' : cl;
+    }
+    // animate the swap subtly
+    grid.classList.remove('bl-swap');
+    void grid.offsetWidth;
+    grid.classList.add('bl-swap');
+  }
 
-  function renderBody(article) {
-    modalBody.innerHTML = '';
-    article.body.forEach(block => {
-      if (block.type === 'p') {
-        const p = document.createElement('p');
-        p.textContent = block.text;
-        modalBody.appendChild(p);
-      } else if (block.type === 'h3') {
-        const h = document.createElement('h3');
-        h.textContent = block.text;
-        modalBody.appendChild(h);
-      } else if (block.type === 'ul') {
-        const ul = document.createElement('ul');
-        block.items.forEach(item => {
-          const li = document.createElement('li');
-          li.textContent = item;
-          ul.appendChild(li);
-        });
-        modalBody.appendChild(ul);
-      } else if (block.type === 'legal-note') {
-        const note = document.createElement('div');
-        note.className = 'legal-note';
-        note.textContent = block.text;
-        modalBody.appendChild(note);
+  function renderGuides() {
+    $('blGuides').innerHTML = GUIDES.map(function (g, i) {
+      var a = byId[g.id];
+      if (!a) return '';
+      return '<li>' + link(a, 'bl-guide',
+        '<span class="bl-guide-num">' + (i < 9 ? '0' : '') + (i + 1) + '</span>' +
+        '<span class="bl-guide-text"><span class="bl-guide-title">' + esc(g.title) + '</span>' +
+        '<span class="bl-guide-desc">' + esc(g.desc) + '</span>' +
+        '<span class="bl-guide-meta">' + esc(UI_TEXT.guideSteps(steps(a))) + ' · ' + a.mins + ' ' + esc(UI_TEXT.minRead) + '</span></span>' +
+        '<span class="bl-guide-go" aria-hidden="true">' + ICON_ARROW + '</span>') + '</li>';
+    }).join('');
+  }
+
+  /* ------------------------------------------------------------------
+     FILTER + SEARCH
+     ------------------------------------------------------------------ */
+  var topicsEl = $('blTopics');
+  var indicator = $('blTopicIndicator');
+
+  function moveIndicator() {
+    var active = topicsEl.querySelector('.bl-topic.is-active');
+    if (!active || !indicator) return;
+    indicator.style.width = active.offsetWidth + 'px';
+    indicator.style.transform = 'translateX(' + active.offsetLeft + 'px)';
+  }
+
+  function setCategory(cat, opts) {
+    state.cat = cat;
+    Array.prototype.forEach.call(topicsEl.querySelectorAll('.bl-topic'), function (b) {
+      var on = b.getAttribute('data-cat') === cat;
+      b.classList.toggle('is-active', on);
+      b.setAttribute('aria-pressed', on ? 'true' : 'false');
+      if (on && !(opts && opts.noScroll)) {
+        // keep the active topic visible in the horizontal scroller (mobile)
+        var sc = topicsEl;
+        var left = b.offsetLeft - sc.clientWidth / 2 + b.offsetWidth / 2;
+        try { sc.scrollTo({ left: left, behavior: reduceMotion ? 'auto' : 'smooth' }); } catch (e) { sc.scrollLeft = left; }
       }
     });
-
-    if (article.takeaways && article.takeaways.length) {
-      const box = document.createElement('div');
-      box.className = 'takeaways-box';
-      const h = document.createElement('h3');
-      h.textContent = 'Key Takeaways';
-      box.appendChild(h);
-      const ul = document.createElement('ul');
-      article.takeaways.forEach(t => {
-        const li = document.createElement('li');
-        li.textContent = t;
-        ul.appendChild(li);
-      });
-      box.appendChild(ul);
-      modalBody.appendChild(box);
-    }
+    moveIndicator();
+    renderLatest();
   }
 
-  function renderRelated(article) {
-    relatedList.innerHTML = '';
-    const related = articles.filter(a => a.id !== article.id && a.category === article.category).slice(0, 3);
-    const fallback = related.length ? related : articles.filter(a => a.id !== article.id).slice(0, 3);
+  topicsEl.addEventListener('click', function (e) {
+    var b = e.target.closest('.bl-topic');
+    if (!b) return;
+    setCategory(b.getAttribute('data-cat'));
+  });
 
-    fallback.forEach(r => {
-      const item = document.createElement('div');
-      item.className = 'related-item';
-      item.tabIndex = 0;
-      item.setAttribute('role', 'button');
-      item.innerHTML = `<span class="title">${r.title}</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>`;
-      item.addEventListener('click', () => openArticle(r.id));
-      item.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openArticle(r.id); }
-      });
-      relatedList.appendChild(item);
+  var searchEl = $('blSearch'), clearEl = $('blSearchClear');
+  var searchTimer = null;
+  function applySearch(v) {
+    state.q = v;
+    clearEl.hidden = !v;
+    renderLatest();
+  }
+  searchEl.addEventListener('input', function () {
+    var v = searchEl.value;
+    clearEl.hidden = !v;
+    clearTimeout(searchTimer);
+    searchTimer = setTimeout(function () { applySearch(v); }, 120);
+  });
+  $('blSearchForm').addEventListener('submit', function (e) {
+    e.preventDefault();
+    clearTimeout(searchTimer);
+    applySearch(searchEl.value);
+    scrollToResults();
+  });
+  searchEl.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape' && searchEl.value) { e.preventDefault(); clearSearch(); }
+  });
+  function clearSearch() {
+    searchEl.value = '';
+    clearTimeout(searchTimer);
+    applySearch('');
+    searchEl.focus();
+  }
+  clearEl.addEventListener('click', clearSearch);
+
+  function scrollToResults() {
+    var target = $('blLatestSection');
+    var navH = (document.querySelector('.navbar') || { offsetHeight: 0 }).offsetHeight;
+    var topH = (document.querySelector('.bl-topics') || { offsetHeight: 0 }).offsetHeight;
+    var y = target.getBoundingClientRect().top + window.pageYOffset - navH - topH - 8;
+    window.scrollTo({ top: y, behavior: reduceMotion ? 'auto' : 'smooth' });
+  }
+
+  // Popular search shortcuts in the hero
+  Array.prototype.forEach.call(document.querySelectorAll('[data-q]'), function (b) {
+    b.addEventListener('click', function () {
+      searchEl.value = b.getAttribute('data-q');
+      applySearch(searchEl.value);
+      scrollToResults();
     });
-  }
-
-  function openArticle(id) {
-    const article = articles.find(a => a.id === id);
-    if (!article) return;
-
-    lastFocusedElement = document.activeElement;
-
-    modalBadge.textContent = article.categoryLabel.toUpperCase();
-    modalTitle.textContent = article.title;
-    modalDate.textContent = article.date;
-    modalReadTime.textContent = article.readTime;
-    renderBody(article);
-    renderRelated(article);
-
-    modalOverlay.classList.add('active');
-    document.body.style.overflow = 'hidden';
-    modalOverlay.scrollTop = 0;
-    modalCloseBtn.focus();
-  }
-
-  function closeModal() {
-    modalOverlay.classList.remove('active');
-    document.body.style.overflow = '';
-    if (lastFocusedElement) lastFocusedElement.focus();
-  }
-
-  modalCloseBtn.addEventListener('click', closeModal);
-  backToBlogBtn.addEventListener('click', closeModal);
-
-  modalOverlay.addEventListener('click', (e) => {
-    if (e.target === modalOverlay) closeModal();
   });
 
-  document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape' && modalOverlay.classList.contains('active')) {
-      closeModal();
+  // Reset from the empty state
+  $('blEmptyReset').addEventListener('click', function () {
+    searchEl.value = '';
+    clearEl.hidden = true;
+    state.q = '';
+    setCategory('all');
+    searchEl.focus();
+  });
+
+  // "/" focuses search (when not typing elsewhere and reader is closed)
+  document.addEventListener('keydown', function (e) {
+    if (e.key !== '/' || e.ctrlKey || e.metaKey || e.altKey) return;
+    var t = e.target;
+    if (t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA' || t.isContentEditable)) return;
+    if (!readerEl.hidden) return;
+    e.preventDefault();
+    searchEl.focus();
+  });
+
+  /* ------------------------------------------------------------------
+     ARTICLE READER (full-screen overlay driven by the URL hash)
+     ------------------------------------------------------------------ */
+  var readerEl = $('blReader'), readerScroll = $('blReaderScroll'), articleEl = $('blArticle');
+  var progressEl = $('blProgress'), readerCat = $('blReaderCat');
+  var lastTrigger = null, openedInPage = false, currentId = null;
+
+  function articleHTML(a) {
+    var related = sorted.filter(function (x) { return x !== a && (x.cat === a.cat || x.also.indexOf(a.cat) >= 0 || a.also.indexOf(x.cat) >= 0); });
+    sorted.forEach(function (x) { if (related.length < 3 && x !== a && related.indexOf(x) < 0) related.push(x); });
+    related = related.slice(0, 3);
+
+    var heads = a.body.filter(function (b) { return b.t === 'h'; });
+    var hi = 0;
+    var body = a.body.map(function (b) {
+      if (b.t === 'h') { hi++; return '<h2 id="bl-sec-' + hi + '">' + esc(b.x) + '</h2>'; }
+      if (b.t === 'p') return '<p>' + esc(b.x) + '</p>';
+      if (b.t === 'ul') return '<ul class="bl-list">' + b.items.map(function (i) { return '<li>' + esc(i) + '</li>'; }).join('') + '</ul>';
+      if (b.t === 'ol') return '<ol class="bl-steps">' + b.items.map(function (i) { return '<li>' + esc(i) + '</li>'; }).join('') + '</ol>';
+      if (b.t === 'note') {
+        return '<aside class="bl-note" role="note"><div class="bl-note-label">' +
+          '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7.5v.5"/></svg>' +
+          esc(UI_TEXT[b.label] || UI_TEXT.legalNote) + '</div><p>' + esc(b.x) + '</p></aside>';
+      }
+      return '';
+    }).join('');
+
+    var alsoTxt = a.also.length ? '<span class="bl-dot" aria-hidden="true"></span><span>' + esc(UI_TEXT.alsoIn) + ' ' + a.also.map(function (c) { return esc(catLabel(c)); }).join(', ') + '</span>' : '';
+
+    return '' +
+      '<header class="bl-article-head">' +
+        '<p class="bl-eyebrow">' + esc(catLabel(a.cat)) + '</p>' +
+        '<h1 class="bl-article-title" id="blReaderTitle" tabindex="-1">' + esc(a.title) + '</h1>' +
+        '<div class="bl-meta bl-article-meta">' + metaHTML(a) + alsoTxt + '</div>' +
+      '</header>' +
+      '<div class="bl-article-cover bl-cover">' + cover(a.cat, 'bl-cover-art--wide') + '</div>' +
+      '<div class="bl-article-layout">' +
+        (heads.length ? '<nav class="bl-toc" aria-label="' + esc(UI_TEXT.inThisArticle) + '"><p class="bl-toc-label">' + esc(UI_TEXT.inThisArticle) + '</p><ol>' +
+          heads.map(function (h, i) { return '<li><a href="#bl-sec-' + (i + 1) + '" data-toc="bl-sec-' + (i + 1) + '">' + esc(h.x) + '</a></li>'; }).join('') +
+        '</ol></nav>' : '') +
+        '<div class="bl-prose">' +
+          '<p class="bl-intro">' + esc(a.intro) + '</p>' +
+          body +
+          '<section class="bl-takeaways" aria-labelledby="blTakeawaysTitle">' +
+            '<h2 id="blTakeawaysTitle">' + esc(UI_TEXT.keyTakeaways) + '</h2>' +
+            '<ol>' + a.takeaways.map(function (t) { return '<li>' + esc(t) + '</li>'; }).join('') + '</ol>' +
+          '</section>' +
+          '<aside class="bl-disclaimer" role="note"><strong>' + esc(UI_TEXT.disclaimerLabel) + '.</strong> ' + esc(UI_TEXT.disclaimer) + '</aside>' +
+        '</div>' +
+      '</div>' +
+      '<section class="bl-related" aria-labelledby="blRelatedTitle">' +
+        '<h2 id="blRelatedTitle">' + esc(UI_TEXT.related) + '</h2>' +
+        '<div class="bl-related-grid">' + related.map(function (r) {
+          return '<article class="bl-rel bl-card">' +
+            '<div class="bl-rel-cover bl-cover">' + cover(r.cat, 'bl-cover-art--thumb') + '</div>' +
+            '<p class="bl-eyebrow">' + esc(catLabel(r.cat)) + '</p>' +
+            '<h3 class="bl-rel-title"><a class="bl-card-link" href="#article=' + r.id + '" data-article="' + r.id + '" data-related="1">' + esc(r.title) + '</a></h3>' +
+            '<div class="bl-meta">' + metaHTML(r) + '</div>' +
+          '</article>';
+        }).join('') + '</div>' +
+      '</section>';
+  }
+
+  function hashId() {
+    var m = /^#article=([a-z0-9-]+)$/.exec(window.location.hash || '');
+    return m && byId[m[1]] ? m[1] : null;
+  }
+
+  function openReader(id) {
+    var a = byId[id];
+    if (!a) return;
+    var wasOpen = !readerEl.hidden;
+    currentId = id;
+    articleEl.innerHTML = articleHTML(a);
+    readerCat.textContent = catLabel(a.cat);
+    document.title = a.title + ' — Legal Lens Journal';
+    readerScroll.scrollTop = 0;
+    updateProgress();
+    if (!wasOpen) {
+      readerEl.hidden = false;
+      document.documentElement.classList.add('bl-locked');
+      // next frame for the enter transition
+      requestAnimationFrame(function () { readerEl.classList.add('is-open'); });
+      $('blMainWrap').setAttribute('aria-hidden', 'true');
+    }
+    var t = $('blReaderTitle');
+    if (t) t.focus({ preventScroll: true });
+  }
+
+  function closeReaderUI() {
+    if (readerEl.hidden) return;
+    readerEl.classList.remove('is-open');
+    document.documentElement.classList.remove('bl-locked');
+    $('blMainWrap').removeAttribute('aria-hidden');
+    document.title = BASE_TITLE;
+    currentId = null;
+    var done = function () { readerEl.hidden = true; articleEl.innerHTML = ''; };
+    if (reduceMotion) done(); else setTimeout(done, 220);
+    // restore focus to whatever opened the reader
+    var target = lastTrigger && document.body.contains(lastTrigger) ? lastTrigger : null;
+    if (!target && lastTrigger && lastTrigger.getAttribute) {
+      var sel = '[data-article="' + lastTrigger.getAttribute('data-article') + '"]';
+      target = document.querySelector('#blMainWrap ' + sel);
+    }
+    (target || searchEl).focus({ preventScroll: true });
+  }
+
+  // Close: step back in history if we pushed the article entry, otherwise strip the hash.
+  function requestClose() {
+    if (openedInPage) {
+      openedInPage = false;
+      history.back();
+    } else {
+      history.replaceState(null, '', window.location.pathname + window.location.search);
+      closeReaderUI();
+    }
+  }
+
+  function syncFromHash() {
+    var id = hashId();
+    if (id) openReader(id);
+    else { openedInPage = false; closeReaderUI(); }
+  }
+  window.addEventListener('hashchange', syncFromHash);
+
+  // Clicks on any article link
+  document.addEventListener('click', function (e) {
+    var a = e.target.closest('a[data-article]');
+    if (!a) return;
+    if (e.metaKey || e.ctrlKey || e.shiftKey || e.button === 1) return; // allow new tab
+    e.preventDefault();
+    var id = a.getAttribute('data-article');
+    if (!readerEl.hidden) {
+      // switching article inside the reader (related): replace, don't stack history
+      history.replaceState(history.state, '', '#article=' + id);
+      openReader(id);
+      return;
+    }
+    lastTrigger = a;
+    openedInPage = true;
+    history.pushState({ blArticle: id }, '', '#article=' + id);
+    openReader(id);
+  });
+
+  // Whole card is clickable (link inside stays the accessible target)
+  document.addEventListener('click', function (e) {
+    if (e.target.closest('a, button')) return;
+    var card = e.target.closest('.bl-card, .bl-feature');
+    if (!card) return;
+    var l = card.querySelector('a[data-article]');
+    if (l) l.click();
+  });
+
+  $('blReaderBack').addEventListener('click', requestClose);
+  $('blReaderClose').addEventListener('click', requestClose);
+
+  // Table-of-contents links scroll inside the reader without touching the hash
+  articleEl.addEventListener('click', function (e) {
+    var t = e.target.closest('a[data-toc]');
+    if (!t) return;
+    e.preventDefault();
+    var sec = document.getElementById(t.getAttribute('data-toc'));
+    if (sec) {
+      var y = sec.getBoundingClientRect().top - readerScroll.getBoundingClientRect().top + readerScroll.scrollTop - 24;
+      readerScroll.scrollTo({ top: y, behavior: reduceMotion ? 'auto' : 'smooth' });
     }
   });
 
-  /* =========================================================
-     SCROLL REVEAL
-     ========================================================= */
-  const revealEls = document.querySelectorAll('.reveal');
-  if ('IntersectionObserver' in window && !prefersReducedMotion) {
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          entry.target.classList.add('in-view');
-          observer.unobserve(entry.target);
-        }
-      });
-    }, { threshold: 0.12 });
-
-    revealEls.forEach(el => observer.observe(el));
-  } else {
-    revealEls.forEach(el => el.classList.add('in-view'));
+  function updateProgress() {
+    var max = readerScroll.scrollHeight - readerScroll.clientHeight;
+    var p = max > 0 ? Math.min(1, readerScroll.scrollTop / max) : 0;
+    progressEl.style.transform = 'scaleX(' + p + ')';
+    readerEl.classList.toggle('is-scrolled', readerScroll.scrollTop > 8);
   }
+  readerScroll.addEventListener('scroll', updateProgress, { passive: true });
+
+  // Escape closes; Tab is kept inside the reader
+  readerEl.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape') { e.preventDefault(); requestClose(); return; }
+    if (e.key !== 'Tab') return;
+    var f = Array.prototype.filter.call(
+      readerEl.querySelectorAll('a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])'),
+      function (el) { return el.offsetParent !== null; }
+    );
+    if (!f.length) return;
+    var first = f[0], last = f[f.length - 1];
+    if (e.shiftKey && (document.activeElement === first || !readerEl.contains(document.activeElement) || document.activeElement.id === 'blReaderTitle')) {
+      e.preventDefault(); last.focus();
+    } else if (!e.shiftKey && document.activeElement === last) {
+      e.preventDefault(); first.focus();
+    }
+  });
+
+  /* ------------------------------------------------------------------
+     NAVBAR (same behaviour as other Legal Lens pages)
+     ------------------------------------------------------------------ */
+  (function initNavbar() {
+    var langWrap = $('langWrap'), langTrigger = $('langTrigger'), langMenu = $('langMenu');
+    if (langWrap && langTrigger && langMenu) {
+      var closeLang = function () { langWrap.classList.remove('open'); langTrigger.setAttribute('aria-expanded', 'false'); };
+      langTrigger.addEventListener('click', function (e) {
+        e.stopPropagation();
+        var open = langWrap.classList.toggle('open');
+        langTrigger.setAttribute('aria-expanded', open ? 'true' : 'false');
+      });
+      document.addEventListener('click', function (e) { if (!langWrap.contains(e.target)) closeLang(); });
+      document.addEventListener('keydown', function (e) { if (e.key === 'Escape') closeLang(); });
+      Array.prototype.forEach.call(langMenu.querySelectorAll('.lang-option'), function (opt) {
+        opt.addEventListener('click', function () {
+          if (typeof window.changeLanguage === 'function') window.changeLanguage(opt.getAttribute('data-lang'));
+          closeLang();
+        });
+      });
+    }
+    Array.prototype.forEach.call(document.querySelectorAll('.mobile-lang-option'), function (btn) {
+      btn.addEventListener('click', function () { if (typeof window.changeLanguage === 'function') window.changeLanguage(btn.getAttribute('data-lang')); });
+    });
+    var hb = $('hamburgerBtn'), mm = $('mobileMenu');
+    if (hb && mm) {
+      hb.addEventListener('click', function () {
+        var open = mm.classList.toggle('open');
+        hb.classList.toggle('open', open);
+        hb.setAttribute('aria-expanded', open ? 'true' : 'false');
+        hb.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
+      });
+    }
+  })();
+
+  /* ------------------------------------------------------------------
+     REVEAL ON SCROLL (skipped for reduced motion)
+     ------------------------------------------------------------------ */
+  var reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  function initReveal() {
+    var els = document.querySelectorAll('.bl-reveal');
+    if (reduceMotion || !('IntersectionObserver' in window)) {
+      Array.prototype.forEach.call(els, function (el) { el.classList.add('is-in'); });
+      return;
+    }
+    document.documentElement.classList.add('bl-js-reveal');
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (en) {
+        if (en.isIntersecting) { en.target.classList.add('is-in'); io.unobserve(en.target); }
+      });
+    }, { rootMargin: '0px 0px -8% 0px', threshold: 0.06 });
+    Array.prototype.forEach.call(els, function (el) { io.observe(el); });
+  }
+
+  /* ------------------------------------------------------------------
+     INIT
+     ------------------------------------------------------------------ */
+  var BASE_TITLE = document.title;
+  renderHeroIndex();
+  renderCounts();
+  renderFeatured();
+  renderGuides();
+  renderLatest();
+  moveIndicator();
+  window.addEventListener('resize', moveIndicator);
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(moveIndicator);
+  initReveal();
+  if (hashId()) openReader(hashId());
 })();
 </script>
-
+<script src="translations.js"></script>
+<script src="language.js"></script>
+<script src="blog.js"></script>
 </body>
 </html>

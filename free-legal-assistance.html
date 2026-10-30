@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Free Legal Assistance — CASEONE</title>
+<meta name="description" content="Apply for free legal assistance on CASEONE. Submit your details and documents to check your eligibility.">
+<link rel="icon" href="favicon.ico">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="lawyer-system.css">
+<style>
+  /* Page-only styles (Free Legal Assistance). Shared styles stay in lawyer-system.css. */
+  .fla-hero { padding: 48px 0 24px; }
+  .fla-hero h1 { font-size: clamp(28px, 4vw, 40px); line-height: 1.15; letter-spacing: -.02em; margin: 0 0 10px; }
+  .fla-hero p { font-size: 15.5px; line-height: 1.65; color: var(--ls-600); margin: 0; max-width: 620px; }
+  .fla-main { max-width: 760px; margin: 0 auto; padding: 8px 0 56px; }
+  .fla-steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin: 0 0 28px; padding: 0; list-style: none; counter-reset: fla; }
+  .fla-steps li { font-size: 12.5px; color: var(--ls-400); counter-increment: fla; }
+  .fla-steps li::before { content: ""; display: block; height: 3px; border-radius: 3px; background: var(--ls-200); margin-bottom: 9px; }
+  .fla-steps li span::before { content: counter(fla) ". "; }
+  .fla-steps li.done, .fla-steps li.current { color: var(--ls-black); font-weight: 500; }
+  .fla-steps li.done::before, .fla-steps li.current::before { background: var(--ls-black); }
+  .fla-after { font-size: 12.5px; color: var(--ls-600); margin: -16px 0 24px; }
+  .fla-h2 { font-size: 20px; margin: 0 0 6px; letter-spacing: -.01em; }
+  .fla-sub { font-size: 14px; color: var(--ls-600); margin: 0 0 22px; line-height: 1.6; }
+  .fla-req { font-weight: 400; color: var(--ls-600); }
+  .fla-err { color: var(--ls-black); font-size: 12.5px; font-weight: 600; margin-top: 6px; }
+  .fla-docs { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--ls-200); }
+  .fla-doc { display: grid; grid-template-columns: 1fr auto; gap: 6px 16px; align-items: center; padding: 16px 0; border-bottom: 1px solid var(--ls-200); }
+  .fla-doc-title { font-size: 14px; font-weight: 600; }
+  .fla-doc-title small { font-weight: 400; color: var(--ls-600); font-size: 12px; margin-left: 6px; }
+  .fla-doc-status { font-size: 12.5px; color: var(--ls-600); margin-top: 3px; overflow-wrap: anywhere; }
+  .fla-doc-status.ok { color: var(--ls-black); }
+  .fla-doc-status.bad { color: var(--ls-black); font-weight: 600; }
+  .fla-doc-actions { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; justify-content: flex-end; }
+  .fla-or { font-size: 12px; letter-spacing: .12em; text-transform: uppercase; color: var(--ls-600); padding: 10px 0 0; }
+  .fla-file { position: absolute; width: 1px; height: 1px; opacity: 0; pointer-events: none; }
+  .fla-summary { display: grid; grid-template-columns: max-content 1fr; gap: 8px 18px; margin: 0 0 20px; font-size: 14px; }
+  .fla-summary dt { color: var(--ls-600); }
+  .fla-summary dd { margin: 0; overflow-wrap: anywhere; }
+  .fla-status { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; flex-wrap: wrap; margin-bottom: 12px; }
+  .fla-info { margin-top: 28px; border-top: 1px solid var(--ls-200); padding-top: 18px; font-size: 13px; color: var(--ls-700); line-height: 1.65; }
+  .fla-info summary { cursor: pointer; font-weight: 600; color: var(--ls-black); font-size: 13.5px; }
+  .fla-info ul { margin: 12px 0 0; padding-left: 18px; }
+  .fla-info li { margin-bottom: 6px; }
+  .fla-info a { font-weight: 600; }
+  /* Link buttons keep button colours (the shared ".ls-body a { color: inherit }" would win otherwise). */
+  .ls-body a.ls-btn { color: #fff; text-decoration: none; }
+  .ls-body a.ls-btn-outline { color: var(--ls-black); }
+  .ls-body .ls-card-dark a.ls-btn { color: #000; }
+  .fla-filters { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 18px; }
+  @media (max-width: 560px) {
+    .fla-summary { grid-template-columns: 1fr; gap: 2px; }
+    .fla-summary dd { margin-bottom: 10px; }
+    .fla-doc { grid-template-columns: 1fr; }
+    .fla-doc-actions { justify-content: flex-start; }
+    .fla-filters { grid-template-columns: 1fr; }
+    .fla-steps li { font-size: 11.5px; }
+  }
+</style>
+</head>
+<body class="ls-body">
+
+<header class="ls-header">
+  <div class="ls-header-inner">
+    <a href="index.html" class="ls-brand"><svg viewBox="0 0 24 24" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 4 6v6c0 5 3.4 9.2 8 10 4.6-.8 8-5 8-10V6z"/></svg>CASEONE</a>
+    <button class="ls-menu-btn" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="lsNav"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
+    <nav class="ls-nav" id="lsNav" aria-label="Main navigation">
+      <a href="index.html">Home</a>
+      <a href="lawyer-connect.html" aria-current="page">Lawyer Connect</a>
+      <a href="find-a-lawyer.html">Find a Paid Lawyer</a>
+      <a href="my-requests.html">My Requests</a>
+      <a href="lawyer-portal.html" class="ls-nav-pill">For Lawyers</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <div class="ls-wrap">
+    <section class="fla-hero">
+      <div class="ls-breadcrumb"><a href="lawyer-connect.html">Lawyer Connect</a> / Free Legal Assistance</div>
+      <h1>Free Legal Assistance</h1>
+      <p>Apply for free legal assistance. Submit your details and documents to check your eligibility.</p>
+    </section>
+
+    <div class="fla-main">
+      <div id="aidApp" aria-live="polite">
+        <div class="ls-skeleton" aria-hidden="true"></div>
+        <p class="ls-sr">Loading…</p>
+      </div>
+
+      <details class="fla-info" id="aidInfo">
+        <summary>Important information <span class="fla-req">· a CASEONE volunteer program, not government legal aid</span></summary>
+        <ul>
+          <li>This is a CASEONE volunteer program, <strong>not government legal aid</strong>. CASEONE does not appoint government legal-aid advocates.</li>
+          <li>Free legal services under the Legal Services Authorities Act, 1987 are provided by NALSA and State, District and Taluka Legal Services Authorities. You can apply there at any time: <a href="https://nalsa.gov.in/" target="_blank" rel="noopener noreferrer">nalsa.gov.in</a> · helpline <a href="tel:15100">15100</a>. Their eligibility rules may differ from CASEONE's.</li>
+          <li>CASEONE's criterion: annual household income below <span id="infoLimit">₹2,50,000</span>. Every application is reviewed by an authorised CASEONE admin; eligibility is not approved from the income you type.</li>
+          <li>Documents are stored privately. Only you and authorised CASEONE reviewers can open them; they are never shown on lawyer profiles or public pages. CASEONE does not claim official verification of your documents.</li>
+          <li>In an emergency, call <a href="tel:112">112</a> (police), <a href="tel:181">181</a> (women helpline) or <a href="tel:1098">1098</a> (Childline).</li>
+        </ul>
+      </details>
+    </div>
+  </div>
+</main>
+
+<!-- Free consultation request -->
+<div class="ls-modal" id="freeRequestModal" role="dialog" aria-modal="true" aria-labelledby="freeRequestTitle">
+  <div class="ls-modal-box">
+    <button class="ls-modal-close" type="button" data-close-modal="freeRequestModal" aria-label="Close">×</button>
+    <div id="freeRequestForm">
+      <h2 id="freeRequestTitle">Request Free Consultation</h2>
+      <p class="ls-sub" id="freeRequestSub">Free consultation · ₹0. The lawyer will accept or decline your request.</p>
+      <div class="ls-alert" id="freeRequestError" role="alert" hidden></div>
+      <form id="freeRequestFormEl" novalidate>
+        <div class="ls-field">
+          <label for="frIssue">Area of your problem</label>
+          <select class="ls-select" id="frIssue" required></select>
+        </div>
+        <div class="ls-field">
+          <label for="frMessage">Short description</label>
+          <textarea class="ls-textarea" id="frMessage" maxlength="2000" required placeholder="What happened and what help do you need? Do not include ID numbers or passwords."></textarea>
+        </div>
+        <div class="ls-field-row">
+          <div class="ls-field">
+            <label for="frType">How would you like to talk?</label>
+            <select class="ls-select" id="frType" required>
+              <option value="Phone">Phone</option>
+              <option value="Video">Video</option>
+              <option value="In-Person">In person</option>
+            </select>
+          </div>
+          <div class="ls-field">
+            <label for="frLanguage">Language</label>
+            <select class="ls-select" id="frLanguage">
+              <option value="">Any</option>
+              <option>English</option><option>Hindi</option><option>Marathi</option><option>Tamil</option><option>Telugu</option><option>Kannada</option>
+            </select>
+          </div>
+        </div>
+        <div class="ls-actions">
+          <button class="ls-btn" type="submit" id="frSubmit">Send request (₹0)</button>
+          <button class="ls-btn ls-btn-outline" type="button" data-close-modal="freeRequestModal">Cancel</button>
+        </div>
+      </form>
+    </div>
+    <div id="freeRequestDone" hidden>
+      <h2>Request sent</h2>
+      <p class="ls-sub">Your request is <strong>pending</strong>. Nothing is confirmed until the lawyer accepts it. You can follow it in My Requests.</p>
+      <div class="ls-actions">
+        <a class="ls-btn" href="my-requests.html">View My Requests</a>
+        <button class="ls-btn ls-btn-outline" type="button" data-close-modal="freeRequestModal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<footer class="ls-footer">
+  <div class="ls-wrap ls-footer-inner">
+    <div><a href="about.html">About</a><a href="contact.html">Contact</a><a href="lawyer-connect.html">Lawyer Connect</a></div>
+    <div>© 2026 CASEONE. Information here is not legal advice.</div>
+  </div>
+</footer>
+
+<script src="config.js"></script>
+<script src="auth.js"></script>
+<script src="lawyer-data.js"></script>
+<script src="lawyer-report.js"></script>
+<script src="lawyer-system.js"></script>
+<script src="free-legal-assistance.js"></script>
+</body>
+</html>

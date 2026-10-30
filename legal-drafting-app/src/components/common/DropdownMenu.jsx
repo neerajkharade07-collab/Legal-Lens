@@ -4,6 +4,7 @@ import './DropdownMenu.css';
 
 /**
  * Accessible menu button. items: [{ id, label, icon, onSelect, disabled }]
+ * header (optional): non-interactive content shown above the items (e.g. account details).
  * Arrow keys move, Enter/Space select, Escape / outside click close.
  */
 export function DropdownMenu({
@@ -13,6 +14,7 @@ export function DropdownMenu({
   align = 'end',
   buttonClassName,
   buttonLabel,
+  header,
 }) {
   const [open, setOpen] = useState(false);
   const buttonRef = useRef(null);
@@ -77,6 +79,11 @@ export function DropdownMenu({
           className={cn('dropdown__menu', `dropdown__menu--${align}`)}
           onKeyDown={onMenuKeyDown}
         >
+          {header && (
+            <div className="dropdown__header" role="presentation">
+              {header}
+            </div>
+          )}
           {items.map((item) => {
             const ItemIcon = item.icon;
             return (

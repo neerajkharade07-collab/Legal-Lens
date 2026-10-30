@@ -109,3 +109,13 @@
     content: '';
   }
 }
+
+/* Phase 4 — a preview page holding a block taller than A4 is never clipped when printed. */
+@media print {
+  body.has-court-preview .cr-page[data-tall] {
+    height: auto;
+    min-height: 297mm;
+    overflow: visible;
+    break-inside: auto;
+  }
+}

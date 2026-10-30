@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Legal Lens — Find a Lawyer</title>
+<title>CASEONE — Find a Lawyer</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
@@ -403,6 +403,16 @@
   .rating-block .sub { font-size: 11.5px; font-weight: 400; color: var(--gray-500); }
 
   .fee-block { text-align: right; }
+  .results-footnote { font-size: 12px; color: var(--gray-600); margin: 18px 0 0; }
+  .credential-line { font-size: 11.5px; color: var(--gray-600); margin: -6px 0 12px; }
+  .service-chip { display: inline-block; font-size: 11px; font-weight: 500; padding: 4px 10px; border-radius: 999px; border: 1px solid var(--black); }
+  .service-chip.muted { border-color: var(--gray-300); color: var(--gray-600); }
+  .avatar-circle.has-photo { padding: 0; overflow: hidden; background: var(--gray-100); }
+  .avatar-circle.has-photo img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .inline-link { color: inherit; font-weight: 600; text-decoration: underline; text-underline-offset: 3px; }
+  .form-error { border: 1px solid var(--black); background: var(--gray-100); border-radius: 10px; padding: 10px 14px; font-size: 13px; margin: -12px 0 18px; }
+  a.btn-send, a.btn-cancel { display: inline-flex; align-items: center; justify-content: center; text-decoration: none; }
+  .consult-type-option:focus-visible { outline: 2px solid var(--black); outline-offset: 2px; }
   .fee-block .fee-label { font-size: 10.5px; color: var(--gray-500); }
   .fee-block .fee-value { font-size: 13.5px; font-weight: 600; }
 
@@ -437,6 +447,14 @@
     transition: transform 0.15s var(--ease);
   }
   .btn-request:hover { transform: translateY(-1px); }
+  .btn-request:disabled, .btn-send:disabled { background: var(--white); color: var(--gray-500); border-color: var(--gray-300); cursor: not-allowed; transform: none; }
+  /* Automatic listing: review status + disclosure + report */
+  .listing-disclosure { max-width: 760px; margin: 14px auto 0; font-size: 12.5px; line-height: 1.65; color: var(--gray-600); border: 1px solid var(--gray-200); border-radius: 12px; padding: 10px 14px; background: var(--white); text-align: left; }
+  .listing-disclosure strong { color: var(--black); }
+  .review-note { font-size: 12px; line-height: 1.6; color: var(--gray-600); border-left: 2px solid var(--gray-300); padding: 2px 0 2px 10px; margin: 0 0 14px; }
+  .btn-report { background: none; border: 0; padding: 6px 0; font: inherit; font-size: 12.5px; color: var(--gray-600); text-decoration: underline; cursor: pointer; }
+  .btn-report:hover { color: var(--black); }
+  .btn-report:focus-visible { outline: 2px solid var(--black); outline-offset: 2px; border-radius: 4px; }
 
   /* ================= EMPTY STATE ================= */
   .empty-state {
@@ -452,6 +470,80 @@
   .empty-state .icon-circle svg { width: 22px; height: 22px; stroke: var(--gray-500); }
   .empty-state h3 { font-size: 17px; font-weight: 600; margin: 0 0 8px; }
   .empty-state p { font-size: 13.5px; color: var(--gray-600); margin: 0 0 22px; }
+
+  /* ================= DIRECTORY EMPTY (no approved lawyers yet) ================= */
+  .directory-empty { display: none; }
+  body.is-directory-empty .directory-empty { display: block; }
+  body.is-directory-empty .filter-panel,
+  body.is-directory-empty .results-header,
+  body.is-directory-empty #emptyState { display: none !important; }
+  .directory-empty-card {
+    position: relative;
+    overflow: hidden;
+    max-width: 760px;
+    margin: 8px auto 0;
+    padding: 56px 40px 44px;
+    text-align: center;
+    border: 1px solid var(--gray-200);
+    border-radius: var(--radius-lg);
+    background:
+      radial-gradient(120% 80% at 50% 0%, var(--gray-100) 0%, var(--white) 62%);
+    box-shadow: var(--shadow-soft);
+  }
+  .directory-empty-card::before {
+    content: "";
+    position: absolute; inset: 0 0 auto 0; height: 3px;
+    background: linear-gradient(90deg, transparent, var(--black), transparent);
+    opacity: 0.85;
+  }
+  .directory-empty-mark {
+    width: 64px; height: 64px; margin: 0 auto 22px;
+    border-radius: 50%;
+    background: var(--black);
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 12px 28px rgba(0,0,0,0.18);
+  }
+  .directory-empty-mark svg { width: 28px; height: 28px; stroke: var(--white); }
+  .directory-empty-eyebrow {
+    font-size: 11.5px; font-weight: 600; letter-spacing: 0.16em; text-transform: uppercase;
+    color: var(--gray-500); margin: 0 0 10px;
+  }
+  .directory-empty h3 {
+    font-size: clamp(22px, 3.2vw, 28px); font-weight: 600; letter-spacing: -0.02em;
+    margin: 0 0 12px; color: var(--black);
+  }
+  .directory-empty-text {
+    font-size: 14.5px; line-height: 1.7; color: var(--gray-600);
+    max-width: 540px; margin: 0 auto 28px;
+  }
+  .directory-empty-points {
+    list-style: none; padding: 0; margin: 0 auto 32px;
+    display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px;
+    max-width: 620px; text-align: left;
+  }
+  .directory-empty-points li {
+    display: flex; gap: 10px; align-items: flex-start;
+    font-size: 12.5px; line-height: 1.5; color: var(--gray-800);
+    padding: 12px 14px; border: 1px solid var(--gray-200); border-radius: var(--radius-sm);
+    background: var(--white);
+  }
+  .directory-empty-points svg { flex: 0 0 16px; width: 16px; height: 16px; stroke: var(--black); margin-top: 1px; }
+  .directory-empty-actions { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+  .directory-empty-actions a {
+    font-family: 'Poppins', sans-serif; font-size: 13.5px; font-weight: 500;
+    padding: 12px 22px; border-radius: 999px; text-decoration: none;
+    transition: transform 0.15s var(--ease), background 0.2s var(--ease), border-color 0.2s var(--ease);
+  }
+  .directory-empty-actions .primary { background: var(--black); color: var(--white); border: 1px solid var(--black); }
+  .directory-empty-actions .primary:hover { transform: translateY(-1px); }
+  .directory-empty-actions .secondary { background: var(--white); color: var(--gray-800); border: 1px solid var(--gray-300); }
+  .directory-empty-actions .secondary:hover { border-color: var(--black); background: var(--gray-100); }
+  .directory-empty-note { font-size: 12px; color: var(--gray-500); margin: 22px 0 0; }
+  @media (max-width: 640px) {
+    .directory-empty-card { padding: 40px 20px 32px; border-radius: var(--radius-md); }
+    .directory-empty-points { grid-template-columns: 1fr; }
+    .directory-empty-actions a { flex: 1 1 100%; text-align: center; }
+  }
 
   /* ================= DISCLAIMER ================= */
   .page-disclaimer {
@@ -636,13 +728,14 @@
   <div class="navbar-inner">
     <a href="index.html" class="nav-brand">
       <svg viewBox="0 0 24 24" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 4 6v6c0 5 3.4 9.2 8 10 4.6-.8 8-5 8-10V6z"></path></svg>
-      Legal Lens
+      CASEONE
     </a>
 
     <nav aria-label="Main navigation">
       <ul class="nav-links">
         <li><a href="index.html">Home</a></li>
-        <li><a href="find-a-lawyer.html" class="current">Lawyer Connect</a></li>
+        <li><a href="lawyer-connect.html" class="current">Lawyer Connect</a></li>
+        <li><a href="my-requests.html">My Requests</a></li>
         <li><a href="about.html">About Us</a></li>
         <li><a href="contact.html">Contact Us</a></li>
       </ul>
@@ -655,7 +748,8 @@
       </button>
 
       <div id="navLoggedOut" style="display:flex; gap:10px;">
-        <a href="lawyer-dashboard.html" class="nav-btn solid">Register as a Lawyer</a>
+        <a href="lawyer-portal.html" class="nav-btn">For Lawyers</a>
+        <a href="login.html" class="nav-btn solid" id="navSignIn">Sign in</a>
       </div>
 
       <button class="nav-user" id="navUser" style="display:none;">
@@ -674,16 +768,17 @@
 
   <!-- ================= HERO ================= -->
   <section class="page-hero">
-    <div class="breadcrumb"><a href="find-a-lawyer.html">Lawyer Connect</a> / Find a Lawyer</div>
-    <h1>Find the Right Lawyer for Your Legal Need</h1>
-    <p>Connect with lawyers based on your legal issue, location, language, experience, and consultation preferences.</p>
+    <div class="breadcrumb"><a href="lawyer-connect.html">Lawyer Connect</a> / Find a Paid Lawyer</div>
+    <h1>Find a Paid Lawyer</h1>
+    <p>Real advocates registered on CASEONE, with fees shown upfront. Each profile shows whether CASEONE has reviewed it. Can't afford a lawyer? <a href="free-legal-assistance.html" class="inline-link">Apply for free assistance</a>.</p>
+    <p class="listing-disclosure" id="listingDisclosure"><strong>Please note:</strong> advocates list themselves on CASEONE. Profile details, including Bar Council enrollment, are provided by the advocate and have not been independently checked unless the profile is marked “Credentials reviewed by CASEONE”. You can send requests only to reviewed advocates. See something wrong? Open the profile and use “Report this profile”.</p>
   </section>
 
   <!-- ================= FILTER PANEL ================= -->
   <section class="filter-panel reveal">
     <div class="main-search">
       <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-      <input type="text" id="mainSearchInput" placeholder="Search by legal issue, lawyer name, or practice area" autocomplete="off" aria-label="Search lawyers">
+      <input type="text" id="mainSearchInput" placeholder="Search by lawyer name, city, qualification or practice area" autocomplete="off" aria-label="Search lawyers">
     </div>
 
     <div class="filter-grid">
@@ -743,7 +838,7 @@
       </div>
 
       <div class="filter-field">
-        <label for="filterBudget">Consultation Budget</label>
+        <label for="filterBudget">Consultation Fee</label>
         <select id="filterBudget">
           <option value="">Any Budget</option>
           <option value="0-1000">Under ₹1,000</option>
@@ -771,14 +866,14 @@
     <div class="results-header reveal">
       <div>
         <h2>Lawyers Available for You</h2>
-        <div class="results-count" id="resultsCount">12 lawyers found</div>
+        <div class="results-count" id="resultsCount" aria-live="polite">Loading lawyers…</div>
       </div>
       <div class="sort-field">
         <label for="sortSelect">Sort by</label>
         <select id="sortSelect">
-          <option value="recommended">Recommended</option>
+          <option value="recommended">Newest first</option>
           <option value="experience">Experience</option>
-          <option value="rating">Rating</option>
+          <option value="name">Name (A–Z)</option>
           <option value="fee-asc">Consultation Fee: Low to High</option>
           <option value="fee-desc">Consultation Fee: High to Low</option>
         </select>
@@ -787,15 +882,35 @@
 
     <div class="lawyer-grid" id="lawyerGrid"></div>
 
+    <div class="directory-empty" id="directoryEmpty" aria-live="polite">
+      <div class="directory-empty-card">
+        <div class="directory-empty-mark"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l7 3v5c0 4.5-3 8.3-7 10-4-1.7-7-5.5-7-10V6l7-3z"></path><path d="M9 12l2 2 4-4"></path></svg></div>
+        <p class="directory-empty-eyebrow">Lawyer Connect</p>
+        <h3>No advocates listed yet</h3>
+        <p class="directory-empty-text" id="directoryEmptyText">No advocates offering paid consultations have registered on CASEONE yet. Advocates appear here as soon as they complete registration, and every profile shows whether CASEONE has reviewed it. Please check back soon.</p>
+        <ul class="directory-empty-points">
+          <li><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6L9 17l-5-5"></path></svg><span>Review status shown on every profile</span></li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6L9 17l-5-5"></path></svg><span>Fees shown upfront, no paid rankings</span></li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6L9 17l-5-5"></path></svg><span>Private contact details and documents never shown</span></li>
+        </ul>
+        <div class="directory-empty-actions">
+          <a class="primary" href="lawyer-register.html">Are you an advocate? Register</a>
+          <a class="secondary" href="lawyer-connect.html">Back to Lawyer Connect</a>
+        </div>
+        <p class="directory-empty-note">Can't afford a lawyer? <a href="free-legal-assistance.html" class="inline-link">Apply for free legal assistance</a>.</p>
+      </div>
+    </div>
+
     <div class="empty-state" id="emptyState">
       <div class="icon-circle"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg></div>
-      <h3>No lawyers found</h3>
-      <p>Try changing your filters or search terms.</p>
+      <h3 id="emptyStateTitle">No lawyers found</h3>
+      <p id="emptyStateText">Try changing your filters or search terms.</p>
       <button class="btn-clear" id="emptyClearBtn">Clear Filters</button>
     </div>
+    <p class="results-footnote">* Free consultations (₹0) are available only to applicants approved through <a href="free-legal-assistance.html" class="inline-link">Free Legal Assistance</a>.</p>
   </section>
 
-  <p class="page-disclaimer">Legal Lens helps users discover and connect with legal professionals. Information shown in this prototype is for demonstration purposes and does not constitute legal advice.</p>
+  <p class="page-disclaimer">Profiles contain information provided by the advocates. Only profiles marked “Credentials reviewed by CASEONE” have had a basic check by the CASEONE team, and that is not official Bar Council or government verification. CASEONE does not rank or recommend advocates, and sending a request does not create a lawyer–client relationship until the advocate accepts.</p>
 
 </div>
 
@@ -806,7 +921,7 @@
       <div>
         <div class="footer-brand">
           <svg viewBox="0 0 24 24" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 4 6v6c0 5 3.4 9.2 8 10 4.6-.8 8-5 8-10V6z"></path></svg>
-          Legal Lens
+          CASEONE
         </div>
         <p class="footer-tagline">AI-powered legal guidance and lawyer connections, made simple for every citizen.</p>
       </div>
@@ -815,7 +930,7 @@
         <ul>
           <li><a href="legal-help-dashboard/index.html">AI Legal Guidance</a></li>
           <li><a href="find-a-lawyer.html">Lawyer Connect</a></li>
-          <li><a href="/legal-drafting/">Legal Drafting Assistant</a></li>
+          <li><a href="legal-drafting/">Legal Drafting Assistant</a></li>
         </ul>
       </div>
       <div class="footer-col">
@@ -835,8 +950,8 @@
       </div>
     </div>
     <div class="footer-bottom">
-      <p>Legal Lens provides general educational information and AI-assisted guidance. It does not constitute legal advice. Always consult a qualified legal professional for advice regarding your specific situation.</p>
-      <span class="footer-copy">© 2026 Legal Lens</span>
+      <p>CASEONE provides general educational information and AI-assisted guidance. It does not constitute legal advice. Always consult a qualified legal professional for advice regarding your specific situation.</p>
+      <span class="footer-copy">© 2026 CASEONE</span>
     </div>
   </div>
 </footer>
@@ -853,11 +968,17 @@
           <span class="verified-badge" id="profileVerifiedBadge"></span>
         </div>
       </div>
+      <p class="review-note" id="profileReviewNote" hidden>This profile was listed automatically when the advocate registered. Its details have not been independently checked yet, and requests open after a CASEONE review.</p>
 
       <div class="profile-stats-grid">
         <div class="profile-stat"><div class="val" id="profileExperience">—</div><div class="label">EXPERIENCE</div></div>
-        <div class="profile-stat"><div class="val" id="profileRating">—</div><div class="label">RATING</div></div>
-        <div class="profile-stat"><div class="val" id="profileConsultations">—</div><div class="label">CONSULTATIONS</div></div>
+        <div class="profile-stat"><div class="val" id="profileRating">—</div><div class="label">CONSULTATION FEE</div></div>
+        <div class="profile-stat"><div class="val" id="profileConsultations">—</div><div class="label">FREE SERVICE</div></div>
+      </div>
+
+      <div class="profile-section" id="profileBarSection">
+        <h4>BAR COUNCIL &amp; QUALIFICATIONS</h4>
+        <p id="profileBar">—</p>
       </div>
 
       <div class="profile-section">
@@ -887,7 +1008,9 @@
 
       <div class="modal-form-actions">
         <button class="btn-send" id="profileRequestBtn">Request Consultation</button>
+        <a class="btn-cancel" id="profileFullLink" href="#">Full profile</a>
       </div>
+      <button type="button" class="btn-report" id="profileReportBtn">Report this profile</button>
     </div>
   </div>
 </div>
@@ -900,7 +1023,8 @@
 
       <div class="consult-form-body" id="consultFormBody">
         <h2 class="form-title" id="consultTitle">Request Consultation</h2>
-        <p class="form-sub" id="consultSub">Demo Mode: requests are saved in this browser only and are not sent to the lawyer.</p>
+        <p class="form-sub" id="consultSub">Your request is sent to the lawyer. It stays “Pending” until they accept.</p>
+        <div class="form-error" id="consultError" role="alert" hidden></div>
 
         <form id="consultForm">
           <div class="form-row">
@@ -923,17 +1047,17 @@
           <div class="form-row form-row-split">
             <div>
               <label for="consultDate">Preferred Date</label>
-              <input type="date" id="consultDate" required>
+              <input type="date" id="consultDate">
             </div>
             <div>
               <label for="consultTime">Preferred Time</label>
-              <input type="time" id="consultTime" required>
+              <input type="time" id="consultTime">
             </div>
           </div>
 
           <div class="form-row">
             <label for="consultDesc">Brief Description of Legal Problem</label>
-            <textarea id="consultDesc" placeholder="Describe your situation briefly..." required></textarea>
+            <textarea id="consultDesc" placeholder="Describe your situation briefly (do not include ID numbers or passwords)" maxlength="2000" required></textarea>
           </div>
 
           <div class="form-row">
@@ -951,15 +1075,15 @@
 
           <div class="form-row">
             <label>Consultation Type</label>
-            <div class="consult-type-group" id="consultTypeGroup">
-              <div class="consult-type-option" data-type="Video">Video</div>
-              <div class="consult-type-option" data-type="Phone">Phone</div>
-              <div class="consult-type-option" data-type="In-Person">In-Person</div>
+            <div class="consult-type-group" id="consultTypeGroup" role="radiogroup" aria-label="Consultation type">
+              <div class="consult-type-option" data-type="Video" role="radio" tabindex="0" aria-checked="false">Video</div>
+              <div class="consult-type-option" data-type="Phone" role="radio" tabindex="0" aria-checked="false">Phone</div>
+              <div class="consult-type-option" data-type="In-Person" role="radio" tabindex="0" aria-checked="false">In-Person</div>
             </div>
           </div>
 
           <div class="modal-form-actions">
-            <button type="submit" class="btn-send" id="sendConsultBtn">Save Demo Request</button>
+            <button type="submit" class="btn-send" id="sendConsultBtn">Send Request</button>
             <button type="button" class="btn-cancel" id="cancelConsultBtn">Cancel</button>
           </div>
         </form>
@@ -967,31 +1091,41 @@
 
       <div class="consult-success" id="consultSuccess">
         <div class="check-circle"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg></div>
-        <h2>Demo Request Saved</h2>
-        <p>Demo Mode: this consultation request was saved only in this browser. It has <strong>not</strong> been sent to the lawyer and no notification will be sent.</p>
-        <button class="btn-send" id="consultDoneBtn">Done</button>
+        <h2>Request sent</h2>
+        <p id="consultSuccessText">Your request has been sent. It is <strong>pending</strong> — the consultation is not confirmed until the lawyer accepts it.</p>
+        <div class="modal-form-actions" style="justify-content:center;">
+          <a class="btn-send" href="my-requests.html">View My Requests</a>
+          <button class="btn-cancel" id="consultDoneBtn">Close</button>
+        </div>
       </div>
 
     </div>
   </div>
 </div>
 
+<script src="config.js"></script>
+<script src="auth.js"></script>
 <script src="lawyer-data.js"></script>
+<script src="lawyer-report.js"></script>
 <script>
 (function () {
 
   /* =========================================================
      LAWYER DATA
-     Sourced from the shared lawyer-data.js module (single
-     source of truth, also used by lawyer-profile.html).
+     From the CASEONE API via lawyer-data.js: lawyers who completed
+     registration are listed automatically (`reviewed` says whether CASEONE
+     reviewed the profile; only reviewed ones accept requests). Every value from a
+     lawyer's profile is escaped before it is put into the page.
      ========================================================= */
-  const { getLawyers, getLawyerById } = window.LegalLensLawyerData;
+  const { getLawyers, getLawyerById, escapeHtml, formatFee, photoSrc, requestConsultation } = window.LegalLensLawyerData;
+  const esc = escapeHtml;
 
   /* =========================================================
      AUTH / NAV STATE (reuses existing localStorage.loggedIn pattern)
      ========================================================= */
+  let sessionUser = null; // { id, name, email, role } from the real session (auth.js)
   function isLoggedIn() {
-    return localStorage.getItem('loggedIn') === 'true';
+    return !!sessionUser;
   }
 
   function refreshNavAuthState() {
@@ -1000,7 +1134,7 @@
     if (isLoggedIn()) {
       loggedOutEl.style.display = 'none';
       userEl.style.display = 'flex';
-      const name = localStorage.getItem('userName') || 'Account';
+      const name = sessionUser.name || 'Account';
       document.getElementById('navUserName').textContent = name;
       document.getElementById('navUserAvatar').textContent = name.charAt(0).toUpperCase();
     } else {
@@ -1009,7 +1143,13 @@
     }
   }
 
+  const sessionReady = (typeof restoreSession === 'function' ? restoreSession() : Promise.resolve(false))
+    .then((ok) => { sessionUser = ok && typeof getCurrentUser === 'function' ? getCurrentUser() : null; refreshNavAuthState(); return sessionUser; })
+    .catch(() => null);
   refreshNavAuthState();
+  document.getElementById('navUser').addEventListener('click', () => {
+    window.location.href = sessionUser && sessionUser.role === 'lawyer' ? 'lawyer-dashboard.html' : 'my-requests.html';
+  });
 
   /* =========================================================
      RESUME CONSULTATION REQUEST AFTER LOGIN
@@ -1017,13 +1157,14 @@
      is consumed; the lawyer id survives in its own session key so we
      can reopen the modal exactly where the visitor left off.)
      ========================================================= */
-  const resumeLawyerId = sessionStorage.getItem('postLoginConsultLawyer');
-  if (resumeLawyerId && isLoggedIn()) {
-    sessionStorage.removeItem('postLoginConsultLawyer');
-    getLawyerById(resumeLawyerId).then(l => {
-      if (l) startConsultationRequest(resumeLawyerId);
-    });
-  }
+  sessionReady.then(() => {
+    let resumeLawyerId = null;
+    try { resumeLawyerId = sessionStorage.getItem('postLoginConsultLawyer'); } catch (e) { /* blocked */ }
+    if (resumeLawyerId && isLoggedIn()) {
+      try { sessionStorage.removeItem('postLoginConsultLawyer'); } catch (e) { /* blocked */ }
+      getLawyerById(resumeLawyerId).then(l => { if (l) startConsultationRequest(resumeLawyerId); });
+    }
+  });
 
   /* =========================================================
      SAVED LAWYERS (localStorage)
@@ -1066,7 +1207,26 @@
   const resultsCount = document.getElementById('resultsCount');
 
   function initials(name) {
-    return name.replace('Adv. ', '').split(' ').map(w => w.charAt(0)).slice(0, 2).join('').toUpperCase();
+    return window.LegalLensLawyerData.initials(name);
+  }
+
+  /** Photo when the advocate uploaded one; otherwise initials. */
+  function avatarHTML(l, cls) {
+    const src = photoSrc(l);
+    if (src) return `<div class="${cls} has-photo"><img src="${esc(src)}" alt="Photo of ${esc(l.name)}" loading="lazy" onerror="this.parentNode.classList.remove('has-photo');this.parentNode.textContent='${esc(initials(l.name))}';"></div>`;
+    return `<div class="${cls}">${esc(initials(l.name))}</div>`;
+  }
+
+  /** Review status: reviewed (CASEONE / official sources) or listed automatically and not yet reviewed. */
+  function badgeFor(l) {
+    const D = window.LegalLensLawyerData;
+    return D.isReviewed(l)
+      ? `<span class="verified-badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg> ${esc(D.verificationLabel(l))}</span>`
+      : `<span class="pending-badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg> ${esc(D.verificationLabel(l))}</span>`;
+  }
+
+  function credentialLine(l) {
+    return [l.qualifications, l.stateBarCouncil].filter(Boolean).join(' · ');
   }
 
   function buildCard(l, index) {
@@ -1075,33 +1235,34 @@
     card.className = 'lawyer-card';
     card.dataset.id = l.id;
 
-    const badgeHTML = l.verified
-      ? `<span class="verified-badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg> Verified Lawyer</span>`
-      : `<span class="pending-badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg> Verification Pending</span>`;
+    const badgeHTML = badgeFor(l);
 
     card.innerHTML = `
       <div class="card-top">
-        <div class="avatar-circle">${initials(l.name)}</div>
-        <button class="save-btn ${saved ? 'saved' : ''}" data-save-id="${l.id}" aria-label="${saved ? 'Remove from saved lawyers' : 'Save lawyer'}" aria-pressed="${saved}">
+        ${avatarHTML(l, 'avatar-circle')}
+        <button class="save-btn ${saved ? 'saved' : ''}" data-save-id="${esc(l.id)}" aria-label="${saved ? 'Remove from saved lawyers' : 'Save lawyer'}" aria-pressed="${saved}">
           <svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 0 0 0-7.8z"></path></svg>
         </button>
       </div>
-      <h3 class="lawyer-name">${l.name}</h3>
+      <h3 class="lawyer-name">${esc(l.name)}</h3>
       ${badgeHTML}
-      <div class="practice-areas">${l.practiceAreas.join(' • ')}</div>
+      <div class="practice-areas">${esc(l.practiceAreas.join(' • '))}</div>
+      ${credentialLine(l) ? `<div class="credential-line">${esc(credentialLine(l))}</div>` : ''}
       <div class="card-meta-list">
-        <div class="meta-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"></circle><path d="M4 21c0-4 3.6-7 8-7s8 3 8 7"></path></svg>${l.experience} Years Experience</div>
-        <div class="meta-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 6-9 12-9 12s-9-6-9-12a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>${l.location}</div>
-        <div class="meta-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line></svg>${l.languages.join(' • ')}</div>
+        <div class="meta-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"></circle><path d="M4 21c0-4 3.6-7 8-7s8 3 8 7"></path></svg>${esc(l.experience)} Years Experience</div>
+        <div class="meta-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 6-9 12-9 12s-9-6-9-12a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>${esc([l.location, l.state].filter(Boolean).join(', ') || 'Location not listed')}</div>
+        <div class="meta-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line></svg>${esc(l.languages.join(' • '))}</div>
       </div>
-      <p class="card-desc">${l.description}</p>
+      <p class="card-desc">${esc(l.description)}</p>
       <div class="card-stats">
-        <div class="rating-block"><svg viewBox="0 0 24 24"><polygon points="12 2 15 9 22 9.5 17 14.5 18.5 22 12 18 5.5 22 7 14.5 2 9.5 9 9"></polygon></svg>${l.rating.toFixed(1)}<span class="sub">(${l.consultations})</span></div>
-        <div class="fee-block"><div class="fee-label">Consultation from</div><div class="fee-value">₹${l.consultationFee.toLocaleString('en-IN')}</div></div>
+        <div class="service-block">${l.offersFree ? '<span class="service-chip">Also offers free help*</span>' : '<span class="service-chip muted">Paid consultation</span>'}</div>
+        <div class="fee-block"><div class="fee-label">Consultation fee</div><div class="fee-value">${esc(formatFee(l))}</div></div>
       </div>
       <div class="card-buttons">
-        <button class="btn-view" data-view-id="${l.id}">View Profile</button>
-        <button class="btn-request" data-request-id="${l.id}">Request Consultation</button>
+        <button class="btn-view" data-view-id="${esc(l.id)}">View Profile</button>
+        ${l.requestsOpen
+          ? `<button class="btn-request" data-request-id="${esc(l.id)}">Request Consultation</button>`
+          : `<button class="btn-request" disabled title="Requests open after a CASEONE review">Requests open after review</button>`}
       </div>
     `;
 
@@ -1109,8 +1270,43 @@
     return card;
   }
 
+  function showLoadError() {
+    document.body.classList.remove('is-directory-empty');
+    grid.innerHTML = '';
+    const box = document.createElement('div');
+    box.className = 'load-error';
+    box.setAttribute('role', 'alert');
+    box.style.cssText = 'grid-column:1/-1;padding:24px;border:1px solid #e5e5e5;border-radius:12px;text-align:center;';
+    const title = document.createElement('p');
+    title.style.cssText = 'font-weight:600;margin:0 0 6px;';
+    title.textContent = "Couldn't load lawyers right now.";
+    const text = document.createElement('p');
+    text.style.cssText = 'margin:0 0 12px;color:#555;';
+    text.textContent = 'Please check your internet connection and try again. (Local setup: make sure the CASEONE backend is running.)';
+    const retry = document.createElement('button');
+    retry.className = 'btn-clear';
+    retry.type = 'button';
+    retry.textContent = 'Try again';
+    retry.addEventListener('click', renderResults);
+    box.append(title, text, retry);
+    grid.appendChild(box);
+    emptyState.classList.remove('visible');
+    resultsCount.textContent = '';
+  }
+
   function renderResults() {
-    getLawyers().then(all => {
+    getLawyers().catch(() => null).then(all => {
+      if (!all) { showLoadError(); return; }
+      // No approved, published lawyers at all (not a filter result): show the
+      // directory empty state instead of "No lawyers found / clear filters".
+      const directoryEmpty = all.length === 0 && !showSavedOnly;
+      document.body.classList.toggle('is-directory-empty', directoryEmpty);
+      if (directoryEmpty) {
+        grid.innerHTML = '';
+        emptyState.classList.remove('visible');
+        resultsCount.textContent = '';
+        return;
+      }
       let list = applyActiveFilters(all);
 
       if (showSavedOnly) {
@@ -1123,6 +1319,7 @@
       grid.innerHTML = '';
 
       if (list.length === 0) {
+        describeNoMatches();
         emptyState.classList.add('visible');
       } else {
         emptyState.classList.remove('visible');
@@ -1132,6 +1329,25 @@
       resultsCount.textContent = `${list.length} lawyer${list.length === 1 ? '' : 's'} found`;
       attachCardListeners();
     });
+  }
+
+  /** "No lawyers found" text that names what the visitor searched for. */
+  function describeNoMatches() {
+    const val = (id) => { const el = document.getElementById(id); return el ? el.value.trim() : ''; };
+    const parts = [];
+    if (val('mainSearchInput')) parts.push('“' + val('mainSearchInput') + '”');
+    if (val('filterIssue')) parts.push(val('filterIssue'));
+    if (val('filterLocation')) parts.push('in ' + val('filterLocation'));
+    if (val('filterLanguage')) parts.push('speaking ' + val('filterLanguage'));
+    const title = document.getElementById('emptyStateTitle');
+    const text = document.getElementById('emptyStateText');
+    if (showSavedOnly && !parts.length) {
+      title.textContent = 'No saved lawyers';
+      text.textContent = 'Lawyers you save appear here.';
+      return;
+    }
+    title.textContent = parts.length ? 'No listed lawyers match ' + parts.join(', ') : 'No lawyers match these filters';
+    text.textContent = 'Try fewer filters or a nearby city. New advocates appear here as soon as they register.';
   }
 
   /* =========================================================
@@ -1148,14 +1364,15 @@
     return all.filter(l => {
       if (query) {
         const haystack = [
-          l.name, l.location, l.description,
+          l.name, l.location, l.state, l.description, l.qualifications, l.stateBarCouncil,
           ...l.practiceAreas, ...l.languages
         ].join(' ').toLowerCase();
         if (!haystack.includes(query)) return false;
       }
 
       if (issue && !l.practiceAreas.includes(issue)) return false;
-      if (location && l.location !== location) return false;
+      // Real profiles may say "Pune" or "Kothrud, Pune": match the city as a word.
+      if (location && !l.location.toLowerCase().split(/[,/\-]+/).map(x => x.trim()).includes(location.toLowerCase())) return false;
       if (language && !l.languages.includes(language)) return false;
 
       if (experience) {
@@ -1165,7 +1382,8 @@
 
       if (budget) {
         const [min, max] = budget.split('-').map(Number);
-        if (l.consultationFee < min || l.consultationFee > max) return false;
+        const fee = l.paidConsultationFee != null ? l.paidConsultationFee : l.consultationFee;
+        if (fee < min || fee > max) return false;
       }
 
       return true;
@@ -1178,11 +1396,11 @@
 
     switch (sortBy) {
       case 'experience': sorted.sort((a, b) => b.experience - a.experience); break;
-      case 'rating': sorted.sort((a, b) => b.rating - a.rating); break;
+      case 'name': sorted.sort((a, b) => a.name.localeCompare(b.name)); break;
       case 'fee-asc': sorted.sort((a, b) => a.consultationFee - b.consultationFee); break;
       case 'fee-desc': sorted.sort((a, b) => b.consultationFee - a.consultationFee); break;
       default:
-        sorted.sort((a, b) => (b.verified - a.verified) || (b.rating - a.rating));
+        break; // API order (newest first) — CASEONE does not rank advocates
     }
 
     return sorted;
@@ -1255,21 +1473,31 @@
       currentProfileId = id;
       profileLastFocused = document.activeElement;
 
-      document.getElementById('profileAvatar').textContent = initials(l.name);
+      const av = document.getElementById('profileAvatar');
+      av.outerHTML = avatarHTML(l, 'avatar-circle').replace('class="avatar-circle', 'id="profileAvatar" class="avatar-circle');
       document.getElementById('profileName').textContent = l.name;
-      document.getElementById('profileVerifiedBadge').innerHTML = l.verified
-        ? `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg> Verified Lawyer`
-        : `<span class="pending-badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg> Verification Pending</span>`;
+      const vb = document.getElementById('profileVerifiedBadge');
+      vb.className = '';
+      vb.innerHTML = badgeFor(l);
+      document.getElementById('profileReviewNote').hidden = !!l.requestsOpen;
+      const rq = document.getElementById('profileRequestBtn');
+      rq.disabled = !l.requestsOpen;
+      rq.textContent = l.requestsOpen ? 'Request Consultation' : 'Requests open after review';
+      const rp = document.getElementById('profileReportBtn');
+      rp.setAttribute('data-report-lawyer', l.id);
+      rp.setAttribute('data-report-name', l.name);
 
       document.getElementById('profileExperience').textContent = l.experience + ' yrs';
-      document.getElementById('profileRating').textContent = l.rating.toFixed(1);
-      document.getElementById('profileConsultations').textContent = l.consultations;
+      document.getElementById('profileRating').textContent = formatFee(l);
+      document.getElementById('profileConsultations').textContent = l.offersFree ? '₹0*' : '—';
+      document.getElementById('profileBar').textContent = [l.qualifications, l.stateBarCouncil, l.barNumber ? 'Enrollment ' + l.barNumber : ''].filter(Boolean).join(' · ') || 'Not listed';
+      document.getElementById('profileFullLink').href = `lawyer-profile.html?id=${encodeURIComponent(l.id)}`;
 
-      document.getElementById('profilePracticeAreas').innerHTML = l.practiceAreas.map(p => `<span>${p}</span>`).join('');
-      document.getElementById('profileLanguages').innerHTML = l.languages.map(p => `<span>${p}</span>`).join('');
-      document.getElementById('profileLocation').textContent = l.location + ', India';
+      document.getElementById('profilePracticeAreas').innerHTML = l.practiceAreas.map(p => `<span>${esc(p)}</span>`).join('');
+      document.getElementById('profileLanguages').innerHTML = l.languages.map(p => `<span>${esc(p)}</span>`).join('');
+      document.getElementById('profileLocation').textContent = l.location ? [l.location, l.state].filter(Boolean).join(', ') + ', India' : 'Location not listed';
       document.getElementById('profileDescription').textContent = l.description;
-      document.getElementById('profileFee').textContent = `Starting from ₹${l.consultationFee.toLocaleString('en-IN')} per session`;
+      document.getElementById('profileFee').textContent = formatFee(l) === 'Fee not listed' ? 'Consultation fee not listed' : `${formatFee(l)} per consultation (paid service)` + (l.offersFree ? '. Free consultations (₹0) are available to approved free-assistance applicants.' : '');
 
       profileModalOverlay.classList.add('active');
       document.body.style.overflow = 'hidden';
@@ -1302,20 +1530,37 @@
   let currentConsultLawyerId = null;
   let selectedConsultType = null;
 
-  function startConsultationRequest(id) {
-    // SIH demo: no customer login required. The request is stored only in
-    // this browser (labelled as a demo in the modal) and is not sent anywhere.
+  async function startConsultationRequest(id) {
+    // Requests are real: a signed-in CLIENT account is required.
+    await sessionReady;
+    if (!sessionUser) {
+      try {
+        sessionStorage.setItem('postLoginRedirect', 'find-a-lawyer.html');
+        sessionStorage.setItem('postLoginConsultLawyer', id);
+      } catch (e) { /* storage blocked */ }
+      window.location.href = 'login.html';
+      return;
+    }
+    if (sessionUser.role !== 'customer') {
+      window.alert('Consultation requests are sent from a client account. Please sign in with a client account.');
+      return;
+    }
 
     getLawyerById(id).then(l => {
       if (!l) return;
+      if (!l.requestsOpen) {
+        window.alert('This advocate\'s profile has not been reviewed by CASEONE yet, so requests are not open. Please choose a reviewed advocate.');
+        return;
+      }
 
       currentConsultLawyerId = id;
       consultLastFocused = document.activeElement;
+      document.getElementById('consultError').hidden = true;
 
-      document.getElementById('consultSub').textContent = `Demo Mode: a request for ${l.name} is saved in this browser only and is not sent to the lawyer.`;
+      document.getElementById('consultSub').textContent = `Request a paid consultation with ${l.name} (fee: ${formatFee(l)}). Nothing is booked until the lawyer accepts. No payment is taken on CASEONE.`;
       consultForm.reset();
       selectedConsultType = null;
-      document.querySelectorAll('.consult-type-option').forEach(o => o.classList.remove('selected'));
+      document.querySelectorAll('.consult-type-option').forEach(o => { o.classList.remove('selected'); o.setAttribute('aria-checked', 'false'); });
 
       consultFormBody.classList.remove('hidden');
       consultSuccess.classList.remove('active');
@@ -1338,11 +1583,14 @@
   consultModalOverlay.addEventListener('click', (e) => { if (e.target === consultModalOverlay) closeConsultModal(); });
 
   document.querySelectorAll('.consult-type-option').forEach(opt => {
-    opt.addEventListener('click', () => {
-      document.querySelectorAll('.consult-type-option').forEach(o => o.classList.remove('selected'));
+    const choose = () => {
+      document.querySelectorAll('.consult-type-option').forEach(o => { o.classList.remove('selected'); o.setAttribute('aria-checked', 'false'); });
       opt.classList.add('selected');
+      opt.setAttribute('aria-checked', 'true');
       selectedConsultType = opt.dataset.type;
-    });
+    };
+    opt.addEventListener('click', choose);
+    opt.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); choose(); } });
   });
 
   consultForm.addEventListener('submit', (e) => {
@@ -1353,29 +1601,30 @@
       return;
     }
 
-    const request = {
-      id: 'req_' + Date.now().toString(36) + Math.random().toString(36).slice(2, 8),
+    const sendBtn = document.getElementById('sendConsultBtn');
+    const errBox = document.getElementById('consultError');
+    errBox.hidden = true;
+    sendBtn.disabled = true;
+    sendBtn.textContent = 'Sending…';
+    requestConsultation({
       lawyerId: currentConsultLawyerId,
-      customerName: localStorage.getItem('userName') || 'Guest Client',
-      customerEmail: localStorage.getItem('userEmail') || '',
+      serviceType: 'paid',
       issue: document.getElementById('consultIssue').value,
-      date: document.getElementById('consultDate').value,
-      time: document.getElementById('consultTime').value,
-      description: document.getElementById('consultDesc').value,
+      preferredDate: document.getElementById('consultDate').value,
+      preferredTime: document.getElementById('consultTime').value,
+      message: document.getElementById('consultDesc').value,
       language: document.getElementById('consultLang').value,
-      type: selectedConsultType,
-      status: 'pending',
-      requestedAt: new Date().toISOString()
-    };
-
-    // Simulate persistence for the prototype (no real backend yet).
-    let requests = [];
-    try { requests = JSON.parse(localStorage.getItem('legalLensConsultRequests')) || []; } catch (e) {}
-    requests.push(request);
-    localStorage.setItem('legalLensConsultRequests', JSON.stringify(requests));
-
-    consultFormBody.classList.add('hidden');
-    consultSuccess.classList.add('active');
+      type: selectedConsultType
+    }).then(() => {
+      consultFormBody.classList.add('hidden');
+      consultSuccess.classList.add('active');
+    }).catch((err) => {
+      errBox.textContent = err && err.message ? err.message : 'Could not send the request. Please try again.';
+      errBox.hidden = false;
+    }).finally(() => {
+      sendBtn.disabled = false;
+      sendBtn.textContent = 'Send Request';
+    });
   });
 
   function alert_inline_fallback() {

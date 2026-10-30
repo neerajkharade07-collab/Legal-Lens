@@ -4,8 +4,9 @@ import { Button } from '../common/Button';
 import { ToolHeader, ToolLoading, ToolError, DemoNotice } from './IntelShared';
 import { SourceNoticeModal } from './SourceNoticeModal';
 import './CitationsTool.css';
+import { AiCitations } from './AiReview';
 
-export function CitationsTool({ intel, nav }) {
+function DemoCitationsTool({ intel, nav }) {
   const state = intel.results.citations;
   const { run } = intel;
   const [sourceFor, setSourceFor] = useState(null);
@@ -78,4 +79,12 @@ export function CitationsTool({ intel, nav }) {
       />
     </div>
   );
+}
+
+/**
+ * Signed-in account document: the real review (Phase 3, CASEONE server).
+ * Otherwise (Demo Mode, document review page): the existing demo tool, unchanged.
+ */
+export function CitationsTool(props) {
+  return props.intel?.aiReview ? <AiCitations {...props} /> : <DemoCitationsTool {...props} />;
 }

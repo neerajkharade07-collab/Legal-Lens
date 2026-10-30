@@ -4,9 +4,11 @@ import { DraftSetupContext } from './contexts';
 import { DraftSetupModal } from '../components/draft-setup/DraftSetupModal';
 import { draftingService, documentsService } from '../services';
 import { extractDemoFields } from '../utils/extractDemoFields';
+import { buildDraftTemplate } from '../data/draftTemplates';
+import { templateOutline } from '../utils/aiText';
 import { useDocuments } from '../hooks/useDocuments';
 import { useToast } from '../hooks/useToast';
-import { SAVE_LOCATION } from '../services/config';
+import { saveLocation } from '../services/config';
 
 /**
  * Owns the Draft Setup modal so any screen (dashboard cards, hero, navbar,
@@ -54,14 +56,25 @@ export function DraftSetupProvider({ children }) {
 
       let doc;
       if (values.useAi) {
-        // POST /api/drafting/generate — the server writes the draft with OpenAI
-        // and saves it (plus version 1) to the user's account.
+        // POST /api/drafting/generate — the server writes the draft with Gemini,
+        // checks it and saves it (plus version 1) to the user's account. On any
+        // failure it rejects (the modal shows the message) and nothing is saved.
         doc = await documentsService.generateAiDraft({
           typeId: payload.typeId,
           language: payload.setup.language,
           description: payload.setup.description,
           fields: extractDemoFields(payload.typeId, payload.setup.description).values,
           title: payload.name,
+          // The selected CASEONE template's sections guide the structure of the AI draft.
+          template: {
+            name: state.template?.name ?? '',
+            outline: templateOutline(
+              buildDraftTemplate(payload.typeId, {
+                setup: payload.setup,
+                templateId: payload.origin?.templateId,
+              }),
+            ),
+          },
         });
         addDocument(doc);
       } else {
@@ -75,7 +88,7 @@ export function DraftSetupProvider({ children }) {
         title: values.useAi ? 'AI draft created' : 'Preliminary draft created',
         description: values.useAi
           ? 'AI-generated — check every detail and all [DETAIL REQUIRED] placeholders.'
-          : `Saved ${SAVE_LOCATION}. Review every detail before use.`,
+          : `Saved ${saveLocation()}. Review every detail before use.`,
         variant: 'success',
       });
       return doc;

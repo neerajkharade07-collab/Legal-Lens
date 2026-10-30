@@ -9,12 +9,19 @@ import './AppShell.css';
 /** Full-height app screens (the drafting workspace) hide the marketing-style footer. */
 const isFullHeightRoute = (pathname) => /^\/draft\/(?!new$)[^/]+$/.test(pathname);
 
+function skipToMain(event) {
+  event.preventDefault();
+  document.getElementById('main-content')?.focus();
+}
+
 export function AppShell() {
   const { pathname } = useLocation();
   const fullHeight = isFullHeightRoute(pathname);
   return (
     <div className="app-shell">
-      <a href="#main-content" className="skip-link">
+      {/* index.html sets <base href=".../legal-drafting/">, so a plain "#main-content"
+          link would load the app's home page; move focus in place instead. */}
+      <a href="#main-content" className="skip-link" onClick={skipToMain}>
         Skip to main content
       </a>
       <ScrollManager />

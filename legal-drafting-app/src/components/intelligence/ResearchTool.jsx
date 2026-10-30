@@ -6,6 +6,7 @@ import { Modal, ModalCloseButton } from '../common/Modal';
 import { ToolLoading, ToolError, DemoNotice } from './IntelShared';
 import { SourceNoticeModal } from './SourceNoticeModal';
 import './ResearchTool.css';
+import { AiResearch } from './AiReview';
 
 function DetailsModal({ item, onClose, onAddNote, onSave }) {
   const closeRef = useRef(null);
@@ -91,7 +92,7 @@ function ResultCard({ item, onView, onAddNote, onSave, saved }) {
   );
 }
 
-export function ResearchTool({ intel }) {
+function DemoResearchTool({ intel }) {
   const [query, setQuery] = useState(intel.research.query);
   const [viewing, setViewing] = useState(null);
   const { research, savedResearch } = intel;
@@ -203,4 +204,12 @@ export function ResearchTool({ intel }) {
       />
     </div>
   );
+}
+
+/**
+ * Signed-in account document: the real review (Phase 3, CASEONE server).
+ * Otherwise (Demo Mode, document review page): the existing demo tool, unchanged.
+ */
+export function ResearchTool(props) {
+  return props.intel?.aiReview ? <AiResearch {...props} /> : <DemoResearchTool {...props} />;
 }

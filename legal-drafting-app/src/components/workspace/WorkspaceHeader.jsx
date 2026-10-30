@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom';
+import { Link, useHref } from 'react-router-dom';
 import {
   ArrowLeft,
   RotateCcw,
@@ -13,12 +13,16 @@ import {
   FileDown,
   FileText,
   MoreHorizontal,
+  ClipboardCheck,
+  Lock,
+  CalendarClock,
 } from 'lucide-react';
 import { Button } from '../common/Button';
 import { Badge, DemoBadge } from '../common/Badge';
 import { DropdownMenu } from '../common/DropdownMenu';
 import { DocumentTypeIcon } from '../common/DocumentTypeIcon';
 import { SaveStatus } from './SaveStatus';
+import { draftOriginBadge } from '../../utils/draftLabels';
 import './WorkspaceHeader.css';
 
 export function WorkspaceHeader({
@@ -41,7 +45,13 @@ export function WorkspaceHeader({
   onExportPdf,
   onExportWord,
   onExportDocx,
+  docxAvailable = false,
+  docStatus,
+  onFinalize,
 }) {
+  // Phase 5: the limitation calculator opens in a new tab, so the document stays open (no change to it).
+  const limitationHref = useHref('/limitation');
+  const openLimitation = () => window.open(limitationHref, '_blank', 'noopener');
   // Regenerate rebuilds from a template, so it is offered only for generated drafts.
   const secondary = [
     ...(onRegenerate
@@ -55,12 +65,15 @@ export function WorkspaceHeader({
     { id: 'pdf', label: 'Export PDF (print dialog)', icon: FileDown, onSelect: onExportPdf },
     {
       id: 'docx',
-      label: 'Export DOCX — not available',
+      label: docxAvailable ? 'Export Word (.docx)' : 'Export DOCX — needs a CASEONE account',
       icon: FileText,
       onSelect: onExportDocx,
-      disabled: true,
+      disabled: !docxAvailable,
     },
     { id: 'doc', label: 'Word-compatible (.doc)', icon: Download, onSelect: onExportWord },
+    ...(onFinalize
+      ? [{ id: 'finalize', label: 'Check readiness & finalize…', icon: ClipboardCheck, onSelect: onFinalize }]
+      : []),
   ];
 
   return (
@@ -108,11 +121,18 @@ export function WorkspaceHeader({
             {document.source === 'compared-document' && (
               <Badge tone="outline">From comparison</Badge>
             )}
-            {document.generation?.source === 'demo' && (
-              <DemoBadge className="ws-header__demo">Preliminary template draft</DemoBadge>
+            {docStatus && (
+              <Badge
+                tone={docStatus.id === 'finalized' ? 'inverse' : 'outline'}
+                icon={docStatus.id === 'finalized' ? Lock : undefined}
+                title={docStatus.detail}
+                className="ws-header__docstatus"
+              >
+                {docStatus.label}
+              </Badge>
             )}
-            {document.generation?.source === 'ai' && (
-              <DemoBadge className="ws-header__demo">AI draft — review every detail</DemoBadge>
+            {draftOriginBadge(document) && (
+              <DemoBadge className="ws-header__demo">{draftOriginBadge(document)}</DemoBadge>
             )}
           </div>
         </div>
@@ -142,6 +162,14 @@ export function WorkspaceHeader({
                 History
                 {versionCount > 0 && <span className="ws-header__count">{versionCount}</span>}
               </Button>
+              <Button
+                variant="secondary"
+                size="sm"
+                icon={CalendarClock}
+                onClick={openLimitation}
+                aria-label="Limitation calculator (opens in a new tab)"
+                title="Limitation calculator (opens in a new tab)"
+              />
               <DropdownMenu
                 label="Export"
                 icon={Download}
@@ -159,6 +187,11 @@ export function WorkspaceHeader({
           >
             Preview
           </Button>
+          {onFinalize && !compact && (
+            <Button variant="secondary" size="sm" icon={ClipboardCheck} onClick={onFinalize}>
+              Finalize
+            </Button>
+          )}
           <Button size="sm" icon={Save} onClick={onSave} disabled={saveStatus === 'saving'}>
             Save
           </Button>
@@ -170,6 +203,7 @@ export function WorkspaceHeader({
                 ...secondary,
                 { id: 'history', label: 'Version history', icon: History, onSelect: onOpenHistory },
                 { id: 'rename', label: 'Rename document', icon: PencilLine, onSelect: onRename },
+                { id: 'limitation', label: 'Limitation calculator (new tab)', icon: CalendarClock, onSelect: openLimitation },
                 ...exportItems,
               ]}
             />
